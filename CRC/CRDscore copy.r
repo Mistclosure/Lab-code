@@ -17,7 +17,7 @@ exp = as.data.frame(LayerData(pbmc1, assay = "RNA", layer = "data"))
 
 # 2. 提取 Rloop.csv 中的基因集
 #112 primary cilium genes ciliopathy_genes.csv
-CRC_data = read.csv("ciliopathy_genes.csv", header = T, check.names = F)
+CRC_data = read.csv("DNA-damage-response genes.csv", header = T, check.names = F)
 #target_genes =c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a','CD8', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
 # 提取 GeneSymbol 列的前 92 个基因
 target_genes = as.character(CRC_data[,1])
