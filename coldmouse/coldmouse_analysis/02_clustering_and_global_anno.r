@@ -1,7 +1,15 @@
 # ==============================================================================
-# Script 2: 降维聚类、去双胞与全局 SingleR 注释
+# Script 2: 降维聚类、去双胞与全局 SingleR 注释 (参数化聚类版)
 # ==============================================================================
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse')
+
+# 【新增】创建输出文件夹
+dir.create("pictures", showWarnings = FALSE)
+dir.create("files", showWarnings = FALSE)
+
+# 【参数配置】在此处切换 "leiden" 或 "louvain"
+cluster_method <- "louvain" 
+algo_id <- ifelse(cluster_method == "leiden", 4, 1) # 4 为 Leiden, 1 为 Louvain
 
 library(reticulate)
 use_condaenv("py_env", conda = "/home/zerui/miniconda3/bin/conda", required = TRUE)
@@ -20,12 +28,12 @@ library(celldex)
 sc_combined <- qread("sc_combined_qc.qs")
 
 # ------------------------------------------------------------------------------
-# 4. 按组织独立分析 (Harmony + Leiden)
+# 4. 按组织独立 analysis (Harmony + Leiden/Louvain)
 # ------------------------------------------------------------------------------
-print("🚀 步骤3/10: 组织拆分 -> 批次校正 -> Leiden 聚类与去双胞...")
+print(paste0("🚀 步骤3/10: 使用 ", cluster_method, " 进行聚类与去双胞..."))
 sc_by_tissue <- SplitObject(sc_combined, split.by = "Tissue")
 
-run_standard_pipeline <- function(obj, tissue_name) {
+run_standard_pipeline <- function(obj, tissue_name, method_id) {
   print(paste(">>> 处理组织:", tissue_name, "| 细胞数:", ncol(obj)))
   if(ncol(obj) < 50) return(NULL)
   
@@ -36,8 +44,9 @@ run_standard_pipeline <- function(obj, tissue_name) {
   obj <- RunHarmony(obj, group.by.vars = "orig.ident", verbose = FALSE)
   
   obj <- FindNeighbors(obj, reduction = "harmony", dims = 1:50)
-  # 使用 Leiden 聚类 (algorithm = 4), 分辨率 1.0
-  obj <- FindClusters(obj, resolution = 1.0, algorithm = 4) 
+  
+  # 使用传入的 method_id 参数
+  obj <- FindClusters(obj, resolution = 1.0, algorithm = method_id) 
   
   temp_obj <- JoinLayers(obj)
   sce <- as.SingleCellExperiment(temp_obj)
@@ -57,7 +66,8 @@ run_standard_pipeline <- function(obj, tissue_name) {
   return(obj)
 }
 
-sc_by_tissue <- lapply(names(sc_by_tissue), function(x) run_standard_pipeline(sc_by_tissue[[x]], x))
+# 将 algo_id 传入函数
+sc_by_tissue <- lapply(names(sc_by_tissue), function(x) run_standard_pipeline(sc_by_tissue[[x]], x, algo_id))
 names(sc_by_tissue) <- c("Aorta", "PBMC", "BoneMarrow")
 sc_by_tissue <- sc_by_tissue[!sapply(sc_by_tissue, is.null)]
 
@@ -78,19 +88,19 @@ for (i in seq_along(sc_by_tissue)) {
   sc_by_tissue[[i]] <- obj
   print(paste("   ✅", tissue_name, "全局注释完成"))
 }
-# 覆写保存带有 SingleR.labels 的对象
-qsave(sc_by_tissue, 'sc_by_tissue.qs')
+# 保存文件名增加聚类方法后缀 (保存在当前目录)
+qsave(sc_by_tissue, paste0('sc_by_tissue_', cluster_method, '.qs'))
 
 # ------------------------------------------------------------------------------
 # 6. 绘制所有细胞的聚类图片 (分组织、分温度) 与 输出 Top Markers
 # ------------------------------------------------------------------------------
 print("🚀 步骤5/10: 绘制所有细胞的聚类 UMAP 并导出 Top Markers...")
-sc_by_tissue = qread('sc_by_tissue.qs')
+sc_by_tissue = qread(paste0('sc_by_tissue_', cluster_method, '.qs'))
+
 for (tissue_name in names(sc_by_tissue)) {
   print(paste(">>> 正在处理组织:", tissue_name))
   obj <- sc_by_tissue[[tissue_name]]
   
-  # 【新增】细胞数量过滤：忽略少于 20 个细胞的稀有/噪声亚群
   min_cells_threshold <- 20
   cell_counts <- table(obj$SingleR.labels)
   keep_labels <- names(cell_counts[cell_counts >= min_cells_threshold])
@@ -100,49 +110,37 @@ for (tissue_name in names(sc_by_tissue)) {
     next
   }
   
-  # 执行过滤
   obj <- subset(obj, subset = SingleR.labels %in% keep_labels)
 
-  # ============================================================================
-  # 【新增步骤】计算该组织下各 SingleR 标签的 Top Markers
-  # ============================================================================
   print(paste("   🔎 正在计算", tissue_name, "的差异表达基因..."))
   
-  # 确保 Ident 设置为 SingleR 注释结果
   Idents(obj) <- "SingleR.labels"
   
-  # 计算 Markers (仅保留高表达且显著的基因)
   all_markers <- FindAllMarkers(obj, 
                                 only.pos = TRUE, 
                                 min.pct = 0.25, 
                                 logfc.threshold = 0.25,
                                 verbose = FALSE)
   
-  # 提取每个 Cluster 的 Top 20 基因 (按 avg_log2FC 排序)
   top20_markers <- all_markers %>%
     group_by(cluster) %>%
     slice_max(n = 20, order_by = avg_log2FC)
   
-  # 保存 Marker 列表到本地 CSV
-  write.csv(all_markers, paste0("Markers_All_", tissue_name, ".csv"), row.names = FALSE)
-  write.csv(top20_markers, paste0("Markers_Top20_", tissue_name, ".csv"), row.names = FALSE)
+  # 【修改】保存 Marker 列表到 files 文件夹
+  write.csv(all_markers, file.path("files", paste0("Markers_All_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
+  write.csv(top20_markers, file.path("files", paste0("Markers_Top20_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
   
   print(paste("   ✅", tissue_name, "Marker 列表已导出。"))
-  # ============================================================================
 
-  # 统一因子水平，确保颜色映射严格一致
   all_labels <- sort(unique(obj$SingleR.labels))
   obj$SingleR.labels <- factor(obj$SingleR.labels, levels = all_labels)
   
-  # --- 以下为原有的绘图代码 (保持不变) ---
-  
-  # Total 图：保留图例
+  # Total 图
   p_total <- DimPlot(obj, reduction = "umap", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
-    ggtitle(paste(tissue_name, "- All Cells")) +
+    ggtitle(paste(tissue_name, "-", cluster_method, "(All)")) + 
     theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
           axis.title = element_blank())
   
-  # 子组图：NoLegend() 强制关闭图例
   p_cold <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
     ggtitle("Cold_4C") + 
     theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
@@ -158,12 +156,12 @@ for (tissue_name in names(sc_by_tissue)) {
     theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
     NoLegend()
   
-  # 拼图
   p_final <- (p_total | p_cold) / (p_rt | p_tn) + 
     plot_layout(guides = "collect", axes = "collect") & 
     theme(legend.text = element_text(size = 9))
   
-  file_name <- paste0("AllCells_UMAP_Grid_", tissue_name, ".png")
+  # 【修改】图片输出到 pictures 文件夹
+  file_name <- file.path("pictures", paste0("UMAP_Grid_", cluster_method, "_", tissue_name, ".png"))
   ggsave(filename = file_name, plot = p_final, width = 15, height = 11, dpi = 300)
 }
 print("✅ 全细胞 UMAP 绘图与 Marker 导出完毕。")
