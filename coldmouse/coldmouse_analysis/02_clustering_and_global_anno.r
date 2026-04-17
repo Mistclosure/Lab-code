@@ -92,76 +92,84 @@ for (i in seq_along(sc_by_tissue)) {
 qsave(sc_by_tissue, paste0('sc_by_tissue_', cluster_method, '.qs'))
 
 # ------------------------------------------------------------------------------
-# 6. 绘制所有细胞的聚类图片 (分组织、分温度) 与 输出 Top Markers
+# 6. 绘制 UMAP 并导出带有 SingleR 标注列的 Cluster Marker
 # ------------------------------------------------------------------------------
-print("🚀 步骤5/10: 绘制所有细胞的聚类 UMAP 并导出 Top Markers...")
+print("🚀 步骤5/10: 导出 Cluster Marker (附带 SingleR 标注用于核对)...")
 sc_by_tissue = qread(paste0('sc_by_tissue_', cluster_method, '.qs'))
 
 for (tissue_name in names(sc_by_tissue)) {
   print(paste(">>> 正在处理组织:", tissue_name))
   obj <- sc_by_tissue[[tissue_name]]
   
+  # 1. 过滤掉过小的亚群（可选，保持与你之前逻辑一致）
   min_cells_threshold <- 20
   cell_counts <- table(obj$SingleR.labels)
   keep_labels <- names(cell_counts[cell_counts >= min_cells_threshold])
-  
-  if (length(keep_labels) == 0) {
-    print(paste("   ⚠️", tissue_name, "中没有符合条件的亚群，跳过。"))
-    next
-  }
-  
+  if (length(keep_labels) == 0) next
   obj <- subset(obj, subset = SingleR.labels %in% keep_labels)
 
-  print(paste("   🔎 正在计算", tissue_name, "的差异表达基因..."))
-  
-  Idents(obj) <- "SingleR.labels"
-  
+  # 2. 计算 Cluster 与 SingleR Label 的映射关系 (取每个 Cluster 中频数最高的 Label)
+  print(paste("   🔗 正在建立 Cluster 与 SingleR Label 的对应关系..."))
+  annotation_map <- obj@meta.data %>%
+    group_by(seurat_clusters, SingleR.labels) %>%
+    summarise(cell_count = n(), .groups = 'drop') %>%
+    group_by(seurat_clusters) %>%
+    slice_max(n = 1, order_by = cell_count, with_ties = FALSE) %>%
+    select(cluster = seurat_clusters, SingleR_Annotation = SingleR.labels)
+
+  # 3. 以 seurat_clusters 为标识符计算 Marker
+  print(paste("   🔎 正在计算", tissue_name, "的 Cluster Marker..."))
+  Idents(obj) <- "seurat_clusters"
   all_markers <- FindAllMarkers(obj, 
-                                only.pos = TRUE, 
-                                min.pct = 0.25, 
-                                logfc.threshold = 0.25,
-                                verbose = FALSE)
+                                 only.pos = TRUE, 
+                                 min.pct = 0.25, 
+                                 logfc.threshold = 0.25,
+                                 verbose = FALSE)
   
+  # 4. 将映射好的 SingleR 标签列合并到 Marker 表中
+  # 注意：Seurat 的 cluster 列通常是 factor，转成 character 方便 join
+  all_markers$cluster <- as.character(all_markers$cluster)
+  annotation_map$cluster <- as.character(annotation_map$cluster)
+  
+  all_markers <- all_markers %>%
+    left_join(annotation_map, by = "cluster") %>%
+    select(cluster, SingleR_Annotation, gene, everything()) # 调整列顺序，方便阅读
+
+  # 5. 提取 Top 20
   top20_markers <- all_markers %>%
     group_by(cluster) %>%
     slice_max(n = 20, order_by = avg_log2FC)
   
-  # 【修改】保存 Marker 列表到 files 文件夹
-  write.csv(all_markers, file.path("files", paste0("Markers_All_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
-  write.csv(top20_markers, file.path("files", paste0("Markers_Top20_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
+  # 6. 保存结果
+  write.csv(all_markers, 
+            file.path("files", paste0("Markers_Check_", cluster_method, "_", tissue_name, ".csv")), 
+            row.names = FALSE)
+  write.csv(top20_markers, 
+            file.path("files", paste0("Markers_Check_Top20_", cluster_method, "_", tissue_name, ".csv")), 
+            row.names = FALSE)
   
-  print(paste("   ✅", tissue_name, "Marker 列表已导出。"))
+  print(paste("   ✅", tissue_name, "Marker 核对列表已导出。"))
 
+  # --- 绘图部分保持不变 ---
   all_labels <- sort(unique(obj$SingleR.labels))
   obj$SingleR.labels <- factor(obj$SingleR.labels, levels = all_labels)
   
-  # Total 图
   p_total <- DimPlot(obj, reduction = "umap", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
     ggtitle(paste(tissue_name, "-", cluster_method, "(All)")) + 
-    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-          axis.title = element_blank())
+    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
   
   p_cold <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
-    ggtitle("Cold_4C") + 
-    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
-    NoLegend()
+    ggtitle("Cold_4C") + theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + NoLegend()
   
   p_rt <- DimPlot(subset(obj, subset = Group == "RT_25C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
-    ggtitle("RT_25C") + 
-    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
-    NoLegend()
+    ggtitle("RT_25C") + theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + NoLegend()
   
   p_tn <- DimPlot(subset(obj, subset = Group == "TN_30C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
-    ggtitle("TN_30C") + 
-    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
-    NoLegend()
+    ggtitle("TN_30C") + theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + NoLegend()
   
-  p_final <- (p_total | p_cold) / (p_rt | p_tn) + 
-    plot_layout(guides = "collect", axes = "collect") & 
-    theme(legend.text = element_text(size = 9))
+  p_final <- (p_total | p_cold) / (p_rt | p_tn) + plot_layout(guides = "collect", axes = "collect") & theme(legend.text = element_text(size = 9))
   
-  # 【修改】图片输出到 pictures 文件夹
-  file_name <- file.path("pictures", paste0("UMAP_Grid_", cluster_method, "_", tissue_name, ".png"))
-  ggsave(filename = file_name, plot = p_final, width = 15, height = 11, dpi = 300)
+  ggsave(filename = file.path("pictures", paste0("UMAP_Grid_", cluster_method, "_", tissue_name, ".png")), 
+         plot = p_final, width = 15, height = 11, dpi = 300)
 }
-print("✅ 全细胞 UMAP 绘图与 Marker 导出完毕。")
+print("✅ 脚本运行完毕，请在 files 文件夹查看 Markers_Check 系列文件。")
