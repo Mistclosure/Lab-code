@@ -80,7 +80,6 @@ for (i in seq_along(sc_by_tissue)) {
 }
 # 保存文件名增加聚类方法后缀 (保存在当前目录)
 qsave(sc_by_tissue, paste0('sc_by_tissue_', cluster_method, '.qs'))
-
 # ------------------------------------------------------------------------------
 # 6. 绘制所有细胞的聚类图片 (分组织、分温度) 与 输出 Top Markers
 # ------------------------------------------------------------------------------
@@ -102,65 +101,105 @@ for (tissue_name in names(sc_by_tissue)) {
   
   obj <- subset(obj, subset = SingleR.labels %in% keep_labels)
 
-  print(paste("   🔎 正在计算", tissue_name, "的差异表达基因..."))
+  print(paste("   🔎 正在计算", tissue_name, "的差异表达基因 (基于 Seurat Clusters)..."))
   
-  Idents(obj) <- "SingleR.labels"
+  # 【修改点 1】设置 Idents 为聚类 ID 而非 SingleR 标签
+  Idents(obj) <- "seurat_clusters"
   
   all_markers <- FindAllMarkers(obj, 
                                 only.pos = TRUE, 
                                 min.pct = 0.25, 
                                 logfc.threshold = 0.25,
                                 verbose = FALSE)
+
+  # 【修改点 2】建立 Cluster 与 SingleR 标签的映射关系 (取每个 Cluster 中频数最高的标签)
+  cluster_to_label <- as.data.frame(obj@meta.data) %>%
+    select(seurat_clusters, SingleR.labels) %>%
+    mutate(SingleR.labels = as.character(unlist(SingleR.labels))) %>% # 强制转为标准字符向量，防 list
+    group_by(seurat_clusters) %>%
+    dplyr::count(SingleR.labels) %>%
+    slice_max(n = 1, order_by = n, with_ties = FALSE) %>% # with_ties = FALSE 极其重要，防止平局导致后续 join 行数翻倍
+    ungroup() %>%
+    select(cluster = seurat_clusters, SingleR_Annotation = SingleR.labels)
+
+  # 【修改点 3】将注释合并到 Marker 结果中
+  all_markers <- all_markers %>%
+    left_join(cluster_to_label, by = "cluster") %>%
+    mutate(cluster_with_anno = paste0("Cluster ", cluster, " (", SingleR_Annotation, ")"))
   
   top20_markers <- all_markers %>%
     group_by(cluster) %>%
     slice_max(n = 20, order_by = avg_log2FC)
   
-  # 【修改】保存 Marker 列表到 files 文件夹
+  # 保存 Marker 列表
   write.csv(all_markers, file.path("files", paste0("Markers_All_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
   write.csv(top20_markers, file.path("files", paste0("Markers_Top20_", cluster_method, "_", tissue_name, ".csv")), row.names = FALSE)
   
-  print(paste("   ✅", tissue_name, "Marker 列表已导出。"))
+  print(paste("   ✅", tissue_name, "Marker 列表 (含 SingleR 注释) 已导出。"))
 
+  # 以下绘图部分逻辑保持不变
   all_labels <- sort(unique(obj$SingleR.labels))
   obj$SingleR.labels <- factor(obj$SingleR.labels, levels = all_labels)
   
-  # 【新增】将过滤和转换为 factor 后的 obj 存回列表
   sc_by_tissue[[tissue_name]] <- obj
   
-  # Total 图
-  p_total <- DimPlot(obj, reduction = "umap", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
-    ggtitle(paste(tissue_name, "-", cluster_method, "(All)")) + 
-    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-          axis.title = element_blank())
+  # ==========================================
+  # 绘图 1: 基于 SingleR 注释 (按 Annotation 分组)
+  # ==========================================
+  p_total_anno <- DimPlot(obj, reduction = "umap", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
+    ggtitle(paste(tissue_name, "-", cluster_method, "(Annotation)")) + 
+    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
   
-  p_cold <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
+  p_cold_anno <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
     ggtitle("Cold_4C") + 
     theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
     NoLegend()
   
-  p_rt <- DimPlot(subset(obj, subset = Group == "RT_25C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
+  p_rt_anno <- DimPlot(subset(obj, subset = Group == "RT_25C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
     ggtitle("RT_25C") + 
     theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
     NoLegend()
   
-  p_tn <- DimPlot(subset(obj, subset = Group == "TN_30C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
+  p_tn_anno <- DimPlot(subset(obj, subset = Group == "TN_30C"), reduction = "umap", group.by = "SingleR.labels", label = FALSE) + 
     ggtitle("TN_30C") + 
     theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
     NoLegend()
   
-  p_final <- (p_total | p_cold) / (p_rt | p_tn) + 
+  p_final_anno <- (p_total_anno | p_cold_anno) / (p_rt_anno | p_tn_anno) + 
     plot_layout(guides = "collect", axes = "collect") & 
     theme(legend.text = element_text(size = 9))
   
-  # 【修改】图片输出到 pictures 文件夹
-  file_name <- file.path("pictures", paste0("UMAP_Grid_", cluster_method, "_", tissue_name, ".png"))
-  ggsave(filename = file_name, plot = p_final, width = 15, height = 11, dpi = 300)
+  file_name_anno <- file.path("pictures", paste0("UMAP_Grid_Annotation_", cluster_method, "_", tissue_name, ".png"))
+  ggsave(filename = file_name_anno, plot = p_final_anno, width = 15, height = 11, dpi = 300)
+
+  # ==========================================
+  # 绘图 2: 基于 Seurat Clusters (按原始聚类分组)
+  # ==========================================
+  p_total_cls <- DimPlot(obj, reduction = "umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) + 
+    ggtitle(paste(tissue_name, "-", cluster_method, "(Clusters)")) + 
+    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
+  
+  p_cold_cls <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "seurat_clusters", label = FALSE) + 
+    ggtitle("Cold_4C") + 
+    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+    NoLegend()
+  
+  p_rt_cls <- DimPlot(subset(obj, subset = Group == "RT_25C"), reduction = "umap", group.by = "seurat_clusters", label = FALSE) + 
+    ggtitle("RT_25C") + 
+    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+    NoLegend()
+  
+  p_tn_cls <- DimPlot(subset(obj, subset = Group == "TN_30C"), reduction = "umap", group.by = "seurat_clusters", label = FALSE) + 
+    ggtitle("TN_30C") + 
+    theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+    NoLegend()
+  
+  p_final_cls <- (p_total_cls | p_cold_cls) / (p_rt_cls | p_tn_cls) + 
+    plot_layout(guides = "collect", axes = "collect") & 
+    theme(legend.text = element_text(size = 9))
+  
+  file_name_cls <- file.path("pictures", paste0("UMAP_Grid_Clusters_", cluster_method, "_", tissue_name, ".png"))
+  ggsave(filename = file_name_cls, plot = p_final_cls, width = 15, height = 11, dpi = 300)
+
+  print(paste("   ✅", tissue_name, "的 Annotation 和 Clusters 两版 UMAP 均已保存。"))
 }
-
-# 【新增】将最终的列表统一保存为一个 qs 文件
-final_qs_name <- paste0("sc_by_tissue_", cluster_method, "_FinalList.qs")
-qsave(sc_by_tissue, final_qs_name)
-
-print("✅ 全细胞 UMAP 绘图与 Marker 导出完毕。")
-print(paste("💾 最终结果列表已保存为:", final_qs_name))

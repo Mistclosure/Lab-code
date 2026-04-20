@@ -13,10 +13,9 @@ library(data.table)
 setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE231559')
 
 # 1. 读取上一步预处理完成的高质量 Seurat 对象
-sc_final <- qread("sc_combined_qc_Cleaned.qs")
+pbmc1 <- qread("Malignant_RNA_assay.qs")
 
 # 2. 筛选肿瘤细胞（注意：预处理脚本中标记肿瘤的列名为 Type，取值为 Tumor）
-pbmc1 <- subset(sc_final, subset = Type == 'Tumor')
 
 # （Seurat NormalizeData 默认 log1p 处理，生成 layer = "data"）
 pbmc1 <- NormalizeData(pbmc1)
@@ -31,8 +30,8 @@ seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
 # 这样 data_log2 才是 CRDscore 要求的 log2 尺度表达矩阵
 data_log2 <- as.data.frame(seurat_data / log(2))
 #仅第一次运行时使用，用于储存结果文件
-#pbmc1[['RNA']]$data_log2 = data_log2
-#qsave(pbmc1,'Tumor_GSE231559.qs')
+pbmc1[['RNA']]$data_log2 = data_log2
+qsave(pbmc1,'Malignant_GSE231559.qs')
 # ------------------------------------------------------------------------------
 # 4. 计算评分
 # ------------------------------------------------------------------------------
@@ -97,7 +96,7 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   theme(legend.position = "none") +
   # 动态标题
   ggtitle(paste0(signature_name, "+GSE231559+CRDscore (Stage)")) +
-  coord_cartesian(ylim = c(-0.2, 0.2)) +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),
@@ -134,7 +133,7 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   theme(legend.position = "none") +
   # 动态标题
   ggtitle(paste0(signature_name, "+GSE231559+CRDscore (Metastasis)")) +
-  coord_cartesian(ylim = c(-0.2, 0.2)) +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),

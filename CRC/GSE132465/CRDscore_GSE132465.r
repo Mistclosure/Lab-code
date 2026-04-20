@@ -12,7 +12,6 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/')
 
 # --- 读取并构建 Seurat 对象 ---
 
-
 # 替换 UMI 矩阵读取
 # data.table 读取后默认是 data.table 格式，我们需要转回 data.frame 并设置行名
 counts_matrix <- fread("GSE132465_10X_UMI_matrix.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -40,8 +39,16 @@ seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
 # 这样 data_log2 才是 CRDscore 要求的 log2 尺度表达矩阵
 data_log2 <- as.data.frame(seurat_data / log(2))
 
-# 2. 提取基因集
-CRC_data = read.csv("/mnt/disk1/qiuzerui/downloads/CRC/signature/112 primary cilium genes.csv", header = T, check.names = F)
+# ==========================================
+# 定义 Signature 名称 (动态变量)
+# ==========================================
+signature_name <- "112 primary cilium genes"
+# 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
+# signature_file_prefix <- gsub(" ", "_", signature_name) 
+signature_file_prefix <- signature_name # 这里默认保留原名
+
+# 2. 提取基因集 (动态路径)
+CRC_data = read.csv(paste0("/mnt/disk1/qiuzerui/downloads/CRC/signature/", signature_name, ".csv"), header = T, check.names = F)
 
 target_genes = as.character(CRC_data[,1])
 target_genes = intersect(target_genes, rownames(pbmc1))
@@ -70,7 +77,10 @@ rt1$metastasis <- ifelse(
   "Primary",
   "Metastasis"
 )
-write.csv(rt1,'112 primary cilium genes_CRC_CRDscore.csv',row.names= FALSE,quote = FALSE)
+
+# 动态保存 CSV 文件
+write.csv(rt1, paste0(signature_file_prefix, '_CRC_CRDscore.csv'), row.names= FALSE, quote = FALSE)
+
 # ==============================
 # 图 1：针对 Stage (分期)
 # ==============================
@@ -93,7 +103,7 @@ if(length(group_stage) >= 2){
   for(i in 1:ncol(comp_stage)){ my_comparisons_stage[[i]] <- comp_stage[, i] }
 }
 
-# 绘图 1
+# 绘图 1 (动态标题)
 p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   stat_boxplot(geom = "errorbar", width = 0.6) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA, size = 0.7, width = 0.7, fatten = 0.7) +
@@ -101,7 +111,7 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   theme(panel.grid = element_blank()) +
   stat_compare_means(comparisons = my_comparisons_stage, method = "wilcox.test") +
   theme(legend.position = "none") +
-  ggtitle("112 primary cilium genes+GSE123465+CRDscore (Stage)") +
+  ggtitle(paste0(signature_name, "+GSE123465+CRDscore (Stage)")) +
   coord_cartesian(ylim = c(-0.2, 0.2)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
@@ -112,7 +122,8 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
         plot.title = element_text(face = "bold", size = 15, hjust = 0.5))
 
 print(p1)
-ggsave("112_primary_cilium_genes_Stage_plot.png", plot = p1, width = 6, height = 5, dpi = 300)
+# 动态保存图片 1
+ggsave(paste0(signature_file_prefix, "_Stage_plot.png"), plot = p1, width = 6, height = 5, dpi = 300)
 
 
 # ==============================
@@ -132,7 +143,7 @@ if(length(group_meta) >= 2){
   for(i in 1:ncol(comp_meta)){ my_comparisons_meta[[i]] <- comp_meta[, i] }
 }
 
-# 绘图 2
+# 绘图 2 (动态标题)
 p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   stat_boxplot(geom = "errorbar", width = 0.6) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA, size = 0.7, width = 0.7, fatten = 0.7) +
@@ -140,7 +151,7 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   theme(panel.grid = element_blank()) +
   stat_compare_means(comparisons = my_comparisons_meta, method = "wilcox.test") +
   theme(legend.position = "none") +
-  ggtitle("112 primary cilium genes+GSE123465+CRDscore (Metastasis)") +
+  ggtitle(paste0(signature_name, "+GSE123465+CRDscore (Metastasis)")) +
   coord_cartesian(ylim = c(-0.2, 0.2)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
@@ -151,4 +162,5 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
         plot.title = element_text(face = "bold", size = 15, hjust = 0.5))
 
 print(p2)
-ggsave("112_primary_cilium_genes_Metastasis_plot.png", plot = p2, width = 6, height = 5, dpi = 300)
+# 动态保存图片 2
+ggsave(paste0(signature_file_prefix, "_Metastasis_plot.png"), plot = p2, width = 6, height = 5, dpi = 300)
