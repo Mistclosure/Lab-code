@@ -1,5 +1,5 @@
 # ==============================================================================
-# Script 2: 降维聚类、去双胞与全局 SingleR 注释 (参数化聚类版) - 已移除 Harmony
+# Script 2: 降维聚类与全局 SingleR 注释 (参数化聚类版) - 承接 Cleaned 数据
 # ==============================================================================
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse')
 
@@ -18,54 +18,39 @@ library(tidyverse)
 library(patchwork)
 library(qs)
 library(leidenbase)
-library(scDblFinder)
-library(SingleCellExperiment)
-# library(harmony) # 可以不再加载
+# 已经去过双胞，注销掉这两个包节约内存
+# library(scDblFinder) 
+# library(SingleCellExperiment)
 library(SingleR)
 library(celldex)
 
-# 读取上一脚本的结果
-sc_combined <- qread("sc_combined_qc.qs")
+# 【关键修改】读取综合质控脚本输出的纯净去双胞数据
+sc_combined <- qread("sc_combined_qc_Cleaned.qs")
 
 # ------------------------------------------------------------------------------
 # 4. 按组织独立 analysis (Leiden/Louvain)
 # ------------------------------------------------------------------------------
-print(paste0("🚀 步骤3/10: 使用 ", cluster_method, " 进行聚类与去双胞..."))
+print(paste0("🚀 步骤3/10: 使用 ", cluster_method, " 进行降维与聚类 (跳过去双胞，因上游已处理)..."))
 sc_by_tissue <- SplitObject(sc_combined, split.by = "Tissue")
 
 run_standard_pipeline <- function(obj, tissue_name, method_id) {
   print(paste(">>> 处理组织:", tissue_name, "| 细胞数:", ncol(obj)))
   if(ncol(obj) < 50) return(NULL)
   
+  # 【新增】确保 Seurat v5 layer 合并，防止 ScaleData 报错
+  obj <- JoinLayers(obj)
+  
+  # 执行单次完整的 标准化 -> 找高变 -> 缩放 -> PCA
   obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000)
   obj <- FindVariableFeatures(obj, selection.method = "vst")
   obj <- ScaleData(obj, vars.to.regress = c("nCount_RNA", "percent.mt"))
   obj <- RunPCA(obj, npcs = 50, verbose = FALSE)
   
-  # --- 已移除 RunHarmony ---
-  
-  # 修改 reduction 为 "pca"
+  # 聚类
   obj <- FindNeighbors(obj, reduction = "pca", dims = 1:50)
-  
-  # 使用传入的 method_id 参数
   obj <- FindClusters(obj, resolution = 1.0, algorithm = method_id) 
   
-  temp_obj <- JoinLayers(obj)
-  sce <- as.SingleCellExperiment(temp_obj)
-  sce <- scDblFinder(sce, clusters = TRUE)
-  obj$scDblFinder_class <- sce$scDblFinder.class
-  rm(temp_obj); gc()
-  
-  obj <- subset(obj, subset = scDblFinder_class == "singlet")
-  
-  obj <- NormalizeData(obj)
-  obj <- FindVariableFeatures(obj)
-  obj <- ScaleData(obj, vars.to.regress = c("nCount_RNA", "percent.mt"))
-  obj <- RunPCA(obj, npcs = 50, verbose = FALSE)
-  
-  # --- 已移除 RunHarmony ---
-  
-  # 修改 reduction 为 "pca"
+  # 【关键修改】删除了冗余的 scDblFinder 和重复的降维代码，直接跑 UMAP
   obj <- RunUMAP(obj, reduction = "pca", dims = 1:50)
   
   return(obj)
@@ -140,6 +125,9 @@ for (tissue_name in names(sc_by_tissue)) {
   all_labels <- sort(unique(obj$SingleR.labels))
   obj$SingleR.labels <- factor(obj$SingleR.labels, levels = all_labels)
   
+  # 【新增】将过滤和转换为 factor 后的 obj 存回列表
+  sc_by_tissue[[tissue_name]] <- obj
+  
   # Total 图
   p_total <- DimPlot(obj, reduction = "umap", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
     ggtitle(paste(tissue_name, "-", cluster_method, "(All)")) + 
@@ -169,4 +157,10 @@ for (tissue_name in names(sc_by_tissue)) {
   file_name <- file.path("pictures", paste0("UMAP_Grid_", cluster_method, "_", tissue_name, ".png"))
   ggsave(filename = file_name, plot = p_final, width = 15, height = 11, dpi = 300)
 }
+
+# 【新增】将最终的列表统一保存为一个 qs 文件
+final_qs_name <- paste0("sc_by_tissue_", cluster_method, "_FinalList.qs")
+qsave(sc_by_tissue, final_qs_name)
+
 print("✅ 全细胞 UMAP 绘图与 Marker 导出完毕。")
+print(paste("💾 最终结果列表已保存为:", final_qs_name))
