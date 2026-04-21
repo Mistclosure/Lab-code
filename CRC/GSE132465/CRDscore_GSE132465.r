@@ -10,26 +10,11 @@ library(qs)
 library(data.table)
 setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/')
 
-# --- 读取并构建 Seurat 对象 ---
-
-# 替换 UMI 矩阵读取
-# data.table 读取后默认是 data.table 格式，我们需要转回 data.frame 并设置行名
-counts_matrix <- fread("GSE132465_10X_UMI_matrix.txt", header = TRUE, sep = "\t", check.names = FALSE)
-counts_matrix <- as.data.frame(counts_matrix)
-rownames(counts_matrix) <- counts_matrix[[1]] # 第一列设为行名
-counts_matrix <- counts_matrix[,-1]          # 删掉原来的第一列
-
-# 替换注释文件读取
-cell_annotation <- fread("GSE132465_10X_cell_annotation.txt", header = TRUE, sep = "\t")
-cell_annotation <- as.data.frame(cell_annotation)
-rownames(cell_annotation) <- cell_annotation[[1]]
-cell_annotation <- cell_annotation[,-1]
-
-scRNA <- CreateSeuratObject(counts = counts_matrix, meta.data = cell_annotation)
-pbmc1 <- subset(scRNA, subset = Class == 'Tumor')
+pbmc1 = qread('Malignant_RNA_assay.qs')
 
 # （注：Seurat 的 NormalizeData 默认是取自然对数 log1p。为了生成 layer = "data" 以防报错，这里保留该步骤）
-pbmc1 <- NormalizeData(pbmc1)
+#计算logCPM
+pbmc1 <- NormalizeData(pbmc1,normalization.method = "LogNormalize", scale.factor = 1000000)
 
 # 1. Seurat v5 提取表达矩阵
 # 提取 Seurat 里的 data 矩阵
@@ -42,7 +27,7 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # ==========================================
 # 定义 Signature 名称 (动态变量)
 # ==========================================
-signature_name <- "112 primary cilium genes"
+signature_name <- "hot tumor"
 # 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
 # signature_file_prefix <- gsub(" ", "_", signature_name) 
 signature_file_prefix <- signature_name # 这里默认保留原名
@@ -51,6 +36,7 @@ signature_file_prefix <- signature_name # 这里默认保留原名
 CRC_data = read.csv(paste0("/mnt/disk1/qiuzerui/downloads/CRC/signature/", signature_name, ".csv"), header = T, check.names = F)
 
 target_genes = as.character(CRC_data[,1])
+#target_genes=c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # 3. 计算评分
@@ -112,7 +98,6 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   stat_compare_means(comparisons = my_comparisons_stage, method = "wilcox.test") +
   theme(legend.position = "none") +
   ggtitle(paste0(signature_name, "+GSE123465+CRDscore (Stage)")) +
-  coord_cartesian(ylim = c(-0.2, 0.2)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),
@@ -152,7 +137,6 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   stat_compare_means(comparisons = my_comparisons_meta, method = "wilcox.test") +
   theme(legend.position = "none") +
   ggtitle(paste0(signature_name, "+GSE123465+CRDscore (Metastasis)")) +
-  coord_cartesian(ylim = c(-0.2, 0.2)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),

@@ -18,8 +18,7 @@ pbmc1 <- qread("Malignant_RNA_assay.qs")
 # 2. 筛选肿瘤细胞（注意：预处理脚本中标记肿瘤的列名为 Type，取值为 Tumor）
 
 # （Seurat NormalizeData 默认 log1p 处理，生成 layer = "data"）
-pbmc1 <- NormalizeData(pbmc1)
-
+pbmc1 <- NormalizeData(pbmc1,normalization.method = "LogNormalize", scale.factor = 1000000)
 # ------------------------------------------------------------------------------
 # 3. 提取表达矩阵并进行 log2 转换
 # ------------------------------------------------------------------------------
@@ -36,7 +35,7 @@ qsave(pbmc1,'Malignant_GSE231559.qs')
 # 4. 计算评分
 # ------------------------------------------------------------------------------
 # --- 动态提取基因集文件名 ---
-signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/112 primary cilium genes.csv"
+signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/ciliopathy_genes.csv"
 signature_name <- tools::file_path_sans_ext(basename(signature_file))
 
 CRC_data = read.csv(signature_file, header = T, check.names = F)
@@ -96,7 +95,6 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   theme(legend.position = "none") +
   # 动态标题
   ggtitle(paste0(signature_name, "+GSE231559+CRDscore (Stage)")) +
-  coord_cartesian(ylim = c(-0.5, 0.5)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),
@@ -133,7 +131,6 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   theme(legend.position = "none") +
   # 动态标题
   ggtitle(paste0(signature_name, "+GSE231559+CRDscore (Metastasis)")) +
-  coord_cartesian(ylim = c(-0.5, 0.5)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("CRDScore") +
   theme(axis.title.x = element_blank(),
