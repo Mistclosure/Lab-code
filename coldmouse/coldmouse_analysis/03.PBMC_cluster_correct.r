@@ -1,3 +1,4 @@
+#此脚本用于纠正分群后的出图，请在02之后使用
 library(Seurat)
 library(qs)
 library(patchwork)
