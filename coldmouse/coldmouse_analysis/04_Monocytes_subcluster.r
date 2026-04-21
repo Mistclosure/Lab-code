@@ -1,5 +1,5 @@
 # ==============================================================================
-# Script 4: Monocytes 亚群精细分析 (Leiden 聚类 + 全局坐标投影 + 差异基因导出)
+# Script 4: Monocytes 亚群精细分析 (Leiden 聚类 + 全局与局部坐标投影 + 差异基因导出)
 # ==============================================================================
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse')
 
@@ -37,6 +37,9 @@ mono_cells <- RunPCA(mono_cells, verbose = FALSE)
 mono_cells <- FindNeighbors(mono_cells, dims = 1:15)
 mono_cells <- FindClusters(mono_cells, resolution = 1.0, algorithm = 4) 
 
+# 【新增】运行局部的 UMAP 降维，为后续的局部坐标绘图提供数据
+mono_cells <- RunUMAP(mono_cells, dims = 1:15, verbose = FALSE)
+
 # 生成亚群专属编号，防止与总图的 0,1,2 混淆
 mono_cells$mono_sub_clusters <- paste0("Mono_", mono_cells$seurat_clusters)
 
@@ -65,9 +68,44 @@ write.csv(top20_markers, file.path("files", "Markers_Top20_Leiden_Monocytes_Subg
 print("  ✅ 单核细胞亚群 Marker 列表已导出。")
 
 # ------------------------------------------------------------------------------
-# 4. 全局坐标绘图 (2x2 网格排版)
+# 4. 局部坐标绘图 (2x2 网格排版，不映射回原图)
 # ------------------------------------------------------------------------------
-print("🚀 步骤3: 正在生成基于总图坐标的 2x2 网格 UMAP...")
+print("🚀 步骤3: 正在生成基于子集局部坐标的 2x2 网格 UMAP...")
+
+# ==========================================
+# 绘图 A: 基于局部坐标的 Monocyte 亚群 (直接画 mono_cells)
+# ==========================================
+p_total_local <- DimPlot(mono_cells, reduction = "umap", group.by = "mono_sub_clusters", label = TRUE, repel = TRUE) + 
+  ggtitle("Monocyte Subgroups - Leiden (Local Total)") + 
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
+
+p_cold_local <- DimPlot(subset(mono_cells, subset = Group == "Cold_4C"), reduction = "umap", group.by = "mono_sub_clusters", label = FALSE) + 
+  ggtitle("Cold_4C") + 
+  theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+  NoLegend()
+
+p_rt_local <- DimPlot(subset(mono_cells, subset = Group == "RT_25C"), reduction = "umap", group.by = "mono_sub_clusters", label = FALSE) + 
+  ggtitle("RT_25C") + 
+  theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+  NoLegend()
+
+p_tn_local <- DimPlot(subset(mono_cells, subset = Group == "TN_30C"), reduction = "umap", group.by = "mono_sub_clusters", label = FALSE) + 
+  ggtitle("TN_30C") + 
+  theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
+  NoLegend()
+
+# 合并图层，应用 axes = "collect" 对齐边界
+p_final_local <- (p_total_local | p_cold_local) / (p_rt_local | p_tn_local) + 
+  plot_layout(guides = "collect", axes = "collect") & 
+  theme(legend.text = element_text(size = 9))
+
+file_name_local <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Local.png")
+ggsave(filename = file_name_local, plot = p_final_local, width = 15, height = 11, dpi = 300)
+
+# ------------------------------------------------------------------------------
+# 5. 全局坐标绘图 (2x2 网格排版，映射回原图)
+# ------------------------------------------------------------------------------
+print("🚀 步骤4: 正在生成基于总图坐标的 2x2 网格 UMAP...")
 
 # 将亚群信息映射回 pbmc 总对象
 pbmc$mono_viz_group <- "Others"
@@ -79,10 +117,10 @@ cells_rt   <- Cells(subset(mono_cells, subset = Group == "RT_25C"))
 cells_tn   <- Cells(subset(mono_cells, subset = Group == "TN_30C"))
 
 # ==========================================
-# 绘图: 基于全局坐标的 Monocyte 亚群 (按温度分组)
+# 绘图 B: 基于全局坐标的 Monocyte 亚群 (按温度分组)
 # ==========================================
 p_total_cls <- DimPlot(pbmc, cells = Cells(mono_cells), reduction = "umap", group.by = "mono_viz_group", label = TRUE, repel = TRUE) + 
-  ggtitle("Monocyte Subgroups - Leiden (Total)") + 
+  ggtitle("Monocyte Subgroups - Leiden (Global Total)") + 
   theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
 
 p_cold_cls <- DimPlot(pbmc, cells = cells_cold, reduction = "umap", group.by = "mono_viz_group", label = FALSE) + 
@@ -108,7 +146,34 @@ p_final_cls <- (p_total_cls | p_cold_cls) / (p_rt_cls | p_tn_cls) +
 file_name_cls <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Global.png")
 ggsave(filename = file_name_cls, plot = p_final_cls, width = 15, height = 11, dpi = 300)
 
-# 保存提取的单核细胞对象供后续独立调用
+# 保存提取的单核细胞对象供后续独立调用 (该对象现在自带局部的 UMAP 坐标)
 qsave(mono_cells, "pbmc_monocytes_sub-clustered.qs")
 
-print("✅ 脚本 04 执行完毕，结果已保存！")
+print("✅ 脚本 04 执行完毕，局部/全局 2x2 UMAP 结果均已保存！")
+# ------------------------------------------------------------------------------
+# 6. Monocytes 组间差异基因分析 (Cold_4C vs RT_25C)
+# ------------------------------------------------------------------------------
+print("🚀 步骤5: 正在计算 Monocytes 在 Cold_4C 和 RT_25C 之间的差异表达基因 (DEG)...")
+
+# 将细胞的身份标识 (Idents) 切换为实验组别 (Group)
+Idents(mono_cells) <- "Group"
+
+# 计算 Cold_4C 对比 RT_25C 的差异基因 (ident.1 vs ident.2)
+# 正的 log2FC 表示在 Cold_4C 中上调，负的表示在 Cold_4C 中下调
+deg_cold_vs_rt <- FindMarkers(mono_cells, 
+                              ident.1 = "Cold_4C", 
+                              ident.2 = "RT_25C",
+                              logfc.threshold = 0.25,
+                              min.pct = 0.1,  # 稍微放宽 min.pct 以捕捉更多组间变化
+                              verbose = FALSE)
+
+# 提取行名(基因名)为单独一列，并按照 avg_log2FC 进行降序排列
+deg_cold_vs_rt <- deg_cold_vs_rt %>% 
+  rownames_to_column(var = "gene") %>%
+  arrange(desc(avg_log2FC)) 
+
+# 导出组间差异基因列表
+deg_filename <- file.path("files", "DEG_Monocytes_Cold_4C_vs_RT_25C.csv")
+write.csv(deg_cold_vs_rt, deg_filename, row.names = FALSE)
+
+print(paste("  ✅ 组间差异基因 (Cold_4C vs RT_25C) 计算完成，已导出至:", deg_filename))
