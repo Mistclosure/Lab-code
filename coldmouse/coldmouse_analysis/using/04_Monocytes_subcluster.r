@@ -35,7 +35,7 @@ mono_cells <- RunPCA(mono_cells, verbose = FALSE)
 
 # 使用 Leiden 算法 (algorithm = 4)
 mono_cells <- FindNeighbors(mono_cells, dims = 1:15)
-mono_cells <- FindClusters(mono_cells, resolution = 1.0, algorithm = 4) 
+mono_cells <- FindClusters(mono_cells, resolution = 0.35, algorithm = 4) 
 
 # 【新增】运行局部的 UMAP 降维，为后续的局部坐标绘图提供数据
 mono_cells <- RunUMAP(mono_cells, dims = 1:15, verbose = FALSE)
@@ -60,11 +60,11 @@ all_markers <- FindAllMarkers(mono_cells,
 # 直接取 Top 20
 top20_markers <- all_markers %>%
   group_by(cluster) %>%
-  slice_max(n = 20, order_by = avg_log2FC)
+  slice_max(n = 30, order_by = avg_log2FC)
 
 # 导出 Marker 列表
 write.csv(all_markers, file.path("files", "Markers_All_Leiden_Monocytes_Subgroups.csv"), row.names = FALSE)
-write.csv(top20_markers, file.path("files", "Markers_Top20_Leiden_Monocytes_Subgroups.csv"), row.names = FALSE)
+write.csv(top20_markers, file.path("files", "Markers_Top30_Leiden_Monocytes_Subgroups.csv"), row.names = FALSE)
 print("  ✅ 单核细胞亚群 Marker 列表已导出。")
 
 # ------------------------------------------------------------------------------
