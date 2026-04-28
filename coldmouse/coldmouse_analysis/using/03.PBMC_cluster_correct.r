@@ -44,6 +44,41 @@ pbmc$new_clusters <- unname(factor(type2newid[pure_celltypes], levels = as.chara
 # 同样更新 celltype 供保存
 pbmc$celltype <- paste0(pbmc$new_clusters, ": ", pure_celltypes)
 qsave(pbmc, 'pbmc_corrected.qs')
+pbmc = qread('pbmc_corrected.qs')
+# ==========================================
+# 4. 进一步过滤和合并群 (基于旧的 new_clusters)
+# ==========================================
+# A. 剔除指定群
+pbmc <- subset(pbmc, subset = new_clusters %in% c("1", "5", "6", "9", "13", "18"), invert = TRUE)
+
+# B. 合并 4 和 15 为 CD8 (此时仍使用旧编号)
+pbmc$new_clusters <- as.character(pbmc$new_clusters)
+pbmc$new_clusters[pbmc$new_clusters == "15"] <- "4"
+id2type["4"] <- "CD8" # 确保 4 号的定义更新为 CD8
+
+# ==========================================
+# 5. 核心：重新计算连续序号
+# ==========================================
+# 获取当前 pbmc 中实际存在的旧编号，并按数字大小排序
+old_ids_present <- sort(as.numeric(unique(pbmc$new_clusters)))
+old_ids_present <- as.character(old_ids_present)
+
+# 获取这些旧编号对应的细胞类型名称
+current_types <- id2type[old_ids_present]
+
+# 创建重映射字典：旧编号 -> 新连续编号 (1, 2, 3...)
+new_id_map <- setNames(as.character(seq_along(old_ids_present)), old_ids_present)
+
+# 应用重映射到 Seurat 对象
+pbmc$new_clusters <- unname(factor(new_id_map[pbmc$new_clusters], 
+                             levels = as.character(seq_along(old_ids_present))))
+
+# 更新 id2type 映射表，供后续 legend_labels 使用
+# 现在 id2type 变成了：新连续编号 -> 细胞类型
+id2type <- setNames(current_types, as.character(seq_along(old_ids_present)))
+
+# 同步更新 celltype 字符串列
+pbmc$celltype <- paste0(pbmc$new_clusters, ": ", id2type[as.character(pbmc$new_clusters)])
 
 # ==========================================
 # 准备替换图例文本的向量
@@ -87,5 +122,5 @@ p_final_anno <- (p_total_anno | p_cold_anno) / (p_rt_anno | p_tn_anno) +
 if(!dir.exists("pictures")) dir.create("pictures")
 file_name_anno_png <- file.path("pictures", "UMAP_Grid_corrected_PBMC.png")
 ggsave(filename = file_name_anno_png, plot = p_final_anno, width = 15, height = 11, dpi = 300)
-file_name_anno_pdf <- file.path("pictures", "UMAP_Grid_corrected_PBMC.pdf")
+file_name_anno_pdf <- file.path("pictures", "UMAP_Grid_corrected_PBMC_update1.pdf")
 ggsave(filename = file_name_anno_pdf, plot = p_final_anno, width = 15, height = 11, dpi = 300)
