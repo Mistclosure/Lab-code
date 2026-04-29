@@ -91,10 +91,10 @@ plot_pseudotime_split <- plot_cells(cds, color_cells_by = "pseudotime",
 # 8. 保存
 print("Saving outputs...")
 if(!dir.exists("files")) dir.create("files")
-qsave(cds, "files/script_06_monocle3_robust_injected.qs")
+qsave(cds, "script_06_monocle3_robust_injected.qs")
 
-ggsave("files/monocle3_global_source.pdf", plot_source_global, width = 6, height = 5)
-ggsave("files/monocle3_global_pseudotime.pdf", plot_pseudotime_global, width = 6, height = 5)
-ggsave("files/monocle3_split_by_group.pdf", plot_pseudotime_split, width = 10, height = 5)
+ggsave("pictures/monocle3_global_source.pdf", plot_source_global, width = 6, height = 5)
+ggsave("pictures/monocle3_global_pseudotime.pdf", plot_pseudotime_global, width = 6, height = 5)
+ggsave("pictures/monocle3_split_by_group.pdf", plot_pseudotime_split, width = 10, height = 5)
 
 print("Script 06 ALL COMPLETED successfully!")
