@@ -1,5 +1,5 @@
 # ==============================================================================
-# Script 02.02: PBMC 独立降维聚类 (tSNE版) 与全局 SingleR 注释
+# Script 02.02: PBMC 独立降维可视化 (极致精简版 - 仅运行 tSNE 并绘图)
 # ==============================================================================
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse')
 
@@ -7,65 +7,36 @@ setwd('/mnt/disk1/qiuzerui/expriments/coldmouse')
 dir.create("pictures", showWarnings = FALSE)
 dir.create("files", showWarnings = FALSE)
 
-# 【参数配置】保持与之前一致的聚类方法
+# 【参数配置】
 cluster_method <- "louvain" 
-algo_id <- ifelse(cluster_method == "leiden", 4, 1)
 
 library(Seurat)
 library(tidyverse)
 library(patchwork)
 library(qs)
-library(SingleR)
-library(celldex)
 
 # ------------------------------------------------------------------------------
-# 1. 读取 PBMC 数据
+# 1. 读取 PBMC 数据 (已包含 PCA 和 SingleR 注释)
 # ------------------------------------------------------------------------------
-print("🚀 步骤1: 读取 pbmc_corrected.qs 数据...")
-# 直接读取仅包含 PBMC 的对象
-pbmc_obj <- qread("pbmc_corrected.qs")
+print("🚀 步骤1: 读取已处理好的 pbmc_obj 数据...")
+sc_by_tissue = qread('sc_by_tissue_louvain.qs')
+pbmc_obj = sc_by_tissue[['PBMC']]
 
 print(paste(">>> 成功读取 PBMC 数据，当前细胞数:", ncol(pbmc_obj)))
 
 # ------------------------------------------------------------------------------
-# 4. 重新进行降维聚类 (使用 tSNE 替代 UMAP)
+# 2. 仅运行 tSNE 降维
 # ------------------------------------------------------------------------------
-print(paste0("🚀 步骤4: 重新运行标准化与降维聚类 (使用 tSNE)..."))
-
-# 确保 Seurat v5 layer 合并
-pbmc_obj <- JoinLayers(pbmc_obj)
-
-# 重新走一遍标准流程
-pbmc_obj <- NormalizeData(pbmc_obj, normalization.method = "LogNormalize", scale.factor = 10000)
-pbmc_obj <- FindVariableFeatures(pbmc_obj, selection.method = "vst")
-pbmc_obj <- ScaleData(pbmc_obj, vars.to.regress = c("nCount_RNA", "percent.mt"))
-pbmc_obj <- RunPCA(pbmc_obj, npcs = 50, verbose = FALSE)
-
-# 聚类
-pbmc_obj <- FindNeighbors(pbmc_obj, reduction = "pca", dims = 1:50)
-pbmc_obj <- FindClusters(pbmc_obj, resolution = 1.0, algorithm = algo_id) 
-
-# 【关键执行】：使用 tSNE 进行降维
-print("   🔎 正在运行 tSNE 降维...")
+print("🚀 步骤2: 基于已有的 PCA 结果计算 tSNE 坐标...")
+# 直接调用已有的前 50 个主成分进行 tSNE 降维
 pbmc_obj <- RunTSNE(pbmc_obj, reduction = "pca", dims = 1:50)
 
 # ------------------------------------------------------------------------------
-# 5. 重新运行 SingleR 注释
+# 3. 绘制细胞 tSNE 图片 (分温度) 
 # ------------------------------------------------------------------------------
-print("🚀 步骤5: 运行 SingleR 对 PBMC 细胞进行全局标注...")
-mouse_ref <- celldex::MouseRNAseqData()
+print("🚀 步骤3: 绘制 PBMC 的 tSNE 分布图并输出...")
 
-expr_mat <- GetAssayData(pbmc_obj, assay = "RNA", layer = "data")
-pred_res <- SingleR(test = expr_mat, ref = mouse_ref, labels = mouse_ref$label.main)
-pbmc_obj$SingleR.labels <- pred_res$labels
-print("   ✅ PBMC 全局 SingleR 注释完成")
-
-# ------------------------------------------------------------------------------
-# 6. 绘制细胞聚类图片 (分温度) 
-# ------------------------------------------------------------------------------
-print("🚀 步骤6: 绘制 PBMC 的 tSNE 聚类图并输出...")
-
-# 过滤极小亚群
+# 基于已有的 SingleR.labels 过滤极小亚群
 min_cells_threshold <- 20
 cell_counts <- table(pbmc_obj$SingleR.labels)
 keep_labels <- names(cell_counts[cell_counts >= min_cells_threshold])
@@ -81,8 +52,8 @@ all_labels <- sort(unique(pbmc_obj$SingleR.labels))
 pbmc_obj$SingleR.labels <- factor(pbmc_obj$SingleR.labels, levels = all_labels)
 
 # ==========================================
-# 绘图: 基于 SingleR 注释 (按 Annotation 分组)
-# 注意：基于 tSNE 的绘图逻辑
+# 绘图: 基于已有的 SingleR 注释 (按 Annotation 分组)
+# 注意：使用 reduction = "tsne"
 # ==========================================
 p_total_anno <- DimPlot(pbmc_obj, reduction = "tsne", group.by = "SingleR.labels", label = TRUE, repel = TRUE) + 
   ggtitle(paste("PBMC -", cluster_method, "(Annotation - tSNE)")) + 
@@ -114,6 +85,5 @@ ggsave(filename = file_name_anno, plot = p_final_anno, width = 15, height = 11, 
 
 print(paste("   ✅ PBMC 的 Annotation 版 tSNE 图像已保存至:", file_name_anno))
 
-# (可选) 如果你后续还需要用到这个含有 tSNE 和 SingleR 结果的 PBMC 对象，可以取消注释保存它
+# (可选) 导出带有 tSNE 坐标的对象，以备后续其他分析需要
 # qsave(pbmc_obj, file.path("files", paste0('sc_PBMC_tSNE_', cluster_method, '.qs')))
-# print("   ✅ 独立处理的 PBMC 数据已保存为 qs 文件。")
