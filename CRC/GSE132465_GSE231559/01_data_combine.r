@@ -26,8 +26,7 @@ sc231559$Dataset <- "GSE231559"
 
 # 合并对象并为 cell barcode 添加前缀以防重名
 merged_sc <- merge(x = sc132465, 
-                   y = sc231559, 
-                   add.cell.ids = c("GSE132465", "GSE231559"), 
+                   y = sc231559,  
                    project = "CRC_Merged")
 
 # 清理内存
@@ -101,3 +100,8 @@ cat("正在保存合并并整合后的 Seurat 对象...\n")
 qsave(merged_sc, "Merged_scRNA.qs")
 
 cat("流程运行完毕！\n")
+merged_sc = qread('Merged_scRNA.qs')
+Malignant132 <- read.table("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/Malignant cells.txt", header = TRUE, sep = "\t", check.names = FALSE, row.names = 1)
+Malignant231 <- read.table("/mnt/disk1/qiuzerui/downloads/CRC/GSE231559/Malignant cells.txt", header = TRUE, sep = "\t", check.names = FALSE, row.names = 1)
+malig <- merged_sc[, colnames(merged_sc) %in% c(rownames(Malignant132),rownames(Malignant231))] 
+qsave(malig,'Merged_malig.qs')
