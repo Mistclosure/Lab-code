@@ -73,7 +73,7 @@ result <- t(new.data2)[, rownames(new_ids_length)]
 dim(result)
 
 # --- 读取 Rloop.csv 
-rloop = read.csv("Rloop.csv", header = T, check.names = F, row.names = 1)
+rloop = read.csv("ciliahub_genes_list.csv", header = T, check.names = F, row.names = 1)
 Cluster1 <- result[intersect(rownames(rloop), rownames(result)), ]
 dim(Cluster1)
 
@@ -102,6 +102,8 @@ nSamples = nrow(dataExpr)
 powers = c(c(1:10), seq(from = 12, to = 30, by = 2))
 sft = pickSoftThreshold(dataExpr, powerVector = powers, networkType = "signed", verbose = 5)
 
+# 【修改：保存软阈值图为 PNG】
+png(filename = "WGCNA_SoftThreshold.png", width = 10, height = 5, units = "in", res = 300)
 par(mfrow = c(1, 2))
 cex1 = 0.9
 plot(sft$fitIndices[, 1], -sign(sft$fitIndices[, 3]) * sft$fitIndices[, 2],
@@ -115,6 +117,7 @@ plot(sft$fitIndices[, 1], sft$fitIndices[, 5],
      xlab = "Soft Threshold (power)", ylab = "Mean Connectivity", type = "n",
      main = "Mean connectivity")
 text(sft$fitIndices[, 1], sft$fitIndices[, 5], labels = powers, cex = cex1, col = "red")
+dev.off()
 
 power = sft$powerEstimate
 if(is.na(power)) power = 12 # 容错处理
@@ -136,9 +139,13 @@ table(net$colors)
 moduleLabels = net$colors
 moduleColors = labels2colors(moduleLabels)
 moduleColors
+
+# 【修改：保存模块聚类树为 PNG】
+png(filename = "WGCNA_ModuleColors_Dendro.png", width = 8, height = 6, units = "in", res = 300)
 plotDendroAndColors(net$dendrograms[[1]], moduleColors[net$blockGenes[[1]]],
                     "Module colors", dendroLabels = FALSE, hang = 0.03,
                     addGuide = TRUE, guideHang = 0.05)
+dev.off()
 
 MEs = net$MEs
 MEs_col = MEs
@@ -146,8 +153,11 @@ colnames(MEs_col) = paste0("ME", labels2colors(as.numeric(str_replace_all(colnam
 MEs_col = orderMEs(MEs_col)
 head(MEs_col)
 
+# 【修改：保存特征基因热图1为 PNG】
+png(filename = "WGCNA_Eigengene_Adjacency1.png", width = 7, height = 7, units = "in", res = 300)
 plotEigengeneNetworks(MEs_col, "Eigengene adjacency heatmap", marDendro = c(3, 3, 2, 4),
                       marHeatmap = c(3, 4, 2, 2), plotDendrograms = T, xLabelsAngle = 90)
+dev.off()
 
 # ====== 恢复原代码缺失的模块表达可视化及TOM分析 ======
 moduleColors <- labels2colors(net$colors)
@@ -156,17 +166,23 @@ MEs = MEList$eigengenes
 MEDiss = 1-cor(MEs);
 METree = hclust(as.dist(MEDiss), method = "average");
 
+# 【修改：保存特征基因热图2为 PNG】
+png(filename = "WGCNA_Eigengene_Adjacency2.png", width = 7, height = 7, units = "in", res = 300)
 plotEigengeneNetworks(MEs,
                       "Eigengene adjacency heatmap",
                       marHeatmap = c(3,4,2,2),
                       plotDendrograms = FALSE,
                       xLabelsAngle = 90)
+dev.off()
 
 table(moduleColors)
 
 # 针对 Blue 模块的可视化
 which.module="blue";
 ME=MEs[, paste("ME",which.module, sep="")]
+
+# 【修改：保存Blue模块可视化为 PNG】
+png(filename = "WGCNA_Blue_Module_Plot.png", width = 8, height = 8, units = "in", res = 300)
 par(mfrow=c(2,1), mar=c(0,4.1,4,2.05))
 plotMat(t(scale(dataExpr[,moduleColors==which.module ]) ),
         nrgcols=30,rlabels=F,rcols=which.module,
@@ -174,6 +190,7 @@ plotMat(t(scale(dataExpr[,moduleColors==which.module ]) ),
 par(mar=c(2,2.3,0.5,0.8))
 barplot(ME, col=which.module, main="", cex.main=2,
         ylab="eigengene expression",xlab="array sample")
+dev.off()
 
 # TOM网络热图绘制
 load(net$TOMFiles, verbose=T)
@@ -188,9 +205,13 @@ diag(plotTOM) = NA
 
 # Call the plot function
 table(moduleColors)
+
+# 【修改：保存TOM网络热图为 PNG】
+png(filename = "WGCNA_Network_Heatmap.png", width = 9, height = 9, units = "in", res = 300)
 TOMplot(plotTOM, net$dendrograms[[1]], moduleColors[net$blockGenes[[1]]],
         main = "Network heatmap plot, all genes",
         col=gplots::colorpanel(250,'red',"orange",'lemonchiffon'))
+dev.off()
 
 # 输出 moduleLabels
 Labels = as.data.frame(moduleLabels)
@@ -211,7 +232,8 @@ cli = cli[common_samples, ]
 moduleTraitCor <- cor(MEs, cli, use = "p")
 moduleTraitPvalue = corPvalueStudent(moduleTraitCor, length(common_samples))
 
-pdf(file = "Module-trait.pdf", width = 7, height = 7)
+# 【修改：由 PDF 改为 PNG】
+png(filename = "Module-trait.png", width = 7, height = 7, units = "in", res = 300)
 textMatrix <- paste(signif(moduleTraitCor, 2), "\n(",
                     signif(moduleTraitPvalue, 1), ")", sep = "")
 par(mar = c(10, 8.5, 3, 3))
