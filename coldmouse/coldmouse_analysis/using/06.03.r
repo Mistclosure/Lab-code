@@ -155,7 +155,7 @@ print("Saving outputs...")
 if(!dir.exists("files")) dir.create("files")
 if(!dir.exists("pictures")) dir.create("pictures")
 
-qsave(cds_mono, "files/script_06_03_monocle3_pbmc_monocytes.qs")
+#qsave(cds_mono, "files/script_06_03_monocle3_pbmc_monocytes.qs")
 
 ggsave("pictures/monocle3_06_03_group_highlight.pdf", plot_group_highlight, width = 4 * length(all_groups), height = 5.5)
 ggsave("pictures/monocle3_06_03_pseudotime.pdf", plot_time, width = 6, height = 5)
