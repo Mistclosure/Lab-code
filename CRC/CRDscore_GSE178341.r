@@ -13,7 +13,7 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178341/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/DNA-damage-response genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/112 primary cilium genes.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')

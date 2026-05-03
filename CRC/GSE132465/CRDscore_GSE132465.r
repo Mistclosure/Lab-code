@@ -27,7 +27,7 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # ==========================================
 # 定义 Signature 名称 (动态变量)
 # ==========================================
-signature_name <- "hot tumor"
+signature_name <- "112 primary cilium genes"
 # 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
 # signature_file_prefix <- gsub(" ", "_", signature_name) 
 signature_file_prefix <- signature_name # 这里默认保留原名
@@ -35,7 +35,7 @@ signature_file_prefix <- signature_name # 这里默认保留原名
 # 2. 提取基因集 (动态路径)
 CRC_data = read.csv(paste0("/mnt/disk1/qiuzerui/downloads/CRC/signature/", signature_name, ".csv"), header = T, check.names = F)
 
-target_genes = as.character(CRC_data[,1])
+target_genes = as.character(CRC_data[1:68,1])
 #target_genes=c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
 target_genes = intersect(target_genes, rownames(pbmc1))
 
@@ -75,7 +75,7 @@ colnames(data_stage) = c("score", "Type")
 
 # 按照你的要求进行分期合并
 data_stage$Type[data_stage$Type %in% c('IIIA', 'IIIB', 'IIIC')] = 'Ⅲ'
-data_stage$Type[data_stage$Type == 'IIA'] = 'I'
+#data_stage$Type[data_stage$Type == 'IIA'] = 'I'
 # 如果有其他分期（如 II），建议也确认一下是否需要保留
 
 # 设置因子水平（去重并排序）

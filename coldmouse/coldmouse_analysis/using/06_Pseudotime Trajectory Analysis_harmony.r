@@ -34,19 +34,24 @@ aorta_target$cell_type <- aorta_target$SingleR.labels
 # 定义Source来源
 aorta_target$Source <- paste0("Aorta_", aorta_target$cell_type)
 
-# 3. 合并与预处理
-print("Merging objects...")
-# 合并两个对象，添加细胞前缀避免重复
-merged_obj <- merge(pbmc_sub, y = aorta_target, 
-                    add.cell.ids = c("PBMC", "Aorta"))
-# 合并图层（Seurat v5必需步骤）
+# 3. 合并与预处理 + Harmony 整合
+print("Merging objects and running Harmony in Seurat...")
+merged_obj <- merge(pbmc_sub, y = aorta_target, add.cell.ids = c("PBMC", "Aorta"))
 merged_obj <- JoinLayers(merged_obj)
 
-# 可选：验证合并后的细胞类型分布
-print(table(merged_obj$Source, merged_obj$cell_type))
+# --- Seurat 标准流程 (Harmony 运行的前提) ---
+merged_obj <- NormalizeData(merged_obj)
+merged_obj <- FindVariableFeatures(merged_obj)
+merged_obj <- ScaleData(merged_obj)
+merged_obj <- RunPCA(merged_obj, npcs = 30, verbose = FALSE)
+
+# 运行 Harmony 整合 (核心步骤)
+# 我们根据 Source 分组对齐，或者你可以根据组织来源对齐
+print("Integrating batches with Harmony...")
+merged_obj <- RunHarmony(merged_obj, group.by.vars = "Source", reduction.use = "pca", dims.use = 1:30)
 
 # 4. 构建全局 Monocle 3 对象
-print("Converting to Monocle 3...")
+print("Converting to Monocle 3 and injecting Harmony embeddings...")
 expression_matrix <- LayerData(merged_obj, layer = "counts")
 cell_metadata <- merged_obj@meta.data
 gene_metadata <- data.frame(gene_short_name = rownames(expression_matrix), 
@@ -56,34 +61,34 @@ cds <- new_cell_data_set(expression_matrix,
                          cell_metadata = cell_metadata,
                          gene_metadata = gene_metadata)
 
-# 计算 Size Factors (Monocle 的归一化步骤)
+# 计算 Size Factors
 cds <- estimate_size_factors(cds)
 
 # ---------------------------------------------------------
-# 🌟 Monocle 3 原生核心分析流程开始
+# 🌟 关键：手动注入 Seurat 的结果
 # ---------------------------------------------------------
 
-# 步骤 A: 原生 PCA 预处理
-print("Preprocessing natively in Monocle 3 (PCA)...")
-cds <- preprocess_cds(cds, num_dim = 30)
+# 1. 注入 PCA 结果 (其实是 Harmony 后的结果)
+# 我们把 Seurat 的 'harmony' 降维矩阵直接放入 Monocle 的 'PCA' 插槽
+reducedDims(cds)[["PCA"]] <- Embeddings(merged_obj, "harmony")
 
-# 步骤 B: 批次效应/组织差异对齐 (使用 MNN)
-print("Aligning PBMC and Aorta...")
-cds <- align_cds(cds, num_dim = 30, alignment_group = "Source",alignment_method = "harmony")
+# 2. 如果你想保留 Seurat 的 UMAP 也可以注入，或者让 Monocle 重新算
+# 这里建议让 Monocle 重新算 UMAP，但基于我们注入的 Harmony PCA
+print("Reducing dimensions based on Harmony-PCA...")
 
-# 步骤 C: UMAP 降维 (基于对齐后的结果)
-# 注意：这里必须使用 UMAP，后续的轨迹推断强依赖于此
-print("Reducing dimensions (UMAP)...")
-cds <- reduce_dimension(cds, reduction_method = "UMAP", preprocess_method = "Aligned")
+# 注意：这里 preprocess_method 必须设为 "PCA"
+# 这样 Monocle 就会把我们注入的 Harmony 坐标当作原始 PCA 来进行 UMAP
+cds <- reduce_dimension(cds, reduction_method = "UMAP", preprocess_method = "PCA")
 
-# 步骤 D: 聚类
+# 步骤 D: 聚类 (基于 UMAP)
 print("Clustering cells...")
 cds <- cluster_cells(cds, reduction_method = "UMAP", resolution = 1e-3) 
 
 # 步骤 E: 学习轨迹图
+# 因为我们已经手动对齐了，这里不需要再调用 align_cds
 print("Learning Trajectory Graph...")
 cds <- learn_graph(cds, use_partition = FALSE, 
-                   learn_graph_control = list(minimal_branch_len = 10))
+                    learn_graph_control = list(minimal_branch_len = 10))
 
 # 步骤 F: 设定拟时序起点并排序（修改为基于Ly6c2高表达单核细胞）
 print("Ordering cells based on Early Marker (Ly6c2)...")
@@ -135,8 +140,8 @@ if(!dir.exists("pictures")) dir.create("pictures")
 
 qsave(cds, "files/script_06_monocle3_native_standard.qs")
 
-ggsave("pictures/monocle3_standard_source.png", plot_source_global, width = 6, height = 5)
-ggsave("pictures/monocle3_standard_pseudotime.png", plot_pseudotime_global, width = 6, height = 5)
-ggsave("pictures/monocle3_standard_split.png", plot_pseudotime_split, width = 10, height = 5)
+ggsave("pictures/monocle3_standard_source_harmony.png", plot_source_global, width = 6, height = 5)
+ggsave("pictures/monocle3_standard_pseudotime_harmony.png", plot_pseudotime_global, width = 6, height = 5)
+ggsave("pictures/monocle3_standard_split_harmony.png", plot_pseudotime_split, width = 10, height = 5)
 
 print("Script 06 ALL COMPLETED successfully!")

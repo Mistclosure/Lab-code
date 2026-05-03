@@ -13,19 +13,31 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178318/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/ciliopathy_genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/random_genelist(1).csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')
+pbmc1$type <- sub(".*_", "", colnames(pbmc1))
+pbmc1 = subset(pbmc1,subset = pbmc1$type %in% c('CRC','LM'))
+#pbmc1 = subset(pbmc1,subset = pbmc1$orig.ident == 'COL17')
 # 过滤全0基因
 pbmc1 <- pbmc1[Matrix::rowSums(GetAssayData(pbmc1, layer = "counts")) > 0, ]
 # 1. Seurat v5 提取表达矩阵
 exp = as.data.frame(LayerData(pbmc1, assay = "RNA", layer = "data"))
 
+# 1. 提取对象中所有的基因名
+all_genes <- rownames(pbmc1)
+
+# 2. 设置随机种子（可选，但建议加上，这样下次运行结果是一样的，方便复现）
+set.seed(123)
+
+# 3. 随机抽取 112 个基因
+target_genes <- sample(all_genes, 112)
+
 # 2. 提取基因集
-CRC_data = read.csv(input_file, header = T, check.names = F)
-target_genes = as.character(CRC_data[,1])
-target_genes = intersect(target_genes, rownames(pbmc1))
+# CRC_data = read.csv(input_file, header = T, check.names = F)
+# target_genes = as.character(CRC_data[,1])
+# target_genes = intersect(target_genes, rownames(pbmc1))
 
 # --- 3. 计算评分 (方法 A: CRDscore) ---
 score <- cal_CRDscore(expr = exp, n.bins = 50, circadians = 
@@ -36,7 +48,7 @@ score$id = rownames(score)
 
 # --- 4. 计算评分 (方法 B: AddModuleScore) ---
 # Seurat 会将结果存入 meta.data，列名为 name + 1
-pbmc1 <- AddModuleScore(pbmc1, features = list(target_genes), name = "AddModuleScore")
+#pbmc1 <- AddModuleScore(pbmc1, features = list(target_genes), name = "AddModuleScore")
 
 # 提取 metadata (包含 AddModuleScore1)
 meta = pbmc1@meta.data
@@ -50,7 +62,7 @@ rt = merge(meta, cli, by.x= "orig.ident",by.y="Patient ID")
 rt1 = merge(score, rt, by.x = "id", by.y = "id")
 
 # --- 绘图公共参数设置 ---
-type_group = levels(factor(rt1$"Tumor Stage"))
+type_group = levels(factor(rt1$"type"))
 my_comparisons = list()
 if(length(type_group) >= 2){
   comp = combn(type_group, 2)
@@ -58,7 +70,7 @@ if(length(type_group) >= 2){
 }
 
 # ==================== 绘图 1: CRDscore ====================
-data_p = rt1[,c('score','Primary tumor invaded to adjacent organ')]
+data_p = rt1[,c('score','type')]
 colnames(data_p) = c("score","Type")
 
 p = ggplot(data_p, aes(x = Type, y = score, color = Type)) +
