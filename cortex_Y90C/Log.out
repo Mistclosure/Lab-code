@@ -1,399 +1,147 @@
 STAR version=2.7.2b
 STAR compilation time,server,dir=Wed Mar 30 09:58:20 CST 2022 qd-software-20-6.qdgb.qd.hpc:/dellfsqd3/MGI_QINGDAO/USER/lishuangshuang/software/STAR-2.7.2b/source
 ##### Command Line:
-/opt/dnbc4tools3.0/lib/python/dnbc4tools/software/STAR --runMode genomeGenerate --genomeDir /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star --runThreadN 128 --genomeFastaFiles /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa --sjdbGTFfile /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf --genomeSAindexNbases 14 --genomeChrBinNbits 18
+/opt/dnbc4tools3.0/lib/python/dnbc4tools/software/STAR --runMode genomeGenerate --genomeDir /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star --runThreadN 10 --genomeFastaFiles /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa --sjdbGTFfile /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf --genomeSAindexNbases 14 --genomeChrBinNbits 18
 ##### Initial USER parameters from Command Line:
 ###### All USER parameters from Command Line:
 runMode                       genomeGenerate     ~RE-DEFINED
-genomeDir                     /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star     ~RE-DEFINED
-runThreadN                    128     ~RE-DEFINED
-genomeFastaFiles              /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa        ~RE-DEFINED
-sjdbGTFfile                   /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf     ~RE-DEFINED
+genomeDir                     /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star     ~RE-DEFINED
+runThreadN                    10     ~RE-DEFINED
+genomeFastaFiles              /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa        ~RE-DEFINED
+sjdbGTFfile                   /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf     ~RE-DEFINED
 genomeSAindexNbases           14     ~RE-DEFINED
 genomeChrBinNbits             18     ~RE-DEFINED
 ##### Finished reading parameters from all sources
 
 ##### Final user re-defined parameters-----------------:
 runMode                           genomeGenerate
-runThreadN                        128
-genomeDir                         /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star
-genomeFastaFiles                  /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa   
+runThreadN                        10
+genomeDir                         /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star
+genomeFastaFiles                  /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa   
 genomeSAindexNbases               14
 genomeChrBinNbits                 18
-sjdbGTFfile                       /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf
+sjdbGTFfile                       /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf
 
 -------------------------------
 ##### Final effective command line:
-/opt/dnbc4tools3.0/lib/python/dnbc4tools/software/STAR   --runMode genomeGenerate   --runThreadN 128   --genomeDir /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star   --genomeFastaFiles /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa      --genomeSAindexNbases 14   --genomeChrBinNbits 18   --sjdbGTFfile /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf
+/opt/dnbc4tools3.0/lib/python/dnbc4tools/software/STAR   --runMode genomeGenerate   --runThreadN 10   --genomeDir /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star   --genomeFastaFiles /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa      --genomeSAindexNbases 14   --genomeChrBinNbits 18   --sjdbGTFfile /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf
 ----------------------------------------
 
 Finished loading and checking parameters
-May 06 03:34:16 ... starting to generate Genome files
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 0  "chr1" chrStart: 0
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 1  "chr10" chrStart: 195559424
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 2  "chr11" chrStart: 326369280
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 3  "chr12" chrStart: 448528384
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 4  "chr13" chrStart: 568852480
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 5  "chr14" chrStart: 689438720
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 6  "chr15" chrStart: 814481408
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 7  "chr16" chrStart: 918552576
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 8  "chr17" chrStart: 1016856576
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 9  "chr18" chrStart: 1112014848
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 10  "chr19" chrStart: 1202978816
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 11  "chr2" chrStart: 1264582656
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 12  "chr3" chrStart: 1446772736
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 13  "chr4" chrStart: 1606942720
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 14  "chr5" chrStart: 1763704832
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 15  "chr6" chrStart: 1915748352
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 16  "chr7" chrStart: 2065694720
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 17  "chr8" chrStart: 2211184640
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 18  "chr9" chrStart: 2340683776
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 19  "chrM" chrStart: 2465464320
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 20  "chrX" chrStart: 2465726464
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 21  "chrY" chrStart: 2636906496
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 22  "JH584299.1" chrStart: 2728656896
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 23  "GL456233.1" chrStart: 2729705472
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 24  "JH584301.1" chrStart: 2730229760
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 25  "GL456211.1" chrStart: 2730491904
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 26  "GL456350.1" chrStart: 2730754048
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 27  "JH584293.1" chrStart: 2731016192
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 28  "GL456221.1" chrStart: 2731278336
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 29  "JH584297.1" chrStart: 2731540480
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 30  "JH584296.1" chrStart: 2731802624
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 31  "GL456354.1" chrStart: 2732064768
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 32  "JH584294.1" chrStart: 2732326912
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 33  "JH584298.1" chrStart: 2732589056
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 34  "JH584300.1" chrStart: 2732851200
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 35  "GL456219.1" chrStart: 2733113344
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 36  "GL456210.1" chrStart: 2733375488
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 37  "JH584303.1" chrStart: 2733637632
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 38  "JH584302.1" chrStart: 2733899776
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 39  "GL456212.1" chrStart: 2734161920
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 40  "JH584304.1" chrStart: 2734424064
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 41  "GL456379.1" chrStart: 2734686208
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 42  "GL456216.1" chrStart: 2734948352
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 43  "GL456393.1" chrStart: 2735210496
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 44  "GL456366.1" chrStart: 2735472640
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 45  "GL456367.1" chrStart: 2735734784
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 46  "GL456239.1" chrStart: 2735996928
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 47  "GL456213.1" chrStart: 2736259072
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 48  "GL456383.1" chrStart: 2736521216
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 49  "GL456385.1" chrStart: 2736783360
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 50  "GL456360.1" chrStart: 2737045504
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 51  "GL456378.1" chrStart: 2737307648
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 52  "GL456389.1" chrStart: 2737569792
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 53  "GL456372.1" chrStart: 2737831936
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 54  "GL456370.1" chrStart: 2738094080
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 55  "GL456381.1" chrStart: 2738356224
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 56  "GL456387.1" chrStart: 2738618368
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 57  "GL456390.1" chrStart: 2738880512
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 58  "GL456394.1" chrStart: 2739142656
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 59  "GL456392.1" chrStart: 2739404800
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 60  "GL456382.1" chrStart: 2739666944
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 61  "GL456359.1" chrStart: 2739929088
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 62  "GL456396.1" chrStart: 2740191232
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 63  "GL456368.1" chrStart: 2740453376
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 64  "JH584292.1" chrStart: 2740715520
-/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/fasta/genome.fa : chr # 65  "JH584295.1" chrStart: 2740977664
+May 06 23:28:03 ... starting to generate Genome files
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 0  "chr1" chrStart: 0
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 1  "chr10" chrStart: 195559424
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 2  "chr11" chrStart: 326369280
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 3  "chr12" chrStart: 448528384
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 4  "chr13" chrStart: 568852480
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 5  "chr14" chrStart: 689438720
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 6  "chr15" chrStart: 814481408
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 7  "chr16" chrStart: 918552576
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 8  "chr17" chrStart: 1016856576
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 9  "chr18" chrStart: 1112014848
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 10  "chr19" chrStart: 1202978816
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 11  "chr2" chrStart: 1264582656
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 12  "chr3" chrStart: 1446772736
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 13  "chr4" chrStart: 1606942720
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 14  "chr5" chrStart: 1763704832
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 15  "chr6" chrStart: 1915748352
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 16  "chr7" chrStart: 2065694720
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 17  "chr8" chrStart: 2211184640
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 18  "chr9" chrStart: 2340683776
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 19  "chrM" chrStart: 2465464320
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 20  "chrX" chrStart: 2465726464
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 21  "chrY" chrStart: 2636906496
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 22  "JH584299.1" chrStart: 2728656896
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 23  "GL456233.1" chrStart: 2729705472
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 24  "JH584301.1" chrStart: 2730229760
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 25  "GL456211.1" chrStart: 2730491904
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 26  "GL456350.1" chrStart: 2730754048
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 27  "JH584293.1" chrStart: 2731016192
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 28  "GL456221.1" chrStart: 2731278336
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 29  "JH584297.1" chrStart: 2731540480
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 30  "JH584296.1" chrStart: 2731802624
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 31  "GL456354.1" chrStart: 2732064768
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 32  "JH584294.1" chrStart: 2732326912
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 33  "JH584298.1" chrStart: 2732589056
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 34  "JH584300.1" chrStart: 2732851200
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 35  "GL456219.1" chrStart: 2733113344
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 36  "GL456210.1" chrStart: 2733375488
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 37  "JH584303.1" chrStart: 2733637632
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 38  "JH584302.1" chrStart: 2733899776
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 39  "GL456212.1" chrStart: 2734161920
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 40  "JH584304.1" chrStart: 2734424064
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 41  "GL456379.1" chrStart: 2734686208
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 42  "GL456216.1" chrStart: 2734948352
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 43  "GL456393.1" chrStart: 2735210496
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 44  "GL456366.1" chrStart: 2735472640
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 45  "GL456367.1" chrStart: 2735734784
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 46  "GL456239.1" chrStart: 2735996928
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 47  "GL456213.1" chrStart: 2736259072
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 48  "GL456383.1" chrStart: 2736521216
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 49  "GL456385.1" chrStart: 2736783360
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 50  "GL456360.1" chrStart: 2737045504
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 51  "GL456378.1" chrStart: 2737307648
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 52  "GL456389.1" chrStart: 2737569792
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 53  "GL456372.1" chrStart: 2737831936
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 54  "GL456370.1" chrStart: 2738094080
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 55  "GL456381.1" chrStart: 2738356224
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 56  "GL456387.1" chrStart: 2738618368
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 57  "GL456390.1" chrStart: 2738880512
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 58  "GL456394.1" chrStart: 2739142656
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 59  "GL456392.1" chrStart: 2739404800
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 60  "GL456382.1" chrStart: 2739666944
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 61  "GL456359.1" chrStart: 2739929088
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 62  "GL456396.1" chrStart: 2740191232
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 63  "GL456368.1" chrStart: 2740453376
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 64  "JH584292.1" chrStart: 2740715520
+/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/fasta/genome.fa : chr # 65  "JH584295.1" chrStart: 2740977664
 Estimated genome size=2942239808   2741239808   201000000
 GstrandBit=32
 Number of SA indices: 5305567000
-May 06 03:35:20 ... starting to sort Suffix Array. This may take a long time...
-Number of chunks: 282;   chunks size limit: 119613272 bytes
-May 06 03:35:36 ... sorting Suffix Array chunks and saving them to disk...
-Writing 264 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_4 ; empty space on disk = 421102260224 bytes ... done
-Writing 152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_14 ; empty space on disk = 421102260224 bytes ... done
-Writing 88 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_9 ; empty space on disk = 421102260224 bytes ... done
-Writing 824 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_19 ; empty space on disk = 421102260224 bytes ... done
-Writing 200 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_24 ; empty space on disk = 421102256128 bytes ... done
-Writing 520 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_34 ; empty space on disk = 421102256128 bytes ... done
-Writing 25981344 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_7 ; empty space on disk = 421102256128 bytes ... done
-Writing 792 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_54 ; empty space on disk = 421076271104 bytes ... done
-Writing 1048 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_64 ; empty space on disk = 421076267008 bytes ... done
-Writing 23048904 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_42 ; empty space on disk = 421076262912 bytes ... done
-Writing 128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_44 ; empty space on disk = 421053210624 bytes ... done
-Writing 192 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_49 ; empty space on disk = 421053210624 bytes ... done
-Writing 152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_39 ; empty space on disk = 421053210624 bytes ... done
-Writing 20654856 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_27 ; empty space on disk = 421053210624 bytes ... done
-Writing 704 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_94 ; empty space on disk = 421032554496 bytes ... done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_99 ; empty space on disk = 421032550400 bytes ... done
-Writing 104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_69 ; empty space on disk = 421032550400 bytes ... done
-Writing 112 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_59 ; empty space on disk = 421032550400 bytes ... done
-Writing 80 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_79 ; empty space on disk = 421032550400 bytes ... done
-Writing 18816968 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_62 ; empty space on disk = 421032550400 bytes ... done
-Writing 96228192 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_29 ; empty space on disk = 421013733376 bytes ...Writing 192 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_89 ; empty space on disk = 420974563328 bytes ... done
-Writing 144 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_84 ; empty space on disk = 420960190464 bytes ... done
-Writing 2920 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_74 ; empty space on disk = 420959825920 bytes ... done
-Writing 136 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_122 ; empty space on disk = 420921610240 bytes ... done
+May 06 23:29:01 ... starting to sort Suffix Array. This may take a long time...
+Number of chunks: 30;   chunks size limit: 1531050016 bytes
+May 06 23:29:16 ... sorting Suffix Array chunks and saving them to disk...
+Writing 1341136928 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_1 ; empty space on disk = 421102264320 bytes ...Writing 1413248728 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_0 ; empty space on disk = 420791619584 bytes ... done
  done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_127 ; empty space on disk = 420917497856 bytes ... done
-Writing 104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_117 ; empty space on disk = 420917497856 bytes ... done
-Writing 34580912 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_82 ; empty space on disk = 420917497856 bytes ... done
-Writing 28833376 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_102 ; empty space on disk = 420882915328 bytes ...Writing 27641152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_120 ; empty space on disk = 420860329984 bytes ... done
+Writing 1459774440 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_3 ; empty space on disk = 418347872256 bytes ...Writing 1368183744 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_2 ; empty space on disk = 417212035072 bytes ... done
+Writing 1378403328 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_4 ; empty space on disk = 416497061888 bytes ...Writing 1434287408 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_5 ; empty space on disk = 414725455872 bytes ...Writing 1440319680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_8 ; empty space on disk = 414612246528 bytes ... done
+Writing 1415233104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_6 ; empty space on disk = 413946347520 bytes ...Writing 1468594424 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_9 ; empty space on disk = 413261078528 bytes ... done
+Writing 1419104224 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_7 ; empty space on disk = 412404510720 bytes ... done
  done
-Writing 130045160 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_26 ; empty space on disk = 420826435584 bytes ... done
-Writing 142392112 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_6 ; empty space on disk = 420696387584 bytes ...Writing 60562392 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_112 ; empty space on disk = 420580319232 bytes ... done
  done
-Writing 85154080 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_111 ; empty space on disk = 420493430784 bytes ... done
-Writing 166648400 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_11 ; empty space on disk = 420408274944 bytes ...Writing 138497296 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_30 ; empty space on disk = 420316577792 bytes ...Writing 202309896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_8 ; empty space on disk = 420285669376 bytes ...Writing 93467144 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_104 ; empty space on disk = 420121133056 bytes ... done
-Writing 97298736 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_110 ; empty space on disk = 420080349184 bytes ...Writing 138885632 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_76 ; empty space on disk = 420015124480 bytes ...Writing 202511776 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_13 ; empty space on disk = 419977293824 bytes ...Writing 163566816 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_28 ; empty space on disk = 419917697024 bytes ... done
-Writing 145214464 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_56 ; empty space on disk = 419725103104 bytes ...Writing 107513648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_109 ; empty space on disk = 419645837312 bytes ... done
-Writing 238733800 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_1 ; empty space on disk = 419581091840 bytes ... done
-Writing 142083864 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_51 ; empty space on disk = 419276988416 bytes ...Writing 116416904 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_114 ; empty space on disk = 419209281536 bytes ... done
  done
-Writing 159637016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_41 ; empty space on disk = 418934382592 bytes ...Writing 155101184 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_16 ; empty space on disk = 418898817024 bytes ... done
  done
+Writing 1401703880 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_10 ; empty space on disk = 406963957760 bytes ...Writing 1445217064 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_11 ; empty space on disk = 406923284480 bytes ... done
  done
-Writing 148918680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_61 ; empty space on disk = 418571583488 bytes ...Writing 155698616 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_31 ; empty space on disk = 418565144576 bytes ...Writing 151276608 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_66 ; empty space on disk = 418522603520 bytes ... done
-Writing 187872736 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_25 ; empty space on disk = 418320285696 bytes ...Writing 155630936 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_50 ; empty space on disk = 418304253952 bytes ... done
-Writing 146580728 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_101 ; empty space on disk = 418258968576 bytes ...Writing 220103960 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_12 ; empty space on disk = 418217013248 bytes ...Writing 132329208 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_105 ; empty space on disk = 418148065280 bytes ... done
-Writing 202091120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_43 ; empty space on disk = 418063949824 bytes ...Writing 165542800 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_57 ; empty space on disk = 418002837504 bytes ...Writing 134021984 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_115 ; empty space on disk = 417997934592 bytes ...Writing 174573368 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_36 ; empty space on disk = 417875472384 bytes ...Writing 146847648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_81 ; empty space on disk = 417861337088 bytes ...Writing 160912384 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_46 ; empty space on disk = 417797591040 bytes ...Writing 167329520 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_96 ; empty space on disk = 417690112000 bytes ...Writing 184591016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_71 ; empty space on disk = 417666465792 bytes ...Writing 187131680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_47 ; empty space on disk = 417528881152 bytes ...Writing 165542800 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_116 ; empty space on disk = 417500446720 bytes ...Writing 172689352 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_72 ; empty space on disk = 417473380352 bytes ...Writing 193223848 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_32 ; empty space on disk = 417469882368 bytes ...Writing 266614536 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_15 ; empty space on disk = 417463767040 bytes ...Writing 161682768 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_113 ; empty space on disk = 417384669184 bytes ...Writing 189906920 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_52 ; empty space on disk = 417359892480 bytes ...Writing 190424320 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_60 ; empty space on disk = 417322008576 bytes ...Writing 163566816 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_48 ; empty space on disk = 417320869888 bytes ...Writing 234200168 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_17 ; empty space on disk = 417176784896 bytes ...Writing 168767432 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_91 ; empty space on disk = 417136881664 bytes ...Writing 178571312 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_124 ; empty space on disk = 417118826496 bytes ... done
-Writing 187947400 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_86 ; empty space on disk = 417000787968 bytes ...Writing 202511776 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_33 ; empty space on disk = 416972242944 bytes ...Writing 172689352 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_78 ; empty space on disk = 416919044096 bytes ...Writing 189906920 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_83 ; empty space on disk = 416909332480 bytes ... done
+Writing 1400401536 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_12 ; empty space on disk = 404117032960 bytes ...Writing 1459075920 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_13 ; empty space on disk = 403070734336 bytes ...Writing 1377583592 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_14 ; empty space on disk = 403052425216 bytes ... done
+Writing 1312080272 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_15 ; empty space on disk = 400855818240 bytes ... done
  done
-Writing 197201896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_67 ; empty space on disk = 416867516416 bytes ...Writing 189527504 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_95 ; empty space on disk = 416856711168 bytes ...Writing 205828584 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_70 ; empty space on disk = 416822714368 bytes ...Writing 187131680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_103 ; empty space on disk = 416787951616 bytes ...Writing 207636648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_100 ; empty space on disk = 416766459904 bytes ...Writing 194148000 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_77 ; empty space on disk = 416681463808 bytes ...Writing 260230640 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_18 ; empty space on disk = 416576462848 bytes ...Writing 201434680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_119 ; empty space on disk = 416503750656 bytes ...Writing 188375512 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_90 ; empty space on disk = 416489512960 bytes ...Writing 202309896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_53 ; empty space on disk = 416475910144 bytes ...Writing 196030448 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_106 ; empty space on disk = 416409149440 bytes ...Writing 249524464 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_20 ; empty space on disk = 416399941632 bytes ...Writing 310480696 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_2 ; empty space on disk = 416352669696 bytes ...Writing 234043000 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_23 ; empty space on disk = 416344182784 bytes ...Writing 223413504 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_40 ; empty space on disk = 416285945856 bytes ...Writing 205879232 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_92 ; empty space on disk = 416242401280 bytes ...Writing 217890392 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_63 ; empty space on disk = 416195788800 bytes ...Writing 197201896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_98 ; empty space on disk = 416193589248 bytes ...Writing 193223848 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_88 ; empty space on disk = 416146776064 bytes ...Writing 223309392 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_107 ; empty space on disk = 415966289920 bytes ...Writing 234043000 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_68 ; empty space on disk = 415960805376 bytes ...Writing 270984872 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_5 ; empty space on disk = 415911079936 bytes ...Writing 240776144 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_21 ; empty space on disk = 415893508096 bytes ...Writing 227508448 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_125 ; empty space on disk = 415832989696 bytes ...Writing 214700904 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_65 ; empty space on disk = 415828140032 bytes ...Writing 228770952 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_123 ; empty space on disk = 415806083072 bytes ...Writing 223309392 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_87 ; empty space on disk = 415773069312 bytes ...Writing 225112320 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_118 ; empty space on disk = 415734415360 bytes ...Writing 227508448 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_97 ; empty space on disk = 415730642944 bytes ...Writing 234200168 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_93 ; empty space on disk = 415706226688 bytes ...Writing 217890392 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_38 ; empty space on disk = 415586844672 bytes ...Writing 250976424 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_55 ; empty space on disk = 415562248192 bytes ...Writing 248090040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_126 ; empty space on disk = 415426658304 bytes ...Writing 248090040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_22 ; empty space on disk = 415395209216 bytes ...Writing 220103960 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_108 ; empty space on disk = 415368163328 bytes ...Writing 312716256 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_10 ; empty space on disk = 415354810368 bytes ...Writing 297980480 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_37 ; empty space on disk = 415202164736 bytes ... done
-Writing 297980480 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_121 ; empty space on disk = 414975885312 bytes ...Writing 353037640 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_3 ; empty space on disk = 414896541696 bytes ...Writing 278460040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_85 ; empty space on disk = 414851260416 bytes ...Writing 279873296 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_58 ; empty space on disk = 414845292544 bytes ...Writing 260162128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_45 ; empty space on disk = 414663217152 bytes ...Writing 313075696 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_80 ; empty space on disk = 414550302720 bytes ... done
  done
-Writing 354414720 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_35 ; empty space on disk = 414402215936 bytes ...Writing 290127064 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_75 ; empty space on disk = 413777477632 bytes ...Writing 353037640 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_73 ; empty space on disk = 413031022592 bytes ... done
+Writing 1478279216 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_16 ; empty space on disk = 398567882752 bytes ...Writing 1407968488 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_17 ; empty space on disk = 398403956736 bytes ...Writing 1519674256 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_19 ; empty space on disk = 396589477888 bytes ...Writing 1496629896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_18 ; empty space on disk = 396110446592 bytes ... done
  done
-Writing 510996328 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_0 ; empty space on disk = 412494843904 bytes ... done
  done
  done
+Writing 1389334864 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_20 ; empty space on disk = 392665317376 bytes ... done
+Writing 1525255160 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_21 ; empty space on disk = 391275978752 bytes ...Writing 1419272096 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_22 ; empty space on disk = 390724669440 bytes ... done
  done
+Writing 1394236760 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_25 ; empty space on disk = 388331450368 bytes ...Writing 1108621576 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_29 ; empty space on disk = 388026052608 bytes ... done
  done
+Writing 1509839184 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_23 ; empty space on disk = 385828589568 bytes ...Writing 1528706312 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_24 ; empty space on disk = 385788592128 bytes ...Writing 1309529344 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_27 ; empty space on disk = 385557487616 bytes ...Writing 1367944072 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_26 ; empty space on disk = 384383930368 bytes ... done
  done
  done
+Writing 1454896504 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA_28 ; empty space on disk = 380335853568 bytes ... done
  done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
-Writing 128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_251 ; empty space on disk = 400781742080 bytes ... done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_231 ; empty space on disk = 400781742080 bytes ... done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_246 ; empty space on disk = 400781742080 bytes ... done
-Writing 608 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_226 ; empty space on disk = 400781742080 bytes ... done
-Writing 112 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_221 ; empty space on disk = 400781742080 bytes ... done
-Writing 2696 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_241 ; empty space on disk = 400781733888 bytes ... done
-Writing 40 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_216 ; empty space on disk = 400781729792 bytes ... done
-Writing 21912776 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_249 ; empty space on disk = 400781729792 bytes ... done
-Writing 48 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_196 ; empty space on disk = 400759816192 bytes ... done
-Writing 16735880 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_214 ; empty space on disk = 400759816192 bytes ...Writing 264 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_201 ; empty space on disk = 400757805056 bytes ... done
-Writing 864 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_186 ; empty space on disk = 400751054848 bytes ... done
- done
-Writing 104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_177 ; empty space on disk = 400743075840 bytes ... done
-Writing 23174512 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_234 ; empty space on disk = 400743075840 bytes ... done
-Writing 15282264 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_194 ; empty space on disk = 400719900672 bytes ... done
-Writing 2688 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_206 ; empty space on disk = 400704614400 bytes ... done
-Writing 104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_211 ; empty space on disk = 400704610304 bytes ... done
-Writing 176 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_172 ; empty space on disk = 400704610304 bytes ... done
-Writing 232 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_147 ; empty space on disk = 400704610304 bytes ... done
-Writing 488 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_167 ; empty space on disk = 400704610304 bytes ... done
-Writing 96 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_157 ; empty space on disk = 400704610304 bytes ... done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_191 ; empty space on disk = 400704610304 bytes ... done
-Writing 616 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_152 ; empty space on disk = 400704610304 bytes ... done
-Writing 72 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_142 ; empty space on disk = 400704610304 bytes ... done
-Writing 85600280 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_236 ; empty space on disk = 400704610304 bytes ...Writing 23236256 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_175 ; empty space on disk = 400665190400 bytes ... done
-Writing 20804152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_160 ; empty space on disk = 400602521600 bytes ... done
- done
-Writing 4584 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_132 ; empty space on disk = 400574963712 bytes ... done
-Writing 152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_137 ; empty space on disk = 400574955520 bytes ... done
-Writing 18929912 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_140 ; empty space on disk = 400574955520 bytes ... done
-Writing 158650016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_253 ; empty space on disk = 400556023808 bytes ... done
-Writing 123351544 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_208 ; empty space on disk = 400397369344 bytes ...Writing 112735552 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_198 ; empty space on disk = 400369823744 bytes ...Writing 110263976 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_182 ; empty space on disk = 400348446720 bytes ...Writing 102636040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_183 ; empty space on disk = 400270200832 bytes ...Writing 123351544 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_202 ; empty space on disk = 400250408960 bytes ...Writing 90192720 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_188 ; empty space on disk = 400205656064 bytes ...Writing 75232928 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_162 ; empty space on disk = 400184963072 bytes ...Writing 112133456 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_193 ; empty space on disk = 399973847040 bytes ...Writing 116416904 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_189 ; empty space on disk = 399958220800 bytes ...Writing 110368112 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_174 ; empty space on disk = 399885508608 bytes ... done
-Writing 112133456 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_169 ; empty space on disk = 399792119808 bytes ...Writing 155368408 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_248 ; empty space on disk = 399782789120 bytes ...Writing 110263728 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_213 ; empty space on disk = 399757230080 bytes ...Writing 112735552 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_154 ; empty space on disk = 399754743808 bytes ...Writing 145231024 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_223 ; empty space on disk = 399693762560 bytes ... done
- done
-Writing 108243264 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_179 ; empty space on disk = 399577239552 bytes ...Writing 143930208 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_243 ; empty space on disk = 399525867520 bytes ...Writing 130045160 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_181 ; empty space on disk = 399520190464 bytes ... done
-Writing 163569840 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_228 ; empty space on disk = 399460888576 bytes ...Writing 190424320 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_245 ; empty space on disk = 399378046976 bytes ...Writing 108243264 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_159 ; empty space on disk = 399377735680 bytes ... done
- done
-Writing 118557128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_218 ; empty space on disk = 399227883520 bytes ...Writing 102636040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_139 ; empty space on disk = 399156772864 bytes ...Writing 143930208 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_192 ; empty space on disk = 399133437952 bytes ...Writing 146580728 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_180 ; empty space on disk = 398956810240 bytes ...Writing 106951664 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_149 ; empty space on disk = 398940729344 bytes ...Writing 146847648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_184 ; empty space on disk = 398929547264 bytes ...Writing 138497296 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_220 ; empty space on disk = 398874697728 bytes ... done
-Writing 138885632 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_204 ; empty space on disk = 398658322432 bytes ...Writing 155630936 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_215 ; empty space on disk = 398596415488 bytes ...Writing 118557128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_163 ; empty space on disk = 398580510720 bytes ...Writing 191947280 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_247 ; empty space on disk = 398537039872 bytes ...Writing 140697232 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_203 ; empty space on disk = 398491275264 bytes ...Writing 159637016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_176 ; empty space on disk = 398400262144 bytes ...Writing 145214464 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_190 ; empty space on disk = 398397145088 bytes ...Writing 148918680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_171 ; empty space on disk = 398387974144 bytes ...Writing 155368408 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_173 ; empty space on disk = 398373515264 bytes ...Writing 187872736 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_255 ; empty space on disk = 398326050816 bytes ...Writing 145231024 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_148 ; empty space on disk = 398302285824 bytes ...Writing 136910048 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_187 ; empty space on disk = 398276812800 bytes ...Writing 135037648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_144 ; empty space on disk = 398271176704 bytes ...Writing 132329208 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_219 ; empty space on disk = 398267572224 bytes ...Writing 135037648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_164 ; empty space on disk = 398261882880 bytes ...Writing 158650016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_158 ; empty space on disk = 398247522304 bytes ...Writing 185313224 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_233 ; empty space on disk = 398187741184 bytes ...Writing 163569840 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_197 ; empty space on disk = 398135365632 bytes ...Writing 142392112 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_185 ; empty space on disk = 398090825728 bytes ...Writing 142083864 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_141 ; empty space on disk = 398039277568 bytes ... done
-Writing 163973808 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_209 ; empty space on disk = 397999550464 bytes ...Writing 140697232 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_134 ; empty space on disk = 397974372352 bytes ...Writing 155101184 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_151 ; empty space on disk = 397918306304 bytes ...Writing 155698616 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_146 ; empty space on disk = 397892677632 bytes ...Writing 163973808 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_128 ; empty space on disk = 397877850112 bytes ...Writing 228770952 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_229 ; empty space on disk = 397873995776 bytes ...Writing 223413504 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_250 ; empty space on disk = 397853298688 bytes ...Writing 151276608 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_156 ; empty space on disk = 397845356544 bytes ...Writing 188280816 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_237 ; empty space on disk = 397769097216 bytes ...Writing 225112320 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_244 ; empty space on disk = 397758758912 bytes ... done
-Writing 188280816 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_217 ; empty space on disk = 397721350144 bytes ...Writing 207636648 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_254 ; empty space on disk = 397714964480 bytes ...Writing 160912384 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_161 ; empty space on disk = 397670744064 bytes ... done
-Writing 185313224 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_178 ; empty space on disk = 397606801408 bytes ...Writing 167329520 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_199 ; empty space on disk = 397572722688 bytes ...Writing 150058528 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_153 ; empty space on disk = 397548904448 bytes ...Writing 168767432 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_150 ; empty space on disk = 397511335936 bytes ...Writing 174573368 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_195 ; empty space on disk = 397505699840 bytes ...Writing 166648400 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_166 ; empty space on disk = 397497692160 bytes ...Writing 206739480 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_227 ; empty space on disk = 397486809088 bytes ...Writing 178571312 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_155 ; empty space on disk = 397392486400 bytes ...Writing 187947400 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_165 ; empty space on disk = 397390536704 bytes ...Writing 227407888 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_252 ; empty space on disk = 397387657216 bytes ...Writing 188375512 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_224 ; empty space on disk = 397385728000 bytes ...Writing 201434680 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_170 ; empty space on disk = 397281980416 bytes ...Writing 184591016 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_136 ; empty space on disk = 397236019200 bytes ...Writing 205828584 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_210 ; empty space on disk = 397190955008 bytes ...Writing 254314328 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_242 ; empty space on disk = 397161844736 bytes ...Writing 265401824 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_238 ; empty space on disk = 397126012928 bytes ...Writing 182269456 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_138 ; empty space on disk = 397125009408 bytes ...Writing 214700904 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_230 ; empty space on disk = 397106384896 bytes ...Writing 196030448 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_145 ; empty space on disk = 397095714816 bytes ...Writing 240776144 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_200 ; empty space on disk = 396978753536 bytes ... done
-Writing 194148000 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_130 ; empty space on disk = 396866756608 bytes ... done
-Writing 206103672 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_212 ; empty space on disk = 396780916736 bytes ...Writing 227407888 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_232 ; empty space on disk = 396669874176 bytes ...Writing 238733800 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_205 ; empty space on disk = 396639408128 bytes ...Writing 266614536 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_225 ; empty space on disk = 396617523200 bytes ... done
-Writing 233570896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_168 ; empty space on disk = 396504961024 bytes ...Writing 241385856 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_222 ; empty space on disk = 396501389312 bytes ...Writing 260162128 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_235 ; empty space on disk = 396417245184 bytes ...Writing 233377896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_135 ; empty space on disk = 396365189120 bytes ...Writing 278460040 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_239 ; empty space on disk = 396194340864 bytes ...Writing 233377896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_129 ; empty space on disk = 396094808064 bytes ...Writing 265401824 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_143 ; empty space on disk = 395970502656 bytes ... done
-Writing 304630376 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_207 ; empty space on disk = 395777683456 bytes ...Writing 312716256 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_240 ; empty space on disk = 395541868544 bytes ...Writing 307494632 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_133 ; empty space on disk = 395078455296 bytes ... done
-Writing 310480696 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_131 ; empty space on disk = 394665103360 bytes ... done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
-Writing 200 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_256 ; empty space on disk = 384787206144 bytes ... done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
- done
-Writing 3552 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_281 ; empty space on disk = 383502721024 bytes ... done
-Writing 152 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_276 ; empty space on disk = 383502716928 bytes ... done
-Writing 1280 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_271 ; empty space on disk = 383502716928 bytes ... done
-Writing 104 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_266 ; empty space on disk = 383502712832 bytes ... done
-Writing 792 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_261 ; empty space on disk = 383502712832 bytes ... done
-Writing 23859704 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_269 ; empty space on disk = 383502708736 bytes ... done
-Writing 136910048 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_263 ; empty space on disk = 383478845440 bytes ...Writing 150058528 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_273 ; empty space on disk = 383461470208 bytes ... done
- done
-Writing 161682768 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_264 ; empty space on disk = 383191871488 bytes ...Writing 182269456 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_258 ; empty space on disk = 383055425536 bytes ...Writing 189527504 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_274 ; empty space on disk = 383049134080 bytes ... done
- done
- done
-Writing 206739480 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_272 ; empty space on disk = 382658383872 bytes ...Writing 206103672 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_257 ; empty space on disk = 382613549056 bytes ... done
- done
-Writing 233570896 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_268 ; empty space on disk = 382245535744 bytes ...Writing 249524464 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_275 ; empty space on disk = 382209609728 bytes ...Writing 248215072 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_262 ; empty space on disk = 381948882944 bytes ...Writing 250976424 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_265 ; empty space on disk = 381918236672 bytes ...Writing 254314328 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_267 ; empty space on disk = 381700988928 bytes ... done
- done
-Writing 290127064 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_279 ; empty space on disk = 381260898304 bytes ...Writing 270984872 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_260 ; empty space on disk = 381162459136 bytes ... done
- done
-Writing 304630376 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_277 ; empty space on disk = 380848472064 bytes ... done
-Writing 313075696 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_259 ; empty space on disk = 380673433600 bytes ...Writing 307494632 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_278 ; empty space on disk = 380512116736 bytes ... done
- done
- done
- done
- done
-Writing 354414720 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_270 ; empty space on disk = 379522596864 bytes ... done
-Writing 510996328 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA_280 ; empty space on disk = 379168178176 bytes ... done
-May 06 03:43:57 ... loading chunks from disk, packing SA...
-May 06 03:45:18 ... finished generating suffix array
-May 06 03:45:18 ... generating Suffix Array index
-May 06 03:50:01 ... completed Suffix Array index
-May 06 03:50:01 ..... processing annotations GTF
-Processing pGe.sjdbGTFfile=/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf, found:
+May 06 23:44:04 ... loading chunks from disk, packing SA...
+May 06 23:45:21 ... finished generating suffix array
+May 06 23:45:21 ... generating Suffix Array index
+May 06 23:49:26 ... completed Suffix Array index
+May 06 23:49:26 ..... processing annotations GTF
+Processing pGe.sjdbGTFfile=/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf, found:
 		118153 transcripts
 		805200 exons (non-collapsed)
 		276162 collapsed junctions
-May 06 03:50:20 ..... finished GTF processing
-May 06 03:50:20   Loaded database junctions from the GTF file: /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/genes/genes.gtf: 276162 total junctions
+May 06 23:49:44 ..... finished GTF processing
+May 06 23:49:44   Loaded database junctions from the GTF file: /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/genes/genes.gtf: 276162 total junctions
 
 WARNING: long repeat for junction # 62878 : chr13 36008518 36189203; left shift = 255; right shift = 29
 WARNING: long repeat for junction # 70135 : chr13 119495135 119609191; left shift = 36; right shift = 255
@@ -401,23 +149,23 @@ WARNING: long repeat for junction # 191595 : chr5 112774527 112775017; left shif
 WARNING: long repeat for junction # 193933 : chr5 123190235 123190960; left shift = 255; right shift = 19
 WARNING: long repeat for junction # 202882 : chr6 48754635 48755196; left shift = 81; right shift = 255
 WARNING: long repeat for junction # 233377 : chr7 141808196 141810304; left shift = 255; right shift = 255
-May 06 03:50:22   Finished preparing junctions
-May 06 03:50:22 ..... inserting junctions into the genome indices
-May 06 03:50:28   Finished SA search: number of new junctions=276099, old junctions=0
-May 06 03:50:57   Finished sorting SA indicesL nInd=110439020
+May 06 23:49:45   Finished preparing junctions
+May 06 23:49:45 ..... inserting junctions into the genome indices
+May 06 23:50:38   Finished SA search: number of new junctions=276099, old junctions=0
+May 06 23:51:07   Finished sorting SA indicesL nInd=110439020
 Genome size with junctions=2796735707  2741239808   55495899
 GstrandBit1=32   GstrandBit=32
-May 06 03:52:05   Finished inserting junction indices
-May 06 03:52:28   Finished SAi
-May 06 03:52:28 ..... finished inserting junctions into genome
-May 06 03:52:28 ... writing Genome to disk ...
-Writing 2796735707 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/Genome ; empty space on disk = 421029179392 bytes ... done
+May 06 23:52:09   Finished inserting junction indices
+May 06 23:52:39   Finished SAi
+May 06 23:52:40 ..... finished inserting junctions into genome
+May 06 23:52:40 ... writing Genome to disk ...
+Writing 2796735707 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/Genome ; empty space on disk = 421029224448 bytes ... done
 SA size in bytes: 22341024836
-May 06 03:53:27 ... writing Suffix Array to disk ...
-Writing 22341024836 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SA ; empty space on disk = 418232438784 bytes ... done
-May 06 04:00:56 ... writing SAindex to disk
-Writing 8 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SAindex ; empty space on disk = 395891408896 bytes ... done
-Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SAindex ; empty space on disk = 395891408896 bytes ... done
-Writing 1565873491 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/undefined/star/SAindex ; empty space on disk = 395891408896 bytes ... done
-May 06 04:01:26 ..... finished successfully
+May 06 23:53:34 ... writing Suffix Array to disk ...
+Writing 22341024836 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SA ; empty space on disk = 418232487936 bytes ... done
+May 07 00:00:12 ... writing SAindex to disk
+Writing 8 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SAindex ; empty space on disk = 395891462144 bytes ... done
+Writing 120 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SAindex ; empty space on disk = 395891462144 bytes ... done
+Writing 1565873491 bytes into /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10/star/SAindex ; empty space on disk = 395891462144 bytes ... done
+May 07 00:00:47 ..... finished successfully
 DONE: Genome generation, EXITING

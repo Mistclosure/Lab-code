@@ -8,5 +8,5 @@ apptainer exec --bind /mnt:/mnt /mnt/disk1/qiuzerui/apptainer/dnbc4tools.sif dnb
     --fasta /mnt/windowsdata/qiuzerui/scannotations/mouse/refdata-gex-mm10-2020-A/fasta/genome.fa \
     --ingtf /mnt/windowsdata/qiuzerui/scannotations/mouse/refdata-gex-mm10-2020-A/genes/genes.gtf \
     --genomeDir /mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index \
-    --species mm10
+    --species mm10 \
     --threads 128

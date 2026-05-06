@@ -14,7 +14,7 @@ FASTQ_DIR="$OUT_DIR/fastqs"
 
 # 4. 参考基因组路径
 # ⚠️【核心警告】：此路径必须是通过华大 v3.0 的 `dnbc4tools rna mkref` 建立的专用索引目录！
-REF_PATH="/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index"
+REF_PATH="/mnt/windowsdata/qiuzerui/scannotations/mouse/mgi_mm10_v3_index/mm10"
 
 # 5. Apptainer 容器沙盒镜像路径
 SINGULARITY_IMAGE="/mnt/disk1/qiuzerui/apptainer/dnbc4tools.sif"
