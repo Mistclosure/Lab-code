@@ -86,6 +86,13 @@ aggregated_pseudo_expr <- aggregated_pseudo_expr[, -1]
 pseudo_cell_counts_mat <- as.matrix(pseudo_cell_counts)
 pseudo_expr_matrix <- t(aggregated_pseudo_expr)[, rownames(pseudo_cell_counts_mat)]
 qsave(pseudo_expr_matrix,'pseudo_expr_matrix.qs')
+# 4.5 构建伪细胞与原始细胞的映射表 (供后续临床关联使用)
+cat("构建伪细胞映射表...\n")
+pseudo_df <- data.frame(CellID = rownames(all_pseudo_ids), 
+                        PseudoCell = all_pseudo_ids[, 1], 
+                        stringsAsFactors = FALSE)
+# 检查 CellID 是否全部存在于 Seurat 对象中
+stopifnot(all(pseudo_df$CellID %in% colnames(malig_seurat)))
 # ==============================================================================
 # 5. 目标基因过滤与 WGCNA 数据准备 ---------------------------------------------
 # ==============================================================================
@@ -230,31 +237,182 @@ Labels <- cbind(Labels, Colors)
 Colors <- cbind(id = rownames(Labels), Labels)
 write.table(Colors, file = "moduleLabels.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
+# # ==============================================================================
+# # 8. 模块与临床特征关联分析 ----------------------------------------------------
+# # ==============================================================================
+# cat("正在分析模块与临床特征的关联...\n")
+# cli <- read.csv("Cli.csv", header = TRUE, check.names = FALSE)
+# rownames(cli) <- cli$ID
+
+# # 确保 MEs 与 cli 样本顺序一致
+# common_samples <- intersect(rownames(MEs), rownames(cli))
+# MEs <- MEs[common_samples, ]
+# cli <- cli[common_samples, ]
+
+# moduleTraitCor <- cor(MEs, cli, use = "p")
+# moduleTraitPvalue <- corPvalueStudent(moduleTraitCor, length(common_samples))
+
+# # 保存临床关联热图
+# png(filename = "Module-trait.png", width = 7, height = 7, units = "in", res = 300)
+# textMatrix <- paste(signif(moduleTraitCor, 2), "\n(", signif(moduleTraitPvalue, 1), ")", sep = "")
+# par(mar = c(10, 8.5, 3, 3))
+# labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(cli),
+#                yLabels = names(MEs), ySymbols = names(MEs),
+#                colorLabels = FALSE, colors = blueWhiteRed(50),
+#                textMatrix = textMatrix, setStdMargins = FALSE,
+#                cex.text = 0.65, zlim = c(-1, 1),
+#                main = "Module-trait relationships")
+# dev.off()
+
+# cat("全部流程运行完毕！\n")
 # ==============================================================================
-# 8. 模块与临床特征关联分析 ----------------------------------------------------
+# 9. 输出每个模块包含的基因列表（CSV格式） --------------------------------------
 # ==============================================================================
-cat("正在分析模块与临床特征的关联...\n")
-cli <- read.csv("Cli.csv", header = TRUE, check.names = FALSE)
-rownames(cli) <- cli$ID
+cat("正在输出每个模块的基因列表...\n")
 
-# 确保 MEs 与 cli 样本顺序一致
-common_samples <- intersect(rownames(MEs), rownames(cli))
-MEs <- MEs[common_samples, ]
-cli <- cli[common_samples, ]
+# 从表达矩阵提取全部基因名（确保与 moduleColors 的顺序严格一致）
+genes <- colnames(dataExpr)
 
-moduleTraitCor <- cor(MEs, cli, use = "p")
-moduleTraitPvalue <- corPvalueStudent(moduleTraitCor, length(common_samples))
+# 安全检验：若 moduleColors 已有正确的基因名，优先使用；否则统一用 genes
+if (!is.null(names(moduleColors)) &&
+    length(moduleColors) == length(genes) &&
+    all(names(moduleColors) == genes)) {
+  gene_names <- names(moduleColors)
+} else {
+  gene_names <- genes
+}
 
-# 保存临床关联热图
-png(filename = "Module-trait.png", width = 7, height = 7, units = "in", res = 300)
-textMatrix <- paste(signif(moduleTraitCor, 2), "\n(", signif(moduleTraitPvalue, 1), ")", sep = "")
-par(mar = c(10, 8.5, 3, 3))
-labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(cli),
-               yLabels = names(MEs), ySymbols = names(MEs),
-               colorLabels = FALSE, colors = blueWhiteRed(50),
-               textMatrix = textMatrix, setStdMargins = FALSE,
-               cex.text = 0.65, zlim = c(-1, 1),
-               main = "Module-trait relationships")
-dev.off()
+# 构建数据框
+gene_module_df <- data.frame(
+  Gene = gene_names,
+  Module = as.character(moduleColors),
+  stringsAsFactors = FALSE
+)
 
-cat("全部流程运行完毕！\n")
+# 写入 CSV
+write.csv(gene_module_df, 
+          file = "Module_Genes.csv", 
+          row.names = FALSE, 
+          quote = FALSE)
+
+cat("模块基因列表已保存至当前工作目录下的 Module_Genes.csv\n")
+# ==============================================================================
+# 9.5 额外提取特定目标模块（棕、蓝、青、红、绿）的基因 ------------------------
+# ==============================================================================
+cat("正在提取特定目标模块（棕、蓝、青、红、绿）的基因...\n")
+
+# 1. 定义你需要提取的目标模块颜色列表（WGCNA中颜色名称通常为全小写）
+target_colors <- c("brown", "blue", "turquoise", "red", "green")
+
+
+# 核心操作 1：将这五个模块的基因单独过滤出来，合并保存为一个新的 CSV 文件
+target_gene_df <- gene_module_df[gene_module_df$Module %in% target_colors, ]
+
+write.csv(target_gene_df, 
+          file = "Target_Selected_Modules_Genes.csv", 
+          row.names = FALSE, 
+          quote = FALSE)
+cat("已将5个目标模块的基因合并保存至 Target_Selected_Modules_Genes.csv\n")
+
+
+# 核心操作 2：循环遍历，将每个模块的基因独立导出为只有一列基因名的文件
+# （这种格式最适合直接复制或导入到 DAVID、Metascape、ClusterProfiler 等富集分析工具中）
+
+# 创建一个独立的文件夹用于存放这几个模块的文件，防止工作目录过于混乱
+output_dir <- "Target_Modules_单独列表"
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
+}
+
+for (color in target_colors) {
+  # 提取属于当前颜色的基因名
+  single_mod_genes <- gene_module_df$Gene[gene_module_df$Module == color]
+  
+  # 健壮性检查：确保该模块在你的结果中确实存在基因
+  if (length(single_mod_genes) > 0) {
+    # 拼接输出路径，例如：Target_Modules_单独列表/Module_turquoise_genes.txt
+    output_path <- file.path(output_dir, paste0("Module_", color, "_genes.txt"))
+    
+    # 导出为无行名、无引号、纯文本单列的文本文档（.txt 或 .csv 均可）
+    write.table(single_mod_genes, 
+                file = output_path, 
+                row.names = FALSE, 
+                col.names = FALSE, # 如果下游工具需要表头，可以改为 TRUE
+                quote = FALSE)
+  } else {
+    warning(paste("警告：当前分析结果中未检测到", color, "模块的基因！"))
+  }
+}
+
+cat("已将各目标模块的基因列表分别独立保存至目录：", output_dir, "/ 下\n")
+# 如果未安装，请先取消注释并运行以下 BiocManager 安装命令：
+# if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+# BiocManager::install(c("clusterProfiler", "org.Hs.eg.db", "ggplot2"))
+
+library(clusterProfiler)
+library(org.Hs.eg.db) # 人类注释包。如果是小鼠，请使用 org.Mm.eg.db
+library(ggplot2)
+
+cat("开始进行多模块整体 KEGG 富集分析...\n")
+# ==============================================================================
+# 10. 多模块整体 KEGG 富集分析 (compareCluster) --------------------------------
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 步骤 1：基因 ID 转换 (Symbol -> Entrez ID)
+# ------------------------------------------------------------------------------
+# KEGG 数据库底层主要识别 Entrez ID，因此需要先进行转换
+gene_ids <- bitr(target_gene_df$Gene,
+                 fromType = "SYMBOL",   # 你原本的基因名类型，如果是 ENSEMBL 请改为 "ENSEMBL"
+                 toType = "ENTREZID",
+                 OrgDb = org.Hs.eg.db)  # 小鼠请换成 org.Mm.eg.db
+
+# 将转换后的 Entrez ID 合并回我们原有的模块分类数据框中
+m_gene_df <- merge(target_gene_df, gene_ids, by.x = "Gene", by.y = "SYMBOL")
+
+
+# ------------------------------------------------------------------------------
+# 步骤 2：使用 compareCluster 进行多模块一键富集
+# ------------------------------------------------------------------------------
+# 公式 ENTREZID ~ Module 意为：按 Module 分组，对 ENTREZID 进行富集
+kegg_compare <- compareCluster(ENTREZID ~ Module, 
+                               data = m_gene_df, 
+                               fun = "enrichKEGG", 
+                               organism = "hsa",    # 人类是 "hsa"；小鼠是 "mmu"；大鼠是 "rno"
+                               pvalueCutoff = 0.05,
+                               qvalueCutoff = 0.2)
+
+
+# ------------------------------------------------------------------------------
+# 步骤 3：将结果中的 Entrez ID 转换回可读的 Gene Symbol（方便人类阅读）
+# ------------------------------------------------------------------------------
+if (!is.null(kegg_compare)) {
+  kegg_compare <- setReadable(kegg_compare, OrgDb = org.Hs.eg.db, keyType = "ENTREZID")
+  
+  # 保存完整的富集表格数据
+  write.csv(as.data.frame(kegg_compare), 
+            file = "Target_Modules_KEGG_Results.csv", 
+            row.names = FALSE)
+  cat("KEGG 富集表格结果已保存至 Target_Modules_KEGG_Results.csv\n")
+  
+  # ----------------------------------------------------------------------------
+  # 步骤 4：多模块横向对比可视化（高级气泡图）
+  # ----------------------------------------------------------------------------
+  # showCategory = 5 代表每个模块展示前 5 个最显著的通路
+  p <- dotplot(kegg_compare, showCategory = 5, title = "KEGG Pathway Enrichment Across Modules") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold"), # 旋转模块标签
+      axis.text.y = element_text(size = 9),
+      plot.title = element_text(hjust = 0.5, face = "bold")
+    )
+  
+  # 保存图片为 PDF 和 PNG
+  ggsave("Target_Modules_KEGG_Dotplot.pdf", plot = p, width = 9, height = 11)
+  ggsave("Target_Modules_KEGG_Dotplot.png", plot = p, width = 9, height = 11, dpi = 300)
+  
+  cat("KEGG 对比气泡图已成功绘制并保存！\n")
+  
+} else {
+  warning("未发现任何在设定阈值下显著富集的 KEGG 通路。")
+}
