@@ -1,6 +1,6 @@
 # ==============================================================================
 # 适配 Kat8 P60 WT vs KO 数据的完整流程
-# 特性：标准合并分析（不使用 Harmony 整合）+ 智能文件名解析
+# 特性：自动处理生物学重复整合 (Harmony) + 智能文件名解析
 # ==============================================================================
 set.seed(42)
 
@@ -15,7 +15,8 @@ library(Matrix)
 library(scales)
 library(HGNChelper) 
 library(dplyr)
-library(qs)
+library(harmony) # 增加：加载 harmony 包
+library(qs)      # 确保加载 qs 以支持后面的 qsave
 
 # --- 加载去双胞专用包 ---
 if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
@@ -32,6 +33,7 @@ data_dir <- "/mnt/disk1/qiuzerui/expriments/cortex_Y90C/filtered_counts"
 setwd(data_dir)
 # 根据文件夹名定义
 sample_folders <- c("kat8-P60-WT-1", "kat8-P60-WT-2", "kat8-P60-Y90C-KO-1", "kat8-P60-Y90C-KO-2")
+
 # ------------------------------------------------------------------------------
 # 加载 ScType 核心函数 (本地化版本)
 # ------------------------------------------------------------------------------
@@ -138,9 +140,9 @@ print(paste("    [Result] 总计发现双细胞:", n_dbl, "个"))
 sc_combined <- subset(sc_combined, subset = scDblFinder_class == "singlet")
 
 # ------------------------------------------------------------------------------
-# 5. 标准流程：降维与聚类 (不使用 Harmony 整合)
+# 5. 标准流程：降维与聚类 (使用 Harmony 整合)
 # ------------------------------------------------------------------------------
-print("🚀 步骤4/6: 标准化与常规降维 (Standard Workflow)...")
+print("🚀 步骤4/6: 标准化与生物学重复整合 (Harmony Workflow)...")
 
 obj <- sc_combined
 obj <- NormalizeData(obj)
@@ -148,8 +150,10 @@ obj <- FindVariableFeatures(obj, selection.method = "vst", nfeatures = 2000)
 obj <- ScaleData(obj)
 obj <- RunPCA(obj, verbose = FALSE)
 
-# 直接基于 PCA 进行后续分析
-reduction_to_use <- "pca"
+# --- 增加 Harmony 整合 ---
+print("    正在运行 Harmony 去除批次效应...")
+obj <- RunHarmony(obj, group.by.vars = "Orig_Folder")
+reduction_to_use <- "harmony" # 后续使用 harmony 的降维结果
 
 obj <- RunUMAP(obj, reduction = reduction_to_use, dims = 1:20)
 obj <- FindNeighbors(obj, reduction = reduction_to_use, dims = 1:20)
@@ -188,14 +192,18 @@ if (file.exists(db_file_path)) {
 
 # 修正特定细胞类型
 obj[["cell_type"]][obj[["cell_type"]] == "Tanycytes"] <- "Mature neurons"
-qsave(obj,'Y90C_no_harmony.qs')
+
+# 保存带有 harmony 后缀的 qs 对象
+qsave(obj, 'Y90C_harmony.qs')
+
 # ------------------------------------------------------------------------------
 # 7. 结果可视化与输出
 # ------------------------------------------------------------------------------
 print("🚀 步骤6/6: 正在生成 PNG 图片...")
 
 plot_group <- "cell_type"
-plot_dir <- file.path(data_dir, "Results_Plots_NoHarmony") 
+# 更改出图文件夹名字以区分
+plot_dir <- file.path(data_dir, "Results_Plots_Harmony") 
 if (!dir.exists(plot_dir)) dir.create(plot_dir)
 
 my_theme <- theme(
@@ -224,10 +232,11 @@ p_ko <- DimPlot(obj_ko, reduction = "umap", group.by = plot_group, label = TRUE,
 p_split <- DimPlot(obj, reduction = "umap", group.by = plot_group, split.by = "Group", label = TRUE, ncol = 2) +
   ggtitle("Condition Comparison: WT vs KO") + theme(legend.position = "right") + my_guide
 
-ggsave(file.path(plot_dir, "01_UMAP_Total.png"), plot = p_total, width = 14, height = 9, dpi = 300, bg = "white")
-ggsave(file.path(plot_dir, "02_UMAP_WT.png"), plot = p_wt, width = 14, height = 9, dpi = 300, bg = "white")
-ggsave(file.path(plot_dir, "03_UMAP_KO.png"), plot = p_ko, width = 14, height = 9, dpi = 300, bg = "white")
-ggsave(file.path(plot_dir, "04_UMAP_Split.png"), plot = p_split, width = 20, height = 8, dpi = 300, bg = "white")
+# 所有图片文件名加上 _harmony 后缀
+ggsave(file.path(plot_dir, "01_UMAP_Total_harmony.png"), plot = p_total, width = 14, height = 9, dpi = 300, bg = "white")
+ggsave(file.path(plot_dir, "02_UMAP_WT_harmony.png"), plot = p_wt, width = 14, height = 9, dpi = 300, bg = "white")
+ggsave(file.path(plot_dir, "03_UMAP_KO_harmony.png"), plot = p_ko, width = 14, height = 9, dpi = 300, bg = "white")
+ggsave(file.path(plot_dir, "04_UMAP_Split_harmony.png"), plot = p_split, width = 20, height = 8, dpi = 300, bg = "white")
 
 # ------------------------------------------------------------------------------
 # 8. 细胞比例分析
@@ -247,10 +256,11 @@ p_barplot <- ggplot(prop_data, aes(x = Group, y = Percent, fill = cell_type)) +
   geom_bar(stat = "identity", position = "fill", width = 0.7) +
   geom_text(aes(label = Label), position = position_fill(vjust = 0.5), size = 3.5) +
   scale_y_continuous(labels = scales::percent) +
-  labs(title = "Cell Type Proportion: WT vs KO") + theme_classic()
+  labs(title = "Cell Type Proportion: WT vs KO (Harmony)") + theme_classic()
 
-ggsave(file.path(stats_dir, "05_Cell_Proportion_Barplot.png"), plot = p_barplot, width = 8, height = 6)
-write.csv(prop_data, file.path(stats_dir, "05_Cell_Proportion_Table.csv"), row.names = FALSE)
+# 表格和图片均加上 _harmony 后缀
+ggsave(file.path(stats_dir, "05_Cell_Proportion_Barplot_harmony.png"), plot = p_barplot, width = 8, height = 6)
+write.csv(prop_data, file.path(stats_dir, "05_Cell_Proportion_Table_harmony.csv"), row.names = FALSE)
 
 # ------------------------------------------------------------------------------
 # 9. 差异分析 (KO vs WT)
@@ -285,12 +295,10 @@ if (length(deg_list) > 0) {
     clean_name <- substr(gsub("[^[:alnum:]]", "_", ctype_name), 1, 30)
     addWorksheet(wb, clean_name); writeData(wb, clean_name, deg_list[[ctype_name]])
   }
-  saveWorkbook(wb, file.path(stats_dir, "06_DEGs_KO_vs_WT_Full_Report.xlsx"), overwrite = TRUE)
+  # Excel 输出加上 _harmony 后缀
+  saveWorkbook(wb, file.path(stats_dir, "06_DEGs_KO_vs_WT_Full_Report_harmony.xlsx"), overwrite = TRUE)
 }
 
 print("🎉 所有分析流程结束！")
-# 提取出所有的 WT 细胞
-
-# 按照重复样本（WT-1 和 WT-2）上色
 k=DimPlot(obj, reduction = "umap", group.by = "Orig_Folder")
-ggsave(file.path(stats_dir, "06_source.png"), plot = k, width = 8, height = 6,dpi = 300)
+ggsave(file.path(stats_dir, "06_source_harmony.png"), plot = k, width = 8, height = 6,dpi = 300)

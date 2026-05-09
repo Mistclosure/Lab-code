@@ -9,33 +9,33 @@ library(qs)
 
 # 1. 加载数据 (默认加载 Louvain 版本，可根据需要修改)
 cluster_method <- "louvain" 
-input_file <- paste0('sc_by_tissue_', cluster_method, '.qs')
+input_file <- 'pbmc_corrected.qs'
 
 if (!file.exists(input_file)) {
   stop(paste("未找到输入文件:", input_file, "请先确保 Script 2 运行成功。"))
 }
 
-sc_by_tissue <- qread(input_file)
+#sc_by_tissue <- qread(input_file)
 
 # 2. 提取 PBMC 对象
-pbmc <- sc_by_tissue[["PBMC"]]
+pbmc <- qread(input_file)
 
 # 3. 提取 Monocyte 亚群
 # 注意：SingleR 的标签通常是 "Monocytes"，请确保名称与输出的 Marker 列表一致
-monocyte_label <- "Monocytes" # 如果你的标签是 "Monocyte" 请在此修改
+#monocyte_label <- "Monocytes" # 如果你的标签是 "Monocyte" 请在此修改
 
-if (!(monocyte_label %in% unique(pbmc$SingleR.labels))) {
-  print("当前的标签列表包含：")
-  print(unique(pbmc$SingleR.labels))
-  stop(paste("在 PBMC 中未找到标签:", monocyte_label))
-}
+# if (!(monocyte_label %in% unique(pbmc$SingleR.labels))) {
+#   print("当前的标签列表包含：")
+#   print(unique(pbmc$SingleR.labels))
+#   stop(paste("在 PBMC 中未找到标签:", monocyte_label))
+# }
 
-pbmc_mono <- subset(pbmc, subset = SingleR.labels == monocyte_label)
+pbmc_mono <- subset(pbmc, subset = new_clusters == '12')
 
 # 切换标识符为分组信息 (Group)
 Idents(pbmc_mono) <- "Group"
 
-print(paste("🚀 开始对 PBMC", monocyte_label, "进行差异分析..."))
+#print(paste("🚀 开始对 PBMC", monocyte_label, "进行差异分析..."))
 
 # ------------------------------------------------------------------------------
 # 4. 差异分析：Cold_4C vs RT_25C
@@ -52,7 +52,7 @@ deg_cold_vs_rt <- FindMarkers(
 
 deg_cold_vs_rt$gene <- rownames(deg_cold_vs_rt)
 write.csv(deg_cold_vs_rt, 
-          file.path("files", paste0("DEG_PBMC_Mono_Cold_vs_RT_", cluster_method, ".csv")), 
+          file.path("files", paste0("DEG_PBMC_Mono_Cold_vs_RT_", cluster_method, "pbmc_corrected.csv")), 
           row.names = FALSE)
 
 # ------------------------------------------------------------------------------
