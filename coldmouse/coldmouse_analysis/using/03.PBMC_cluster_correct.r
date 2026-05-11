@@ -79,7 +79,8 @@ id2type <- setNames(current_types, as.character(seq_along(old_ids_present)))
 
 # 同步更新 celltype 字符串列
 pbmc$celltype <- paste0(pbmc$new_clusters, ": ", id2type[as.character(pbmc$new_clusters)])
-
+pbmc$cell_annotation = factor(unname(id2type[as.character(pbmc$new_clusters)]))
+qsave(pbmc, 'pbmc_recorrected.qs')
 # ==========================================
 # 准备替换图例文本的向量
 # ==========================================
@@ -124,3 +125,61 @@ file_name_anno_png <- file.path("pictures", "UMAP_Grid_corrected_PBMC.png")
 ggsave(filename = file_name_anno_png, plot = p_final_anno, width = 15, height = 11, dpi = 300)
 file_name_anno_pdf <- file.path("pictures", "UMAP_Grid_corrected_PBMC_update1.pdf")
 ggsave(filename = file_name_anno_pdf, plot = p_final_anno, width = 15, height = 11, dpi = 300)
+# ==========================================
+# 6. 生成 Cluster x Marker 气泡图 (Top 5 Markers)
+# ==========================================
+# 加载处理数据框所需的包
+library(dplyr)
+
+# 设置当前分类标签为你刚刚生成的合并注释列 'celltype'
+Idents(pbmc) <- "cell_annotation"
+
+# 计算所有 cluster 的 marker 基因 
+# (注意：如果数据较大会运行几分钟，only.pos = TRUE 只找高表达基因，加速计算)
+message("Finding all markers for each cluster...")
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+# 提取每个 cluster 按照 log2FC 排序的前五的 marker 基因
+top5_markers <- pbmc.markers %>%
+  group_by(cluster) %>%
+  top_n(n = 5, wt = avg_log2FC)
+
+# 提取去重后的基因名列表，保证 X 轴的基因顺序与 cluster 排序大致对应
+top5_genes <- unique(top5_markers$gene)
+
+# ==========================================
+# 绘制 DotPlot (气泡图)
+# ==========================================
+p_dotplot <- DotPlot(pbmc, features = top5_genes, group.by = "cell_annotation") +
+  # 调整颜色渐变，模仿附图中的由白到深红
+  scale_color_gradient(low = "white", high = "darkred") + 
+  # 修改图例标题以贴合附图
+  labs(
+    size = "Fraction of cells\nin group (%)", 
+    color = "Mean expression\nin group"
+  ) +
+  theme_bw() + # 基础黑白主题去灰底
+  ggtitle('PBMC Dimplot')+
+  theme(
+    # X轴基因名字体倾斜 45 度，防止基因名重叠
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "italic", color = "black"),
+    axis.text.y = element_text(color = "black"),
+    # 移除横纵轴默认的 "Features" 和 "Identity" 标题
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    # 调整图例背景和边框
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_blank()
+  )
+
+# ==========================================
+# 保存图片
+# ==========================================
+file_name_dotplot_png <- file.path("pictures", "DotPlot_PBMC_Top5_Markers.png")
+ggsave(filename = file_name_dotplot_png, plot = p_dotplot, width = 16, height = 6, dpi = 300)
+
+# file_name_dotplot_pdf <- file.path("pictures", "DotPlot_Top5_Markers.pdf")
+# ggsave(filename = file_name_dotplot_pdf, plot = p_dotplot, width = 16, height = 6, dpi = 300)
+
+message("DotPlot saved to pictures directory.")

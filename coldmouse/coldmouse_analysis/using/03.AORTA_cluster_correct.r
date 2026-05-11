@@ -7,14 +7,14 @@ library(ggplot2)
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse/')
 sc_by_tissue = qread('sc_by_tissue_louvain.qs')
 
-# 注意：根据您上传的表格内容是Aorta（主动脉）的数据，这里将变量名更新为 obj
+# 注意：根据您上传的表格内容是Aorta（主动脉）的数据，这里将变量名更新为 aorta
 # 若您原本的数据集名字不叫 Aorta，请自行修改此处的 [['Aorta']]
-obj = sc_by_tissue[['Aorta']]
+aorta = sc_by_tissue[['Aorta']]
 
 # ==========================================
 # 1. 剔除 cluster 7 和 16
 # ==========================================
-obj <- subset(obj, subset = seurat_clusters %in% c("7", "16"), invert = TRUE)
+aorta <- subset(aorta, subset = seurat_clusters %in% c("7", "16"), invert = TRUE)
 
 # ==========================================
 # 2. 字典映射关系 (根据 Aorta CSV 表格)
@@ -91,28 +91,29 @@ celltype_colors_dict <- c(
 # 4. 合并相同 celltype 并重新顺序编号 (1, 2, 3...)
 # ==========================================
 # 获取基础文本注释
-mapped_names <- unname(cluster2celltype[as.character(obj$seurat_clusters)])
-pure_celltypes <- ifelse(is.na(mapped_names), as.character(obj$seurat_clusters), mapped_names)
+mapped_names <- unname(cluster2celltype[as.character(aorta$seurat_clusters)])
+pure_celltypes <- ifelse(is.na(mapped_names), as.character(aorta$seurat_clusters), mapped_names)
 
 # 提取所有不重复的细胞类型并排序，然后生成 1, 2, 3... 的新编号字典
 unique_types <- sort(unique(pure_celltypes))
 type2newid <- setNames(as.character(seq_along(unique_types)), unique_types)
 id2type <- setNames(names(type2newid), type2newid) # 反向字典: "1" = "B cells" ...
 
-# 将新生成的编号作为一个新列存入 obj
-obj$new_clusters <- unname(factor(type2newid[pure_celltypes], levels = as.character(seq_along(unique_types))))
+# 将新生成的编号作为一个新列存入 aorta
+aorta$new_clusters <- unname(factor(type2newid[pure_celltypes], levels = as.character(seq_along(unique_types))))
 
 # 更新 celltype 供保存
-obj$celltype <- paste0(obj$new_clusters, ": ", pure_celltypes)
-qsave(obj, 'aorta_corrected.qs')
+aorta$celltype <- paste0(aorta$new_clusters, ": ", pure_celltypes)
+aorta$cell_annotation = factor(pure_celltypes)
+qsave(aorta, 'aorta_corrected.qs')
 
 # 如果内存够大不需要重新 load，可以直接注释掉下一行
-# obj = qread('aorta_corrected.qs')
+#aorta = qread('aorta_corrected.qs')
 
 # ==========================================
 # 5. 准备图例文本与颜色向量
 # ==========================================
-cluster_levels <- levels(obj$new_clusters)
+cluster_levels <- levels(aorta$new_clusters)
 
 # 自动生成 "1: B cells" 这种格式的图例文字
 legend_labels <- sapply(cluster_levels, function(x) {
@@ -125,24 +126,24 @@ final_colors <- unname(celltype_colors_dict[id2type[cluster_levels]])
 # ==========================================
 # 6. 绘图 (基于 scale_color_manual 使用自定义色系)
 # ==========================================
-p_total_anno <- DimPlot(obj, reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
+p_total_anno <- DimPlot(aorta, reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
   scale_color_manual(values = final_colors, labels = legend_labels) + 
   ggtitle('Corrected Aorta') + 
   theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
 
-p_cold_anno <- DimPlot(subset(obj, subset = Group == "Cold_4C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
+p_cold_anno <- DimPlot(subset(aorta, subset = Group == "Cold_4C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
   scale_color_manual(values = final_colors) +
   ggtitle("Cold_4C") + 
   theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
   NoLegend()
 
-p_rt_anno <- DimPlot(subset(obj, subset = Group == "RT_25C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
+p_rt_anno <- DimPlot(subset(aorta, subset = Group == "RT_25C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
   scale_color_manual(values = final_colors) +
   ggtitle("RT_25C") + 
   theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
   NoLegend()
 
-p_tn_anno <- DimPlot(subset(obj, subset = Group == "TN_30C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
+p_tn_anno <- DimPlot(subset(aorta, subset = Group == "TN_30C"), reduction = "umap", group.by = "new_clusters", label = TRUE, repel = TRUE) + 
   scale_color_manual(values = final_colors) +
   ggtitle("TN_30C") + 
   theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
@@ -160,3 +161,61 @@ ggsave(filename = file_name_anno_png, plot = p_final_anno, width = 15, height = 
 
 file_name_anno_pdf <- file.path("pictures", "UMAP_Grid_corrected_Aorta_update1.pdf")
 ggsave(filename = file_name_anno_pdf, plot = p_final_anno, width = 15, height = 11, dpi = 300)
+# ==========================================
+# 6. 生成 Cluster x Marker 气泡图 (Top 5 Markers)
+# ==========================================
+# 加载处理数据框所需的包
+library(dplyr)
+
+# 设置当前分类标签为你刚刚生成的合并注释列 'celltype'
+Idents(aorta) <- "cell_annotation"
+
+# 计算所有 cluster 的 marker 基因 
+# (注意：如果数据较大会运行几分钟，only.pos = TRUE 只找高表达基因，加速计算)
+message("Finding all markers for each cluster...")
+aorta.markers <- FindAllMarkers(aorta, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+# 提取每个 cluster 按照 log2FC 排序的前五的 marker 基因
+top5_markers <- aorta.markers %>%
+  group_by(cluster) %>%
+  top_n(n = 5, wt = avg_log2FC)
+
+# 提取去重后的基因名列表，保证 X 轴的基因顺序与 cluster 排序大致对应
+top5_genes <- unique(top5_markers$gene)
+
+# ==========================================
+# 绘制 DotPlot (气泡图)
+# ==========================================
+p_dotplot <- DotPlot(aorta, features = top5_genes, group.by = "cell_annotation") +
+  # 调整颜色渐变，模仿附图中的由白到深红
+  scale_color_gradient(low = "white", high = "darkred") + 
+  # 修改图例标题以贴合附图
+  labs(
+    size = "Fraction of cells\nin group (%)", 
+    color = "Mean expression\nin group"
+  ) +
+  theme_bw() + # 基础黑白主题去灰底
+  ggtitle('AORTA Dimplot')+
+  theme(
+    # X轴基因名字体倾斜 45 度，防止基因名重叠
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "italic", color = "black"),
+    axis.text.y = element_text(color = "black"),
+    # 移除横纵轴默认的 "Features" 和 "Identity" 标题
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    # 调整图例背景和边框
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_blank()
+  )
+
+# ==========================================
+# 保存图片
+# ==========================================
+file_name_dotplot_png <- file.path("pictures", "DotPlot_AORTA_Top5_Markers.png")
+ggsave(filename = file_name_dotplot_png, plot = p_dotplot, width = 20, height = 6, dpi = 300)
+
+# file_name_dotplot_pdf <- file.path("pictures", "DotPlot_Top5_Markers.pdf")
+# ggsave(filename = file_name_dotplot_pdf, plot = p_dotplot, width = 16, height = 6, dpi = 300)
+
+message("DotPlot saved to pictures directory.")
