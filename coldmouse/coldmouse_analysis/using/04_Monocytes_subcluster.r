@@ -175,7 +175,6 @@ p_final_cls <- (p_total_cls | p_cold_cls) / (p_rt_cls | p_tn_cls) +
 
 file_name_cls <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Global.png")
 ggsave(filename = file_name_cls, plot = p_final_cls, width = 15, height = 11, dpi = 300)
-
 # 保存提取的单核细胞对象供后续独立调用 (该对象现在自带局部的 UMAP 坐标和完整的注释信息)
 qsave(mono_cells, "pbmc_monocytes_sub-clustered.qs")
 
