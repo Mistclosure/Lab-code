@@ -26,22 +26,22 @@ cluster2celltype <- c(
   "2" = "Fibromyocytes",
   "3" = "Smooth muscle cell",
   "4" = "osteochondrogenic cell",
-  "5" = "Adventitial Fibroblasts",
+  "5" = "Fibroblasts",
   "6" = "Vascular Tissue-Resident Macrophages",
   "8" = "VSMC-derived Osteoblast-like cells",
   "9" = "Fibromyocytes",
   "10" = "Lipid-Associated Macrophages",
-  "11" = "Arterial Endothelial Cells",
+  "11" = "Endothelial Cells",
   "12" = "Smooth muscle cell",
-  "13" = "Fibroblast",
+  "13" = "Fibroblasts",
   "14" = "moDCs",
   "15" = "Cytotoxic CD8+",
   "17" = "Naive/Central Memory T",
   "18" = "Proliferating T",
   "19" = "Neutrophils",
   "20" = "Pericytes",
-  "21" = "Adventitial Fibroblasts",
-  "22" = "Capillary Endothelial Cells",
+  "21" = "Fibroblasts",
+  "22" = "Endothelial Cells",
   "23" = "gamma delta T", # 移除了LaTeX符号以防止ggplot2报错
   "24" = "B cells"
 )
@@ -67,12 +67,12 @@ celltype_colors_dict <- c(
   "VSMC-derived Osteoblast-like cells" = "#756bb1",
   
   # Fibroblasts大类 (红色系，不同深浅)
-  "Adventitial Fibroblasts" = "#fcbba1",
-  "Fibroblast" = "#cb181d",
+  #"Fibroblasts" = "#fcbba1",
+  "Fibroblasts" = "#cb181d",
   
   # Endothelial cells大类 (深绿色系，不同深浅)
-  "Arterial Endothelial Cells" = "#a1d99b",
-  "Capillary Endothelial Cells" = "#006d2c",
+  #"Endothelial Cells" = "#a1d99b",
+  "Endothelial Cells" = "#006d2c",
   
   # T细胞大类 (粉/紫红色系，不同深浅)
   "Cytotoxic CD8+" = "#feebe2",

@@ -15,6 +15,7 @@ library(org.Mm.eg.db) # 小鼠基因注释数据库
 # ------------------------------------------------------------------------------
 print("🚀 步骤1: 正在加载 Monocytes 子集对象...")
 mono_cells <- qread("pbmc_monocytes_sub-clustered.qs")
+mono_cells = subset(mono_cells,subset = mono_cells$Group == 'TN_30C',invert = TRUE)
 
 # 确保以我们自定义的亚群编号 (Mono_1 到 Mono_6) 作为当前分组标准
 Idents(mono_cells) <- "mono_cluster_id"
@@ -102,7 +103,7 @@ if (length(go_results_list) > 0) {
     dplyr::select(Cluster, mono_annotation, everything())
   
   # 导出路径
-  output_file <- file.path("files", "GO_BP_Enrichment_Monocytes_Subgroups.csv")
+  output_file <- file.path("files", "GO_BP_Enrichment_Monocytes_Subgroups_Cold_RT.csv")
   
   # 确保 files 文件夹存在
   if (!dir.exists("files")) dir.create("files")
