@@ -28,33 +28,28 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # 定义 Signature 完整路径，并动态提取名称
 # ==========================================
 # 在这里输入包含文件名和后缀的完整路径
-signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Genes_3KEGG.csv"
+signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv"
 
-# 自动提取文件名：去除路径和 .csv 后缀，得到 "112 primary cilium genes"
+# 自动提取文件名：去除路径和 .csv 后缀
 signature_name <- sub("\\.csv$", "", basename(signature_file_path))
 
-# 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
-# signature_file_prefix <- gsub(" ", "_", signature_name) 
-signature_file_prefix <- signature_name # 这里默认保留原名
+# 【修改点】：设置文件前缀包含 addmodulescore
+signature_file_prefix <- paste0(signature_name, "_addmodulescore")
 
 # 2. 提取基因集 (按照完整路径读取)
 CRC_data = read.csv(signature_file_path, header = T, check.names = F)
 target_genes = as.character(CRC_data[,1])
-#data7 = CRC_data[CRC_data$Pathway == 'Cell cycle',]
-#target_genes = as.character(CRC_data[CRC_data$Pathway == 'Proteoglycans in cancer',1])
-#write.csv(data7,'Cell cycle.csv' , row.names= FALSE, quote = FALSE)
-#target_genes=c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
 target_genes = intersect(target_genes, rownames(pbmc1))
 
-# 3. 计算评分
-# 【后续用 data_log2 替换】：计算得分时的 expr 参数改为 data_log2
-score <- cal_CRDscore(expr = data_log2, n.bins = 50, circadians = 
-                        target_genes, study.type = "scRNAseq")
-gc()
-score = as.data.frame(score)
-score = cbind(id=rownames(score), score)
+# 3. 计算评分 (使用 AddModuleScore)
+# AddModuleScore 接收一个基因列表(list)，计算结果会存入 meta.data
+pbmc1 <- AddModuleScore(object = pbmc1, features = list(target_genes), name = "ModuleScore")
 
-score$id = rownames(score)
+# 提取评分：Seurat 会在提供的 name 后面自动加上数字 1 (即 ModuleScore1)
+score <- pbmc1@meta.data[, "ModuleScore1", drop = FALSE]
+colnames(score) <- "score" # 重命名为 score 以兼容后续合并和绘图逻辑
+score$id <- rownames(score) # 为后续 merge 提供 ID 列
+
 meta = pbmc1@meta.data
 meta$id = rownames(meta) 
 
@@ -71,8 +66,8 @@ rt1$metastasis <- ifelse(
   "Metastasis"
 )
 
-# 动态保存 CSV 文件
-write.csv(rt1, paste0(signature_file_prefix, '_CRC_CRDscore.csv'), row.names= FALSE, quote = FALSE)
+# 【修改点】：动态保存 CSV 文件名
+write.csv(rt1, paste0(signature_file_prefix, '_CRC_results.csv'), row.names= FALSE, quote = FALSE)
 
 # ==============================
 # 图 1：针对 Stage (分期)
@@ -82,8 +77,6 @@ colnames(data_stage) = c("score", "Type")
 
 # 按照你的要求进行分期合并
 data_stage$Type[data_stage$Type %in% c('IIIA', 'IIIB', 'IIIC')] = 'Ⅲ'
-#data_stage$Type[data_stage$Type == 'IIA'] = 'I'
-# 如果有其他分期（如 II），建议也确认一下是否需要保留
 
 # 设置因子水平（去重并排序）
 group_stage = levels(factor(data_stage$Type))
@@ -96,7 +89,7 @@ if(length(group_stage) >= 2){
   for(i in 1:ncol(comp_stage)){ my_comparisons_stage[[i]] <- comp_stage[, i] }
 }
 
-# 绘图 1 (动态标题)
+# 绘图 1 (标题与 Y 轴标签已修改)
 p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   stat_boxplot(geom = "errorbar", width = 0.6) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA, size = 0.7, width = 0.7, fatten = 0.7) +
@@ -104,9 +97,9 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
   theme(panel.grid = element_blank()) +
   stat_compare_means(comparisons = my_comparisons_stage, method = "wilcox.test") +
   theme(legend.position = "none") +
-  ggtitle(paste0(signature_name, "+GSE132465+CRDscore (Stage)")) +
+  ggtitle(paste0(signature_name, "+GSE132465+addmodulescore (Stage)")) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("CRDScore") +
+  ylab("AddModuleScore") +
   theme(axis.title.x = element_blank(),
         axis.text.y = element_text(size = 15, face = "bold", color = "black"),
         axis.title.y = element_text(size = 15, face = "bold", color = "black"),
@@ -135,7 +128,7 @@ if(length(group_meta) >= 2){
   for(i in 1:ncol(comp_meta)){ my_comparisons_meta[[i]] <- comp_meta[, i] }
 }
 
-# 绘图 2 (动态标题)
+# 绘图 2 (标题与 Y 轴标签已修改)
 p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   stat_boxplot(geom = "errorbar", width = 0.6) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA, size = 0.7, width = 0.7, fatten = 0.7) +
@@ -143,9 +136,9 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
   theme(panel.grid = element_blank()) +
   stat_compare_means(comparisons = my_comparisons_meta, method = "wilcox.test") +
   theme(legend.position = "none") +
-  ggtitle(paste0(signature_name, "+GSE132465+CRDscore (Metastasis)")) +
+  ggtitle(paste0(signature_name, "+GSE132465+addmodulescore (Metastasis)")) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("CRDScore") +
+  ylab("AddModuleScore") +
   theme(axis.title.x = element_blank(),
         axis.text.y = element_text(size = 15, face = "bold", color = "black"),
         axis.title.y = element_text(size = 15, face = "bold", color = "black"),

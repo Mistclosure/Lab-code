@@ -3,7 +3,7 @@
 # ==========================================
 # 请将引号内的文件名替换为你实际的文件路径（例如 "C:/data/geneset1.csv"）
 data1 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/signature/ciliopathy_genes.csv", stringsAsFactors = FALSE)
-data2 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/target_gene_df.csv", stringsAsFactors = FALSE)
+data2 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv", stringsAsFactors = FALSE)
 #data2 <- read.table("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Target_Modules_Signed_单独列表/Module_blue_signed_genes.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
 # ==========================================
 # 2. 提取基因名称列
