@@ -25,17 +25,22 @@ seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
 data_log2 <- as.data.frame(seurat_data / log(2))
 
 # ==========================================
-# 定义 Signature 名称 (动态变量)
+# 定义 Signature 完整路径，并动态提取名称
 # ==========================================
-signature_name <- "112 primary cilium genes"
+# 在这里输入包含文件名和后缀的完整路径
+signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Target_Modules_KEGG_Hit_Unique_Genes_signed.csv"
+
+# 自动提取文件名：去除路径和 .csv 后缀，得到 "112 primary cilium genes"
+signature_name <- sub("\\.csv$", "", basename(signature_file_path))
+
 # 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
 # signature_file_prefix <- gsub(" ", "_", signature_name) 
 signature_file_prefix <- signature_name # 这里默认保留原名
 
-# 2. 提取基因集 (动态路径)
-CRC_data = read.csv(paste0("/mnt/disk1/qiuzerui/downloads/CRC/signature/", signature_name, ".csv"), header = T, check.names = F)
+# 2. 提取基因集 (按照完整路径读取)
+CRC_data = read.csv(signature_file_path, header = T, check.names = F)
 
-target_genes = as.character(CRC_data[1:68,1])
+target_genes = as.character(CRC_data[CRC_data$Module == 'turquoise',2])
 #target_genes=c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
 target_genes = intersect(target_genes, rownames(pbmc1))
 
