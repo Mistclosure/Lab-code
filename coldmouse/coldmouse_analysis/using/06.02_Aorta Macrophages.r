@@ -11,10 +11,9 @@ library(dplyr)
 
 # 1. 读取数据并提取 Aorta Macrophages
 print("Loading data and subsetting Aorta Macrophages...")
-sc_by_tissue <- qread('sc_by_tissue_louvain.qs')
-aorta <- sc_by_tissue[['Aorta']]
-#aorta = subset(aorta, subset = aorta$Group == 'Cold_4C' )
-aorta_mac <- subset(aorta, SingleR.labels %in% c("Macrophages"))
+aorta <- qread('aorta_corrected.qs')
+aorta_mac <- subset(aorta, cell_annotation %in% c("Lipid-Associated Macrophages",'proinflammation Macrophage','Vascular Tissue-Resident Macrophages'))
+
 
 # 2. 构建 Monocle 3 对象
 print("Converting to Monocle 3...")
@@ -84,9 +83,8 @@ plot_group <- do.call(plot_cells, c(common_args, list(color_cells_by = "Group"))
 plot_time <- do.call(plot_cells, c(common_args, list(color_cells_by = "pseudotime"))) + 
   ggtitle("Aorta Macrophages: Pseudotime (Root: Ly6c2 high)")
 
-plot_split <- do.call(plot_cells, c(common_args, list(color_cells_by = "pseudotime"))) + 
-  facet_wrap(~Group) + 
-  ggtitle("Aorta Macrophages: Pseudotime Split by Group")
+plot_split <- do.call(plot_cells, c(common_args, list(color_cells_by = "cell_annotation")))
+  ggtitle("Aorta Macrophages: Trajectory by cell_annotation")
 
 # 7. 保存
 print("Saving outputs...")
@@ -95,6 +93,6 @@ if(!dir.exists("pictures")) dir.create("pictures")
 
 ggsave("pictures/monocle3_aorta_macrophages_group.png", plot_group, width = 6, height = 5)
 ggsave("pictures/monocle3_aorta_macrophages_pseudotime.png", plot_time, width = 6, height = 5)
-#ggsave("pictures/monocle3_aorta_macrophages_split.png", plot_split, width = 10, height = 5)
+ggsave("pictures/monocle3_aorta_macrophages_cell_annotation.png", plot_split, width = 10, height = 5)
 
 print("Script 06.02 COMPLETED successfully!")
