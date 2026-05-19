@@ -88,17 +88,30 @@ top20_markers <- all_markers %>%
 write.csv(all_markers, file.path("files", "Markers_All_Leiden_Monocytes_Subgroups.csv"), row.names = FALSE)
 write.csv(top20_markers, file.path("files", "Markers_Top30_Leiden_Monocytes_Subgroups.csv"), row.names = FALSE)
 print("  ✅ 单核细胞亚群 Marker 列表已导出。")
-
+mono_cells = qread("pbmc_monocytes_sub-clustered.qs")
 # ------------------------------------------------------------------------------
 # 4. 局部坐标绘图 (2x2 网格排版，不映射回原图)
 # ------------------------------------------------------------------------------
 print("🚀 步骤3: 正在生成基于子集局部坐标的 2x2 网格 UMAP...")
 
+# ==============================================================================
+# 【新增步骤】自动获取全局 UMAP 坐标范围，并增加 5% 的边距（防止边缘细胞被切掉）
+# ==============================================================================
+umap_coords <- Embeddings(mono_cells, reduction = "umap")
+x_range <- range(umap_coords[, 1])
+y_range <- range(umap_coords[, 2])
+
+# 适当增加一点 buffer（边距）
+x_buffer <- diff(x_range) * 0.05
+y_buffer <- diff(y_range) * 0.05
+global_xlim <- x_range + c(-x_buffer, x_buffer)
+global_ylim <- y_range + c(-y_buffer, y_buffer)
+
 # ==========================================
 # 绘图 A: 基于局部坐标的 Monocyte 亚群 (直接画 mono_cells)
 # ==========================================
 p_total_local <- DimPlot(mono_cells, reduction = "umap", group.by = "mono_cluster_id", label = TRUE, repel = TRUE) + 
-  scale_color_discrete(labels = legend_labels) + # 【重点修改】在这里替换图例文字
+  scale_color_discrete(labels = legend_labels) + 
   ggtitle("Monocyte Subgroups - Leiden (Local Total)") + 
   theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), axis.title = element_blank())
 
@@ -117,14 +130,19 @@ p_tn_local <- DimPlot(subset(mono_cells, subset = Group == "TN_30C"), reduction 
   theme(plot.title = element_text(hjust = 0.5, size = 12), axis.title = element_blank()) + 
   NoLegend()
 
-# 合并图层，应用 axes = "collect" 对齐边界
+# ==========================================
+# 合并图层并统一坐标轴
+# ==========================================
+# 使用 & coord_cartesian 可以把相同的坐标轴范围强加给拼图中的每一个子图
 p_final_local <- (p_total_local | p_cold_local) / (p_rt_local | p_tn_local) + 
   plot_layout(guides = "collect", axes = "collect") & 
-  theme(legend.text = element_text(size = 9))
+  theme(legend.text = element_text(size = 9)) & 
+  coord_cartesian(xlim = global_xlim, ylim = global_ylim) # 【重点修改】在这里统一坐标轴范围
 
-file_name_local <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Local.png")
-ggsave(filename = file_name_local, plot = p_final_local, width = 15, height = 11, dpi = 300)
-
+file_name_png <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Local.png")
+file_name_pdf <- file.path("pictures", "UMAP_Grid_Monocytes_Subgroups_Leiden_Local.pdf")
+ggsave(filename = file_name_png, plot = p_final_local, width = 15, height = 11, dpi = 300)
+ggsave(filename = file_name_pdf, plot = p_final_local, width = 15, height = 11)
 # ------------------------------------------------------------------------------
 # 5. 全局坐标绘图 (2x2 网格排版，映射回原图)
 # ------------------------------------------------------------------------------

@@ -90,7 +90,7 @@ volcano_plot <- ggplot(deg_results, aes(x = avg_log2FC, y = -log10(p_val_adj), c
   theme(legend.position = "top", legend.title = element_blank(), plot.title = element_text(hjust = 0.5))
 
 # 保存火山图
-#ggsave(filename = file.path("plots", "Volcano_Monocytes_Cold_vs_RT.pdf"), plot = volcano_plot, width = 8, height = 7)
+ggsave(filename = file.path("plots", "Volcano_Monocytes_Cold_vs_RT.pdf"), plot = volcano_plot, width = 8, height = 7)
 ggsave(filename = file.path("plots", "Volcano_Monocytes_Cold_vs_RT.png"), plot = volcano_plot, width = 8, height = 7, dpi = 300)
 
 # ------------------------------------------------------------------------------

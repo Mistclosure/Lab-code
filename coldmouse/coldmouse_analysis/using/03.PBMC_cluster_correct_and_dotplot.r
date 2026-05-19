@@ -128,6 +128,7 @@ ggsave(filename = file_name_anno_pdf, plot = p_final_anno, width = 15, height = 
 # ==========================================
 # 6. 生成 Cluster x Marker 气泡图 (Top 5 Markers)
 # ==========================================
+pbmc = qread('pbmc_recorrected.qs')
 # 加载处理数据框所需的包
 library(dplyr)
 
@@ -179,7 +180,7 @@ p_dotplot <- DotPlot(pbmc, features = top5_genes, group.by = "cell_annotation") 
 file_name_dotplot_png <- file.path("pictures", "DotPlot_PBMC_Top5_Markers.png")
 ggsave(filename = file_name_dotplot_png, plot = p_dotplot, width = 16, height = 6, dpi = 300)
 
-# file_name_dotplot_pdf <- file.path("pictures", "DotPlot_Top5_Markers.pdf")
-# ggsave(filename = file_name_dotplot_pdf, plot = p_dotplot, width = 16, height = 6, dpi = 300)
+file_name_dotplot_pdf <- file.path("pictures", "DotPlot_PBMC_Top5_Markers.pdf")
+ggsave(filename = file_name_dotplot_pdf, plot = p_dotplot, width = 16, height = 6, dpi = 300)
 
 message("DotPlot saved to pictures directory.")
