@@ -13,17 +13,25 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178318/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Genes_3KEGG.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')
+pbmc1 <- NormalizeData(pbmc1,normalization.method = "LogNormalize", scale.factor = 1000000)
 pbmc1$type <- sub(".*_", "", colnames(pbmc1))
 pbmc1 = subset(pbmc1,subset = pbmc1$type %in% c('CRC','LM'))
 #pbmc1 = subset(pbmc1,subset = pbmc1$orig.ident == 'COL17')
 # 过滤全0基因
 pbmc1 <- pbmc1[Matrix::rowSums(GetAssayData(pbmc1, layer = "counts")) > 0, ]
 # 1. Seurat v5 提取表达矩阵
-exp = as.data.frame(LayerData(pbmc1, assay = "RNA", layer = "data"))
+# 提取 Seurat 里的 data 矩阵
+seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
+
+# 修正：将 ln(x+1) 转换为 log2(x+1)，只需除以 ln(2)
+# 这样 data_log2 才是 CRDscore 要求的 log2 尺度表达矩阵
+data_log2 <- as.data.frame(seurat_data / log(2))
+exp = data_log2
+
 
 ## 1. 提取对象中所有的基因名
 #all_genes <- rownames(pbmc1)

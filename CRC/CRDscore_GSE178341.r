@@ -13,14 +13,18 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178341/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/112 primary cilium genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Genes_3KEGG.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')
+pbmc1 <- NormalizeData(pbmc1,normalization.method = "LogNormalize", scale.factor = 1000000)
+
 # 过滤全0基因
 pbmc1 <- pbmc1[Matrix::rowSums(GetAssayData(pbmc1, layer = "counts")) > 0, ]
 # 1. Seurat v5 提取表达矩阵
-exp = as.data.frame(LayerData(pbmc1, assay = "RNA", layer = "data"))
+seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
+data_log2 <- as.data.frame(seurat_data / log(2))
+exp = data_log2
 
 # 2. 提取基因集
 CRC_data = read.csv(input_file, header = T, check.names = F)

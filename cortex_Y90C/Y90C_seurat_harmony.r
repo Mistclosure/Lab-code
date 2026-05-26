@@ -76,7 +76,7 @@ for (folder in sample_folders) {
   print(paste("    正在处理:", folder))
   
   tryCatch({
-    counts <- Read10X(data.dir = full_path)
+    counts <- Read10X(data.dir = full_path, gene.column = 1)
     
     if (is.list(counts) && !is(counts, "dgCMatrix")) {
       counts <- if ("Gene Expression" %in% names(counts)) counts$`Gene Expression` else counts[[1]]

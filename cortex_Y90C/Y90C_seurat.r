@@ -154,6 +154,40 @@ reduction_to_use <- "pca"
 obj <- RunUMAP(obj, reduction = reduction_to_use, dims = 1:20)
 obj <- FindNeighbors(obj, reduction = reduction_to_use, dims = 1:20)
 obj <- FindClusters(obj, resolution = 0.5)
+# ------------------------------------------------------------------------------
+# 5.1 筛选每个 Seurat cluster 的 marker genes
+# ------------------------------------------------------------------------------
+print("🚀 正在筛选每个 Seurat cluster 的 marker genes...")
+
+marker_dir <- file.path(data_dir, "Results_Markers")
+if (!dir.exists(marker_dir)) dir.create(marker_dir)
+
+Idents(obj) <- "seurat_clusters"
+
+cluster_markers <- FindAllMarkers(
+  obj,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+
+write.csv(
+  cluster_markers,
+  file.path(marker_dir, "Seurat_Cluster_Markers_All.csv"),
+  row.names = FALSE
+)
+
+top10_markers <- cluster_markers %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 20)
+
+write.csv(
+  top10_markers,
+  file.path(marker_dir, "Seurat_Cluster_Markers_Top20.csv"),
+  row.names = FALSE
+)
+
+print("✅ 每个 cluster 的 marker genes 已输出完成")
 
 # ------------------------------------------------------------------------------
 # 6. ScType 自动注释
