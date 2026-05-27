@@ -21,8 +21,8 @@ library(grid)
 
 setwd('/mnt/disk1/qiuzerui/expriments/coldmouse/')
 
-input_qs <- "pbmc_recorrected.qs"
-output_prefix <- "PBMC_Fkbp5_positive_vs_negative"
+input_qs <- "aorta_corrected.qs"
+output_prefix <- "AORTA_Fkbp5_positive_vs_negative"
 
 gene_target <- "Fkbp5"
 expr_threshold <- 0

@@ -224,3 +224,72 @@ deg_filename <- file.path("files", "DEG_Monocytes_Cold_4C_vs_RT_25C.csv")
 write.csv(deg_cold_vs_rt, deg_filename, row.names = FALSE)
 
 print(paste("  ✅ 组间差异基因 (Cold_4C vs RT_25C) 计算完成，已导出至:", deg_filename))
+# ------------------------------------------------------------------------------
+# 7. seurat cluster 3 / 4 分别与其他细胞做差异基因分析
+# ------------------------------------------------------------------------------
+print("🚀 步骤6: 正在计算 seurat cluster 3 和 4 分别 vs 其他细胞的差异基因...")
+
+# 确保输出目录存在
+dir.create("files", showWarnings = FALSE, recursive = TRUE)
+mono_cells = qread('pbmc_monocytes_sub-clustered.qs')
+# 将身份标识切换回 seurat_clusters
+mono_cells$seurat_clusters <- factor(as.character(mono_cells$seurat_clusters))
+Idents(mono_cells) <- "mono_cluster_id"
+
+target_clusters <- c("Mono_3", "Mono_4")
+
+# 检查 cluster 是否存在
+missing_clusters <- setdiff(target_clusters, levels(Idents(mono_cells)))
+if(length(missing_clusters) > 0){
+  stop(paste0("以下 seurat cluster 不存在: ", paste(missing_clusters, collapse = ", ")))
+}
+
+deg_list <- list()
+top20_list <- list()
+
+for(cl in target_clusters){
+  
+  print(paste0("  🔍 正在计算 cluster ", cl, " vs Others ..."))
+  
+  # ident.2 = NULL 表示 ident.1 与所有其他细胞比较
+  deg_tmp <- FindMarkers(
+    mono_cells,
+    ident.1 = cl,
+    ident.2 = NULL,
+    logfc.threshold = 0.25,
+    min.pct = 0.1,
+    verbose = FALSE
+  )
+  
+  deg_tmp <- deg_tmp %>%
+    rownames_to_column(var = "gene") %>%
+    arrange(desc(avg_log2FC)) %>%
+    mutate(
+      cluster = paste0("cluster_", cl),
+      comparison = paste0("cluster_", cl, "_vs_others")
+    )
+  
+  # 按 avg_log2FC 取前 20 个上调差异基因
+  top20_tmp <- deg_tmp %>%
+    slice_max(n = 20, order_by = avg_log2FC, with_ties = FALSE)
+  
+  # 分别导出完整 DEG 和 Top20 DEG
+  all_filename <- file.path("files", paste0("DEG_monoCluster_", cl, "_vs_Others_All.csv"))
+  top20_filename <- file.path("files", paste0("DEG_monoCluster_", cl, "_vs_Others_Top20.csv"))
+  
+  write.csv(deg_tmp, all_filename, row.names = FALSE)
+  write.csv(top20_tmp, top20_filename, row.names = FALSE)
+  
+  deg_list[[cl]] <- deg_tmp
+  top20_list[[cl]] <- top20_tmp
+  
+  print(paste0("  ✅ seurat cluster ", cl, " vs Others 完成，Top20 已导出至: ", top20_filename))
+}
+
+# 合并 cluster 3 和 4 的 Top20 结果，方便查看
+top20_combined <- bind_rows(top20_list)
+
+combined_filename <- file.path("files", "DEG_monoCluster_3_4_vs_Others_Top20_Combined.csv")
+write.csv(top20_combined, combined_filename, row.names = FALSE)
+
+print(paste0("✅ mono cluster 3 和 4 vs Others 的 Top20 差异基因合并表已导出至: ", combined_filename))
