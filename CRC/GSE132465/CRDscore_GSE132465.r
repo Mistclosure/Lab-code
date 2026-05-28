@@ -28,7 +28,7 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # 定义 Signature 完整路径，并动态提取名称
 # ==========================================
 # 在这里输入包含文件名和后缀的完整路径
-signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Genes_3KEGG.csv"
+signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
 
 # 自动提取文件名：去除路径和 .csv 后缀，得到 "112 primary cilium genes"
 signature_name <- sub("\\.csv$", "", basename(signature_file_path))

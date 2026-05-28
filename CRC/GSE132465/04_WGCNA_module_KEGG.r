@@ -15,14 +15,14 @@ library(qs)
 # 0. 目录配置与数据读取 --------------------------------------------------------
 # ==============================================================================
 # 设置为vpn端口
-Sys.setenv(http_proxy  = "http://127.0.0.1:7890")
-Sys.setenv(https_proxy = "http://127.0.0.1:7890")
+# Sys.setenv(http_proxy  = "http://127.0.0.1:7890")
+# Sys.setenv(https_proxy = "http://127.0.0.1:7890")
 
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
 FILES_DIR <- "files"
 PLOTS_DIR <- "plots"
 QS_DIR <- "qs"
-TARGET_MODULES_DIR <- file.path(FILES_DIR, "Target_Modules_Genes") # 新增：存放按模块独立导出的基因文件目录
+TARGET_MODULES_DIR <- file.path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv") # 新增：存放按模块独立导出的基因文件目录
 
 setwd(WORK_DIR)
 
@@ -32,7 +32,7 @@ if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR)
 
 cat("正在读取 WGCNA 分析结果...\n")
 # 读取之前保存的 qs 结果列表，并提取基因模块映射表
-wgcna_results <- qread(file.path(QS_DIR, 'WGCNA_Final_Results_signed.qs'))
+wgcna_results <- qread(file.path(QS_DIR, 'hdWGCNA_Final_Results_signed.qs'))
 gene_module_df <- wgcna_results$gene_module_df
 
 # 提取你关心的目标模块

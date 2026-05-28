@@ -13,7 +13,7 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE225857/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes   ciliopathy_genes
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 

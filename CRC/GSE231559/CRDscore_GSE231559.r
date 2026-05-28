@@ -35,7 +35,7 @@ qsave(pbmc1,'Malignant_GSE231559.qs')
 # 4. 计算评分
 # ------------------------------------------------------------------------------
 # --- 动态提取基因集文件名 ---
-signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Genes_3KEGG.csv"
+signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
 signature_name <- tools::file_path_sans_ext(basename(signature_file))
 
 CRC_data = read.csv(signature_file, header = T, check.names = F)
