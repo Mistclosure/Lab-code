@@ -1,0 +1,3 @@
+/home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/cnmf/cnmf.py:616: UserWarning: 374 runs already appear completed. If this is unexpected, consider
+            re-initializing the cnmf object with a different run name or output directory
+  warnings.warn(message, UserWarning)
