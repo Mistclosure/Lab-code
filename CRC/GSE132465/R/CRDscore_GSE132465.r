@@ -28,7 +28,7 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # 定义 Signature 完整路径，并动态提取名称
 # ==========================================
 # 在这里输入包含文件名和后缀的完整路径
-signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
+signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaCarta_GSE132465/tables/top200_genes_by_program/cortaProgram_2_top200.csv"
 
 # 自动提取文件名：去除路径和 .csv 后缀，得到 "112 primary cilium genes"
 signature_name <- sub("\\.csv$", "", basename(signature_file_path))
@@ -39,7 +39,7 @@ signature_file_prefix <- signature_name # 这里默认保留原名
 
 # 2. 提取基因集 (按照完整路径读取)
 CRC_data = read.csv(signature_file_path, header = T, check.names = F)
-target_genes = as.character(CRC_data[,1])
+target_genes = as.character(CRC_data[1:100,'gene'])
 #data7 = CRC_data[CRC_data$Pathway == 'Cell cycle',]
 #target_genes = as.character(CRC_data[CRC_data$Pathway == 'Proteoglycans in cancer',1])
 #write.csv(data7,'Cell cycle.csv' , row.names= FALSE, quote = FALSE)

@@ -1,3 +1,877 @@
 /home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/cnmf/cnmf.py:616: UserWarning: 374 runs already appear completed. If this is unexpected, consider
             re-initializing the cnmf object with a different run name or output directory
   warnings.warn(message, UserWarning)
+/home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/sklearn/decomposition/_nmf.py:1728: ConvergenceWarning: Maximum number of iterations 1000 reached. Increase it to improve convergence.
+  warnings.warn(
+已限制 BLAS/OpenMP 线程数为: 16
+WORK_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465
+INPUT_H5AD: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/Malignant_RNA_assay_for_cNMF_countsX.h5ad
+CILIAHUB_CSV: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/ciliahub_genes_list.csv
+OUT_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465
+FAST_DEBUG: False
+K_VALUES: [np.int64(2), np.int64(3), np.int64(4), np.int64(5), np.int64(6), np.int64(7), np.int64(8), np.int64(9), np.int64(10), np.int64(11), np.int64(12)]
+N_ITER: 100
+DENSITY_THRESHOLD: 0.5
+LOCAL_NEIGHBORHOOD_SIZE: 0.3
+CPU_THREADS: 16
+threadpool info:
+ - mkl 16 /home/zerui/miniconda3/envs/CRCpy/lib/libmkl_rt.so.3
+ - openmp 16 /home/zerui/miniconda3/envs/CRCpy/lib/libomp.so
+输入文件检查通过。
+h5ad size: 177.36110019683838 MB
+CiliaHub CSV size: 72.55078125 KB
+正在读取 AnnData...
+AnnData: AnnData object with n_obs × n_vars = 10789 × 25200
+    obs: 'orig.ident', 'nCount_RNA', 'nFeature_RNA', 'Patient', 'Class', 'Sample', 'Cell_type', 'Cell_subtype', 'percent.mt', 'percent.rb', 'RNA_snn_res.0.5', 'seurat_clusters', 'scDblFinder_class', 'RNA_snn_res.1.5', 'RNA_snn_res.1'
+    var: 'gene_id', 'gene_symbol'
+    uns: 'X_matrix', 'note', 'source'
+    obsm: 'X_harmony', 'X_pca', 'X_tsne', 'X_umap'
+    layers: 'counts'
+layers: ['counts']
+obsm: ['X_harmony', 'X_pca', 'X_tsne', 'X_umap']
+obs columns 前 30 个: ['orig.ident', 'nCount_RNA', 'nFeature_RNA', 'Patient', 'Class', 'Sample', 'Cell_type', 'Cell_subtype', 'percent.mt', 'percent.rb', 'RNA_snn_res.0.5', 'seurat_clusters', 'scDblFinder_class', 'RNA_snn_res.1.5', 'RNA_snn_res.1']
+var columns: ['gene_id', 'gene_symbol']
+使用 adata.layers['counts'] 作为 raw counts。
+counts shape cells x genes: (10789, 25200)
+counts dtype: float32
+counts nnz: 40495689
+CiliaHub CSV columns: ['gene', 'ensembl_id']
+     gene                        ensembl_id
+0    AAAS  ENSG00000291836, ENSG00000094914
+1    AAMP                   ENSG00000127837
+2    AATF  ENSG00000276072, ENSG00000275700
+3  ABCA13                   ENSG00000179869
+4   ABCA4                   ENSG00000198691
+
+自动选择 gene symbol 列: gene (列名精确匹配)
+CiliaHub 去重后基因数: 2588
+前 20 个基因: ['AAAS', 'AAMP', 'AATF', 'ABCA13', 'ABCA4', 'ABCB6', 'ABCC3', 'ABCC4', 'ABCD1', 'ABHD2', 'ABI2', 'ABITRAM', 'ABLIM1', 'ABLIM3', 'ABRAXAS2', 'ACAA1', 'ACAA2', 'ACACA', 'ACE2', 'ACLY']
+检测到 adata.var['gene_symbol']，优先用 gene_symbol 匹配。
+CiliaHub 与 adata.var_names 交集基因数: 2260
+CiliaHub 与 adata.var['gene_symbol'] 交集基因数: 2260
+最终匹配模式: gene_symbol
+最终保留基因数: 2260
+过滤前细胞数: 10789
+保留细胞数: 10789
+过滤掉细胞数: 0
+CiliaHub 交集基因数: 2260
+低表达过滤后保留基因数: 1992
+最终 cNMF 输入 AnnData: AnnData object with n_obs × n_vars = 10789 × 1992
+    obs: 'orig.ident', 'nCount_RNA', 'nFeature_RNA', 'Patient', 'Class', 'Sample', 'Cell_type', 'Cell_subtype', 'percent.mt', 'percent.rb', 'RNA_snn_res.0.5', 'seurat_clusters', 'scDblFinder_class', 'RNA_snn_res.1.5', 'RNA_snn_res.1'
+    var: 'gene_id', 'gene_symbol', 'original_var_name'
+    uns: 'X_matrix', 'note', 'source'
+    obsm: 'X_harmony', 'X_pca', 'X_tsne', 'X_umap'
+    layers: 'counts'
+最终基因示例: ['AAAS', 'AAMP', 'AATF', 'ABCA13', 'ABCC3', 'ABCC4', 'ABCD1', 'ABHD2', 'ABI2', 'ABLIM1', 'ABLIM3', 'ACAA1', 'ACAA2', 'ACACA', 'ACE2', 'ACLY', 'ACOT13', 'ACOT7', 'ACOX1', 'ACP5']
+正在保存 h5ad: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.h5ad
+正在保存 counts txt: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.txt
+counts_df shape: (10789, 1992)
+输出文件：
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.h5ad
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.txt
+开始 cNMF prepare...
+开始 cNMF factorize...
+[Worker 0]. Starting task 374.
+[Worker 0]. Starting task 375.
+[Worker 0]. Starting task 376.
+[Worker 0]. Starting task 377.
+[Worker 0]. Starting task 378.
+[Worker 0]. Starting task 379.
+[Worker 0]. Starting task 380.
+[Worker 0]. Starting task 381.
+[Worker 0]. Starting task 382.
+[Worker 0]. Starting task 383.
+[Worker 0]. Starting task 384.
+[Worker 0]. Starting task 385.
+[Worker 0]. Starting task 386.
+[Worker 0]. Starting task 387.
+[Worker 0]. Starting task 388.
+[Worker 0]. Starting task 389.
+[Worker 0]. Starting task 390.
+[Worker 0]. Starting task 391.
+[Worker 0]. Starting task 392.
+[Worker 0]. Starting task 393.
+[Worker 0]. Starting task 394.
+[Worker 0]. Starting task 395.
+[Worker 0]. Starting task 396.
+[Worker 0]. Starting task 397.
+[Worker 0]. Starting task 398.
+[Worker 0]. Starting task 399.
+[Worker 0]. Starting task 400.
+[Worker 0]. Starting task 401.
+[Worker 0]. Starting task 402.
+[Worker 0]. Starting task 403.
+[Worker 0]. Starting task 404.
+[Worker 0]. Starting task 405.
+[Worker 0]. Starting task 406.
+[Worker 0]. Starting task 407.
+[Worker 0]. Starting task 408.
+[Worker 0]. Starting task 409.
+[Worker 0]. Starting task 410.
+[Worker 0]. Starting task 411.
+[Worker 0]. Starting task 412.
+[Worker 0]. Starting task 413.
+[Worker 0]. Starting task 414.
+[Worker 0]. Starting task 415.
+[Worker 0]. Starting task 416.
+[Worker 0]. Starting task 417.
+[Worker 0]. Starting task 418.
+[Worker 0]. Starting task 419.
+[Worker 0]. Starting task 420.
+[Worker 0]. Starting task 421.
+[Worker 0]. Starting task 422.
+[Worker 0]. Starting task 423.
+[Worker 0]. Starting task 424.
+[Worker 0]. Starting task 425.
+[Worker 0]. Starting task 426.
+[Worker 0]. Starting task 427.
+[Worker 0]. Starting task 428.
+[Worker 0]. Starting task 429.
+[Worker 0]. Starting task 430.
+[Worker 0]. Starting task 431.
+[Worker 0]. Starting task 432.
+[Worker 0]. Starting task 433.
+[Worker 0]. Starting task 434.
+[Worker 0]. Starting task 435.
+[Worker 0]. Starting task 436.
+[Worker 0]. Starting task 437.
+[Worker 0]. Starting task 438.
+[Worker 0]. Starting task 439.
+[Worker 0]. Starting task 440.
+[Worker 0]. Starting task 441.
+[Worker 0]. Starting task 442.
+[Worker 0]. Starting task 443.
+[Worker 0]. Starting task 444.
+[Worker 0]. Starting task 445.
+[Worker 0]. Starting task 446.
+[Worker 0]. Starting task 447.
+[Worker 0]. Starting task 448.
+[Worker 0]. Starting task 449.
+[Worker 0]. Starting task 450.
+[Worker 0]. Starting task 451.
+[Worker 0]. Starting task 452.
+[Worker 0]. Starting task 453.
+[Worker 0]. Starting task 454.
+[Worker 0]. Starting task 455.
+[Worker 0]. Starting task 456.
+[Worker 0]. Starting task 457.
+[Worker 0]. Starting task 458.
+[Worker 0]. Starting task 459.
+[Worker 0]. Starting task 460.
+[Worker 0]. Starting task 461.
+[Worker 0]. Starting task 462.
+[Worker 0]. Starting task 463.
+[Worker 0]. Starting task 464.
+[Worker 0]. Starting task 465.
+[Worker 0]. Starting task 466.
+[Worker 0]. Starting task 467.
+[Worker 0]. Starting task 468.
+[Worker 0]. Starting task 469.
+[Worker 0]. Starting task 470.
+[Worker 0]. Starting task 471.
+[Worker 0]. Starting task 472.
+[Worker 0]. Starting task 473.
+[Worker 0]. Starting task 474.
+[Worker 0]. Starting task 475.
+[Worker 0]. Starting task 476.
+[Worker 0]. Starting task 477.
+[Worker 0]. Starting task 478.
+[Worker 0]. Starting task 479.
+[Worker 0]. Starting task 480.
+[Worker 0]. Starting task 481.
+[Worker 0]. Starting task 482.
+[Worker 0]. Starting task 483.
+[Worker 0]. Starting task 484.
+[Worker 0]. Starting task 485.
+[Worker 0]. Starting task 486.
+[Worker 0]. Starting task 487.
+[Worker 0]. Starting task 488.
+[Worker 0]. Starting task 489.
+[Worker 0]. Starting task 490.
+[Worker 0]. Starting task 491.
+[Worker 0]. Starting task 492.
+[Worker 0]. Starting task 493.
+[Worker 0]. Starting task 494.
+[Worker 0]. Starting task 495.
+[Worker 0]. Starting task 496.
+[Worker 0]. Starting task 497.
+[Worker 0]. Starting task 498.
+[Worker 0]. Starting task 499.
+[Worker 0]. Starting task 500.
+[Worker 0]. Starting task 501.
+[Worker 0]. Starting task 502.
+[Worker 0]. Starting task 503.
+[Worker 0]. Starting task 504.
+[Worker 0]. Starting task 505.
+[Worker 0]. Starting task 506.
+[Worker 0]. Starting task 507.
+[Worker 0]. Starting task 508.
+[Worker 0]. Starting task 509.
+[Worker 0]. Starting task 510.
+[Worker 0]. Starting task 511.
+[Worker 0]. Starting task 512.
+[Worker 0]. Starting task 513.
+[Worker 0]. Starting task 514.
+[Worker 0]. Starting task 515.
+[Worker 0]. Starting task 516.
+[Worker 0]. Starting task 517.
+[Worker 0]. Starting task 518.
+[Worker 0]. Starting task 519.
+[Worker 0]. Starting task 520.
+[Worker 0]. Starting task 521.
+[Worker 0]. Starting task 522.
+[Worker 0]. Starting task 523.
+[Worker 0]. Starting task 524.
+[Worker 0]. Starting task 525.
+[Worker 0]. Starting task 526.
+[Worker 0]. Starting task 527.
+[Worker 0]. Starting task 528.
+[Worker 0]. Starting task 529.
+[Worker 0]. Starting task 530.
+[Worker 0]. Starting task 531.
+[Worker 0]. Starting task 532.
+[Worker 0]. Starting task 533.
+[Worker 0]. Starting task 534.
+[Worker 0]. Starting task 535.
+[Worker 0]. Starting task 536.
+[Worker 0]. Starting task 537.
+[Worker 0]. Starting task 538.
+[Worker 0]. Starting task 539.
+[Worker 0]. Starting task 540.
+[Worker 0]. Starting task 541.
+[Worker 0]. Starting task 542.
+[Worker 0]. Starting task 543.
+[Worker 0]. Starting task 544.
+[Worker 0]. Starting task 545.
+[Worker 0]. Starting task 546.
+[Worker 0]. Starting task 547.
+[Worker 0]. Starting task 548.
+[Worker 0]. Starting task 549.
+[Worker 0]. Starting task 550.
+[Worker 0]. Starting task 551.
+[Worker 0]. Starting task 552.
+[Worker 0]. Starting task 553.
+[Worker 0]. Starting task 554.
+[Worker 0]. Starting task 555.
+[Worker 0]. Starting task 556.
+[Worker 0]. Starting task 557.
+[Worker 0]. Starting task 558.
+[Worker 0]. Starting task 559.
+[Worker 0]. Starting task 560.
+[Worker 0]. Starting task 561.
+[Worker 0]. Starting task 562.
+[Worker 0]. Starting task 563.
+[Worker 0]. Starting task 564.
+[Worker 0]. Starting task 565.
+[Worker 0]. Starting task 566.
+[Worker 0]. Starting task 567.
+[Worker 0]. Starting task 568.
+[Worker 0]. Starting task 569.
+[Worker 0]. Starting task 570.
+[Worker 0]. Starting task 571.
+[Worker 0]. Starting task 572.
+[Worker 0]. Starting task 573.
+[Worker 0]. Starting task 574.
+[Worker 0]. Starting task 575.
+[Worker 0]. Starting task 576.
+[Worker 0]. Starting task 577.
+[Worker 0]. Starting task 578.
+[Worker 0]. Starting task 579.
+[Worker 0]. Starting task 580.
+[Worker 0]. Starting task 581.
+[Worker 0]. Starting task 582.
+[Worker 0]. Starting task 583.
+[Worker 0]. Starting task 584.
+[Worker 0]. Starting task 585.
+[Worker 0]. Starting task 586.
+[Worker 0]. Starting task 587.
+[Worker 0]. Starting task 588.
+[Worker 0]. Starting task 589.
+[Worker 0]. Starting task 590.
+[Worker 0]. Starting task 591.
+[Worker 0]. Starting task 592.
+[Worker 0]. Starting task 593.
+[Worker 0]. Starting task 594.
+[Worker 0]. Starting task 595.
+[Worker 0]. Starting task 596.
+[Worker 0]. Starting task 597.
+[Worker 0]. Starting task 598.
+[Worker 0]. Starting task 599.
+[Worker 0]. Starting task 600.
+[Worker 0]. Starting task 601.
+[Worker 0]. Starting task 602.
+[Worker 0]. Starting task 603.
+[Worker 0]. Starting task 604.
+[Worker 0]. Starting task 605.
+[Worker 0]. Starting task 606.
+[Worker 0]. Starting task 607.
+[Worker 0]. Starting task 608.
+[Worker 0]. Starting task 609.
+[Worker 0]. Starting task 610.
+[Worker 0]. Starting task 611.
+[Worker 0]. Starting task 612.
+[Worker 0]. Starting task 613.
+[Worker 0]. Starting task 614.
+[Worker 0]. Starting task 615.
+[Worker 0]. Starting task 616.
+[Worker 0]. Starting task 617.
+[Worker 0]. Starting task 618.
+[Worker 0]. Starting task 619.
+[Worker 0]. Starting task 620.
+[Worker 0]. Starting task 621.
+[Worker 0]. Starting task 622.
+[Worker 0]. Starting task 623.
+[Worker 0]. Starting task 624.
+[Worker 0]. Starting task 625.
+[Worker 0]. Starting task 626.
+[Worker 0]. Starting task 627.
+[Worker 0]. Starting task 628.
+[Worker 0]. Starting task 629.
+[Worker 0]. Starting task 630.
+[Worker 0]. Starting task 631.
+[Worker 0]. Starting task 632.
+[Worker 0]. Starting task 633.
+[Worker 0]. Starting task 634.
+[Worker 0]. Starting task 635.
+[Worker 0]. Starting task 636.
+[Worker 0]. Starting task 637.
+[Worker 0]. Starting task 638.
+[Worker 0]. Starting task 639.
+[Worker 0]. Starting task 640.
+[Worker 0]. Starting task 641.
+[Worker 0]. Starting task 642.
+[Worker 0]. Starting task 643.
+[Worker 0]. Starting task 644.
+[Worker 0]. Starting task 645.
+[Worker 0]. Starting task 646.
+[Worker 0]. Starting task 647.
+[Worker 0]. Starting task 648.
+[Worker 0]. Starting task 649.
+[Worker 0]. Starting task 650.
+[Worker 0]. Starting task 651.
+[Worker 0]. Starting task 652.
+[Worker 0]. Starting task 653.
+[Worker 0]. Starting task 654.
+[Worker 0]. Starting task 655.
+[Worker 0]. Starting task 656.
+[Worker 0]. Starting task 657.
+[Worker 0]. Starting task 658.
+[Worker 0]. Starting task 659.
+[Worker 0]. Starting task 660.
+[Worker 0]. Starting task 661.
+[Worker 0]. Starting task 662.
+[Worker 0]. Starting task 663.
+[Worker 0]. Starting task 664.
+[Worker 0]. Starting task 665.
+[Worker 0]. Starting task 666.
+[Worker 0]. Starting task 667.
+[Worker 0]. Starting task 668.
+[Worker 0]. Starting task 669.
+[Worker 0]. Starting task 670.
+[Worker 0]. Starting task 671.
+[Worker 0]. Starting task 672.
+[Worker 0]. Starting task 673.
+[Worker 0]. Starting task 674.
+[Worker 0]. Starting task 675.
+[Worker 0]. Starting task 676.
+[Worker 0]. Starting task 677.
+[Worker 0]. Starting task 678.
+[Worker 0]. Starting task 679.
+[Worker 0]. Starting task 680.
+[Worker 0]. Starting task 681.
+[Worker 0]. Starting task 682.
+[Worker 0]. Starting task 683.
+[Worker 0]. Starting task 684.
+[Worker 0]. Starting task 685.
+[Worker 0]. Starting task 686.
+[Worker 0]. Starting task 687.
+[Worker 0]. Starting task 688.
+[Worker 0]. Starting task 689.
+[Worker 0]. Starting task 690.
+[Worker 0]. Starting task 691.
+[Worker 0]. Starting task 692.
+[Worker 0]. Starting task 693.
+[Worker 0]. Starting task 694.
+[Worker 0]. Starting task 695.
+[Worker 0]. Starting task 696.
+[Worker 0]. Starting task 697.
+[Worker 0]. Starting task 698.
+[Worker 0]. Starting task 699.
+[Worker 0]. Starting task 700.
+[Worker 0]. Starting task 701.
+[Worker 0]. Starting task 702.
+[Worker 0]. Starting task 703.
+[Worker 0]. Starting task 704.
+[Worker 0]. Starting task 705.
+[Worker 0]. Starting task 706.
+[Worker 0]. Starting task 707.
+[Worker 0]. Starting task 708.
+[Worker 0]. Starting task 709.
+[Worker 0]. Starting task 710.
+[Worker 0]. Starting task 711.
+[Worker 0]. Starting task 712.
+[Worker 0]. Starting task 713.
+[Worker 0]. Starting task 714.
+[Worker 0]. Starting task 715.
+[Worker 0]. Starting task 716.
+[Worker 0]. Starting task 717.
+[Worker 0]. Starting task 718.
+[Worker 0]. Starting task 719.
+[Worker 0]. Starting task 720.
+[Worker 0]. Starting task 721.
+[Worker 0]. Starting task 722.
+[Worker 0]. Starting task 723.
+[Worker 0]. Starting task 724.
+[Worker 0]. Starting task 725.
+[Worker 0]. Starting task 726.
+[Worker 0]. Starting task 727.
+[Worker 0]. Starting task 728.
+[Worker 0]. Starting task 729.
+[Worker 0]. Starting task 730.
+[Worker 0]. Starting task 731.
+[Worker 0]. Starting task 732.
+[Worker 0]. Starting task 733.
+[Worker 0]. Starting task 734.
+[Worker 0]. Starting task 735.
+[Worker 0]. Starting task 736.
+[Worker 0]. Starting task 737.
+[Worker 0]. Starting task 738.
+[Worker 0]. Starting task 739.
+[Worker 0]. Starting task 740.
+[Worker 0]. Starting task 741.
+[Worker 0]. Starting task 742.
+[Worker 0]. Starting task 743.
+[Worker 0]. Starting task 744.
+[Worker 0]. Starting task 745.
+[Worker 0]. Starting task 746.
+[Worker 0]. Starting task 747.
+[Worker 0]. Starting task 748.
+[Worker 0]. Starting task 749.
+[Worker 0]. Starting task 750.
+[Worker 0]. Starting task 751.
+[Worker 0]. Starting task 752.
+[Worker 0]. Starting task 753.
+[Worker 0]. Starting task 754.
+[Worker 0]. Starting task 755.
+[Worker 0]. Starting task 756.
+[Worker 0]. Starting task 757.
+[Worker 0]. Starting task 758.
+[Worker 0]. Starting task 759.
+[Worker 0]. Starting task 760.
+[Worker 0]. Starting task 761.
+[Worker 0]. Starting task 762.
+[Worker 0]. Starting task 763.
+[Worker 0]. Starting task 764.
+[Worker 0]. Starting task 765.
+[Worker 0]. Starting task 766.
+[Worker 0]. Starting task 767.
+[Worker 0]. Starting task 768.
+[Worker 0]. Starting task 769.
+/home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/sklearn/decomposition/_nmf.py:1728: ConvergenceWarning: Maximum number of iterations 1000 reached. Increase it to improve convergence.
+  warnings.warn(
+/home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/sklearn/decomposition/_nmf.py:1728: ConvergenceWarning: Maximum number of iterations 1000 reached. Increase it to improve convergence.
+  warnings.warn(
+[Worker 0]. Starting task 770.
+[Worker 0]. Starting task 771.
+[Worker 0]. Starting task 772.
+[Worker 0]. Starting task 773.
+[Worker 0]. Starting task 774.
+[Worker 0]. Starting task 775.
+[Worker 0]. Starting task 776.
+[Worker 0]. Starting task 777.
+[Worker 0]. Starting task 778.
+[Worker 0]. Starting task 779.
+[Worker 0]. Starting task 780.
+[Worker 0]. Starting task 781.
+[Worker 0]. Starting task 782.
+[Worker 0]. Starting task 783.
+[Worker 0]. Starting task 784.
+[Worker 0]. Starting task 785.
+[Worker 0]. Starting task 786.
+[Worker 0]. Starting task 787.
+[Worker 0]. Starting task 788.
+[Worker 0]. Starting task 789.
+[Worker 0]. Starting task 790.
+[Worker 0]. Starting task 791.
+[Worker 0]. Starting task 792.
+[Worker 0]. Starting task 793.
+[Worker 0]. Starting task 794.
+[Worker 0]. Starting task 795.
+[Worker 0]. Starting task 796.
+[Worker 0]. Starting task 797.
+[Worker 0]. Starting task 798.
+[Worker 0]. Starting task 799.
+[Worker 0]. Starting task 800.
+[Worker 0]. Starting task 801.
+[Worker 0]. Starting task 802.
+[Worker 0]. Starting task 803.
+[Worker 0]. Starting task 804.
+[Worker 0]. Starting task 805.
+[Worker 0]. Starting task 806.
+[Worker 0]. Starting task 807.
+[Worker 0]. Starting task 808.
+[Worker 0]. Starting task 809.
+[Worker 0]. Starting task 810.
+[Worker 0]. Starting task 811.
+[Worker 0]. Starting task 812.
+[Worker 0]. Starting task 813.
+[Worker 0]. Starting task 814.
+[Worker 0]. Starting task 815.
+[Worker 0]. Starting task 816.
+[Worker 0]. Starting task 817.
+[Worker 0]. Starting task 818.
+[Worker 0]. Starting task 819.
+[Worker 0]. Starting task 820.
+[Worker 0]. Starting task 821.
+[Worker 0]. Starting task 822.
+[Worker 0]. Starting task 823.
+[Worker 0]. Starting task 824.
+[Worker 0]. Starting task 825.
+[Worker 0]. Starting task 826.
+[Worker 0]. Starting task 827.
+[Worker 0]. Starting task 828.
+[Worker 0]. Starting task 829.
+[Worker 0]. Starting task 830.
+[Worker 0]. Starting task 831.
+[Worker 0]. Starting task 832.
+[Worker 0]. Starting task 833.
+[Worker 0]. Starting task 834.
+[Worker 0]. Starting task 835.
+[Worker 0]. Starting task 836.
+[Worker 0]. Starting task 837.
+[Worker 0]. Starting task 838.
+[Worker 0]. Starting task 839.
+[Worker 0]. Starting task 840.
+[Worker 0]. Starting task 841.
+[Worker 0]. Starting task 842.
+[Worker 0]. Starting task 843.
+[Worker 0]. Starting task 844.
+[Worker 0]. Starting task 845.
+[Worker 0]. Starting task 846.
+[Worker 0]. Starting task 847.
+[Worker 0]. Starting task 848.
+[Worker 0]. Starting task 849.
+[Worker 0]. Starting task 850.
+[Worker 0]. Starting task 851.
+[Worker 0]. Starting task 852.
+[Worker 0]. Starting task 853.
+[Worker 0]. Starting task 854.
+[Worker 0]. Starting task 855.
+[Worker 0]. Starting task 856.
+[Worker 0]. Starting task 857.
+[Worker 0]. Starting task 858.
+[Worker 0]. Starting task 859.
+[Worker 0]. Starting task 860.
+[Worker 0]. Starting task 861.
+[Worker 0]. Starting task 862.
+[Worker 0]. Starting task 863.
+[Worker 0]. Starting task 864.
+[Worker 0]. Starting task 865.
+[Worker 0]. Starting task 866.
+[Worker 0]. Starting task 867.
+[Worker 0]. Starting task 868.
+[Worker 0]. Starting task 869.
+[Worker 0]. Starting task 870.
+[Worker 0]. Starting task 871.
+[Worker 0]. Starting task 872.
+[Worker 0]. Starting task 873.
+[Worker 0]. Starting task 874.
+[Worker 0]. Starting task 875.
+[Worker 0]. Starting task 876.
+[Worker 0]. Starting task 877.
+[Worker 0]. Starting task 878.
+[Worker 0]. Starting task 879.
+[Worker 0]. Starting task 880.
+[Worker 0]. Starting task 881.
+[Worker 0]. Starting task 882.
+[Worker 0]. Starting task 883.
+[Worker 0]. Starting task 884.
+[Worker 0]. Starting task 885.
+[Worker 0]. Starting task 886.
+[Worker 0]. Starting task 887.
+[Worker 0]. Starting task 888.
+[Worker 0]. Starting task 889.
+[Worker 0]. Starting task 890.
+[Worker 0]. Starting task 891.
+[Worker 0]. Starting task 892.
+[Worker 0]. Starting task 893.
+[Worker 0]. Starting task 894.
+[Worker 0]. Starting task 895.
+[Worker 0]. Starting task 896.
+[Worker 0]. Starting task 897.
+[Worker 0]. Starting task 898.
+[Worker 0]. Starting task 899.
+[Worker 0]. Starting task 900.
+[Worker 0]. Starting task 901.
+[Worker 0]. Starting task 902.
+[Worker 0]. Starting task 903.
+[Worker 0]. Starting task 904.
+[Worker 0]. Starting task 905.
+[Worker 0]. Starting task 906.
+[Worker 0]. Starting task 907.
+[Worker 0]. Starting task 908.
+[Worker 0]. Starting task 909.
+[Worker 0]. Starting task 910.
+[Worker 0]. Starting task 911.
+[Worker 0]. Starting task 912.
+[Worker 0]. Starting task 913.
+[Worker 0]. Starting task 914.
+[Worker 0]. Starting task 915.
+[Worker 0]. Starting task 916.
+[Worker 0]. Starting task 917.
+[Worker 0]. Starting task 918.
+[Worker 0]. Starting task 919.
+[Worker 0]. Starting task 920.
+[Worker 0]. Starting task 921.
+[Worker 0]. Starting task 922.
+[Worker 0]. Starting task 923.
+[Worker 0]. Starting task 924.
+[Worker 0]. Starting task 925.
+[Worker 0]. Starting task 926.
+[Worker 0]. Starting task 927.
+[Worker 0]. Starting task 928.
+[Worker 0]. Starting task 929.
+[Worker 0]. Starting task 930.
+[Worker 0]. Starting task 931.
+[Worker 0]. Starting task 932.
+[Worker 0]. Starting task 933.
+[Worker 0]. Starting task 934.
+[Worker 0]. Starting task 935.
+[Worker 0]. Starting task 936.
+[Worker 0]. Starting task 937.
+[Worker 0]. Starting task 938.
+[Worker 0]. Starting task 939.
+[Worker 0]. Starting task 940.
+[Worker 0]. Starting task 941.
+[Worker 0]. Starting task 942.
+[Worker 0]. Starting task 943.
+[Worker 0]. Starting task 944.
+[Worker 0]. Starting task 945.
+[Worker 0]. Starting task 946.
+[Worker 0]. Starting task 947.
+[Worker 0]. Starting task 948.
+[Worker 0]. Starting task 949.
+[Worker 0]. Starting task 950.
+[Worker 0]. Starting task 951.
+[Worker 0]. Starting task 952.
+[Worker 0]. Starting task 953.
+[Worker 0]. Starting task 954.
+[Worker 0]. Starting task 955.
+[Worker 0]. Starting task 956.
+[Worker 0]. Starting task 957.
+[Worker 0]. Starting task 958.
+[Worker 0]. Starting task 959.
+[Worker 0]. Starting task 960.
+[Worker 0]. Starting task 961.
+[Worker 0]. Starting task 962.
+[Worker 0]. Starting task 963.
+[Worker 0]. Starting task 964.
+[Worker 0]. Starting task 965.
+[Worker 0]. Starting task 966.
+[Worker 0]. Starting task 967.
+[Worker 0]. Starting task 968.
+[Worker 0]. Starting task 969.
+[Worker 0]. Starting task 970.
+[Worker 0]. Starting task 971.
+[Worker 0]. Starting task 972.
+[Worker 0]. Starting task 973.
+[Worker 0]. Starting task 974.
+[Worker 0]. Starting task 975.
+[Worker 0]. Starting task 976.
+[Worker 0]. Starting task 977.
+[Worker 0]. Starting task 978.
+[Worker 0]. Starting task 979.
+[Worker 0]. Starting task 980.
+[Worker 0]. Starting task 981.
+[Worker 0]. Starting task 982.
+[Worker 0]. Starting task 983.
+[Worker 0]. Starting task 984.
+[Worker 0]. Starting task 985.
+[Worker 0]. Starting task 986.
+[Worker 0]. Starting task 987.
+[Worker 0]. Starting task 988.
+[Worker 0]. Starting task 989.
+[Worker 0]. Starting task 990.
+[Worker 0]. Starting task 991.
+[Worker 0]. Starting task 992.
+[Worker 0]. Starting task 993.
+[Worker 0]. Starting task 994.
+[Worker 0]. Starting task 995.
+[Worker 0]. Starting task 996.
+[Worker 0]. Starting task 997.
+[Worker 0]. Starting task 998.
+[Worker 0]. Starting task 999.
+[Worker 0]. Starting task 1000.
+[Worker 0]. Starting task 1001.
+[Worker 0]. Starting task 1002.
+[Worker 0]. Starting task 1003.
+[Worker 0]. Starting task 1004.
+[Worker 0]. Starting task 1005.
+[Worker 0]. Starting task 1006.
+[Worker 0]. Starting task 1007.
+[Worker 0]. Starting task 1008.
+[Worker 0]. Starting task 1009.
+[Worker 0]. Starting task 1010.
+[Worker 0]. Starting task 1011.
+[Worker 0]. Starting task 1012.
+[Worker 0]. Starting task 1013.
+[Worker 0]. Starting task 1014.
+[Worker 0]. Starting task 1015.
+[Worker 0]. Starting task 1016.
+[Worker 0]. Starting task 1017.
+[Worker 0]. Starting task 1018.
+[Worker 0]. Starting task 1019.
+[Worker 0]. Starting task 1020.
+[Worker 0]. Starting task 1021.
+[Worker 0]. Starting task 1022.
+[Worker 0]. Starting task 1023.
+[Worker 0]. Starting task 1024.
+[Worker 0]. Starting task 1025.
+[Worker 0]. Starting task 1026.
+[Worker 0]. Starting task 1027.
+[Worker 0]. Starting task 1028.
+[Worker 0]. Starting task 1029.
+[Worker 0]. Starting task 1030.
+[Worker 0]. Starting task 1031.
+[Worker 0]. Starting task 1032.
+/home/zerui/miniconda3/envs/CRCpy/lib/python3.10/site-packages/scanpy/preprocessing/_scale.py:309: UserWarning: Received a view of an AnnData. Making a copy.
+  view_to_actual(adata)
+[Worker 0]. Starting task 1033.
+[Worker 0]. Starting task 1034.
+[Worker 0]. Starting task 1035.
+[Worker 0]. Starting task 1036.
+[Worker 0]. Starting task 1037.
+[Worker 0]. Starting task 1038.
+[Worker 0]. Starting task 1039.
+[Worker 0]. Starting task 1040.
+[Worker 0]. Starting task 1041.
+[Worker 0]. Starting task 1042.
+[Worker 0]. Starting task 1043.
+[Worker 0]. Starting task 1044.
+[Worker 0]. Starting task 1045.
+[Worker 0]. Starting task 1046.
+[Worker 0]. Starting task 1047.
+[Worker 0]. Starting task 1048.
+[Worker 0]. Starting task 1049.
+[Worker 0]. Starting task 1050.
+[Worker 0]. Starting task 1051.
+[Worker 0]. Starting task 1052.
+[Worker 0]. Starting task 1053.
+[Worker 0]. Starting task 1054.
+[Worker 0]. Starting task 1055.
+[Worker 0]. Starting task 1056.
+[Worker 0]. Starting task 1057.
+[Worker 0]. Starting task 1058.
+[Worker 0]. Starting task 1059.
+[Worker 0]. Starting task 1060.
+[Worker 0]. Starting task 1061.
+[Worker 0]. Starting task 1062.
+[Worker 0]. Starting task 1063.
+[Worker 0]. Starting task 1064.
+[Worker 0]. Starting task 1065.
+[Worker 0]. Starting task 1066.
+[Worker 0]. Starting task 1067.
+[Worker 0]. Starting task 1068.
+[Worker 0]. Starting task 1069.
+[Worker 0]. Starting task 1070.
+[Worker 0]. Starting task 1071.
+[Worker 0]. Starting task 1072.
+[Worker 0]. Starting task 1073.
+[Worker 0]. Starting task 1074.
+[Worker 0]. Starting task 1075.
+[Worker 0]. Starting task 1076.
+[Worker 0]. Starting task 1077.
+[Worker 0]. Starting task 1078.
+[Worker 0]. Starting task 1079.
+[Worker 0]. Starting task 1080.
+[Worker 0]. Starting task 1081.
+[Worker 0]. Starting task 1082.
+[Worker 0]. Starting task 1083.
+[Worker 0]. Starting task 1084.
+[Worker 0]. Starting task 1085.
+[Worker 0]. Starting task 1086.
+[Worker 0]. Starting task 1087.
+[Worker 0]. Starting task 1088.
+[Worker 0]. Starting task 1089.
+[Worker 0]. Starting task 1090.
+[Worker 0]. Starting task 1091.
+[Worker 0]. Starting task 1092.
+[Worker 0]. Starting task 1093.
+[Worker 0]. Starting task 1094.
+[Worker 0]. Starting task 1095.
+[Worker 0]. Starting task 1096.
+[Worker 0]. Starting task 1097.
+[Worker 0]. Starting task 1098.
+[Worker 0]. Starting task 1099.
+开始 cNMF combine...
+Combining factorizations for k=2.
+Combining factorizations for k=3.
+Combining factorizations for k=4.
+Combining factorizations for k=5.
+Combining factorizations for k=6.
+Combining factorizations for k=7.
+Combining factorizations for k=8.
+Combining factorizations for k=9.
+Combining factorizations for k=10.
+Combining factorizations for k=11.
+Combining factorizations for k=12.
+生成 K selection plot...
+cNMF K selection 完成。请查看：
+/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF
+常见图文件： /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF/GSE132465_malignant_CiliaHub_cNMF.k_selection.png
+(10789, 25200)
+K selection 相关文件：
+ - GSE132465_malignant_CiliaHub_cNMF.k_selection.png
+ - GSE132465_malignant_CiliaHub_cNMF.k_selection_stats.df.npz
+SELECTED_K=None，临时使用中间 K=7。正式结果请结合 K selection plot 手动确认。
+开始 consensus: K=7, density_threshold=0.5, local_neighborhood_size=0.3
+consensus 相关输出文件：
+ - GSE132465_malignant_CiliaHub_cNMF.clustering.k_7.dt_0_5.png
+ - GSE132465_malignant_CiliaHub_cNMF.gene_spectra_score.k_7.dt_0_5.txt
+ - GSE132465_malignant_CiliaHub_cNMF.gene_spectra_tpm.k_7.dt_0_5.txt
+ - GSE132465_malignant_CiliaHub_cNMF.spectra.k_7.dt_0_5.consensus.txt
+ - GSE132465_malignant_CiliaHub_cNMF.starcat_spectra.k_7.dt_0_5.txt
+ - GSE132465_malignant_CiliaHub_cNMF.usages.k_7.dt_0_5.consensus.txt
+usage_file: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF/GSE132465_malignant_CiliaHub_cNMF.usages.k_7.dt_0_5.consensus.txt
+spectra_score_file: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF/GSE132465_malignant_CiliaHub_cNMF.gene_spectra_score.k_7.dt_0_5.txt
+spectra_tpm_file: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF/GSE132465_malignant_CiliaHub_cNMF.gene_spectra_tpm.k_7.dt_0_5.txt
+top_genes_file: None
+usage_df shape: (10789, 7)
+spectra_score_df shape: (7, 1992)
+usage columns: ['1', '2', '3', '4', '5', '6', '7']
+spectra_score index 前几个: [1, 2, 3, 4, 5]
+spectra_score columns 前几个: ['AAAS', 'AAMP', 'AATF', 'ABCA13', 'ABCC3']
+marker gene 排名已保存: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/tables/marker_gene_rankings_by_program.k_7.csv
+已保存: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/plots/usage_heatmap.k_7.png
+已保存: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/plots/program_top_gene_heatmap.k_7.png
+可用于汇总 usage 的 metadata 列: ['seurat_clusters', 'Patient', 'orig.ident', 'Class', 'Sample']
+默认使用分组列: seurat_clusters
+已保存: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/plots/usage_mean_by_seurat_clusters.k_7.png
+主要输出目录:
+OUT_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465
+CNMF_RUN_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF
+TABLES_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/tables
+PLOTS_DIR: /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/plots
+
+OUT_DIR 文件：
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.h5ad
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_counts_for_cNMF.txt
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/plots
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/tables
+ - /mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/tmp
+
+TABLES_DIR 文件：
+ - CiliaHub_gene_qc_for_cNMF.csv
+ - CiliaHub_gene_symbols_used.csv
+ - CiliaHub_intersect_genes_for_cNMF.csv
+ - cell_qc_all_genes.csv
+ - consensus_programs_by_gene.k_7.csv
+ - marker_gene_rankings_by_program.k_7.csv
+ - usage_matrix_from_cNMF.k_7.csv
+ - usage_mean_by_seurat_clusters.k_7.csv
+
+PLOTS_DIR 文件：
+ - program_top_gene_heatmap.k_7.png
+ - usage_heatmap.k_7.png
+ - usage_mean_by_seurat_clusters.k_7.png

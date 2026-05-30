@@ -13,7 +13,7 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178341/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/KEGG_cNMF_program_top200/files/Program_Top200_Genes/Program_6_top200_genes.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')
@@ -28,7 +28,7 @@ exp = data_log2
 
 # 2. 提取基因集
 CRC_data = read.csv(input_file, header = T, check.names = F)
-target_genes = as.character(CRC_data[,1])
+target_genes = as.character(CRC_data[,'gene'])
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # --- 3. 计算评分 (方法 A: CRDscore) ---
@@ -107,21 +107,21 @@ ggsave(paste0("pictures/", file_base_name, "_CRC_AddModuleScore.png"), plot = p2
 rownames(rt1) <- rt1$id
 pbmc1$type <- rt1[colnames(pbmc1), "Liver metastasis (LM)"]
 VlnPlot(pbmc1, features = c("TP53", "BRCA1"), group.by = "type")
-# 选出你 112 个基因中在 pbmc1 里真正存在的那些
-genes_to_plot <- intersect(target_genes, rownames(pbmc1))
+# # 选出你 112 个基因中在 pbmc1 里真正存在的那些
+# genes_to_plot <- intersect(target_genes, rownames(pbmc1))
 
-# 画气泡图：颜色代表表达量高低，点的大小代表表达细胞比例
-# 1. 快速找两组间的差异基因（仅针对这 112 个基因）
-de_results <- FindMarkers(pbmc1, 
-                          ident.1 = "primary", 
-                          ident.2 = "metastasis", 
-                          group.by = "type",
-                          features = target_genes,
-                          logfc.threshold = 0)
+# # 画气泡图：颜色代表表达量高低，点的大小代表表达细胞比例
+# # 1. 快速找两组间的差异基因（仅针对这 112 个基因）
+# de_results <- FindMarkers(pbmc1, 
+#                           ident.1 = "primary", 
+#                           ident.2 = "metastasis", 
+#                           group.by = "type",
+#                           features = target_genes,
+#                           logfc.threshold = 0)
 
-# 2. 按照 Log2FC 的绝对值排序，选出前 30 个
-top_30_genes <- rownames(de_results[order(abs(de_results$avg_log2FC), decreasing = TRUE), ])[1:30]
+# # 2. 按照 Log2FC 的绝对值排序，选出前 30 个
+# top_30_genes <- rownames(de_results[order(abs(de_results$avg_log2FC), decreasing = TRUE), ])[1:30]
 
-# 3. 只画这 30 个基因
-p3=DotPlot(pbmc1, features = top_30_genes, group.by = "type") + coord_flip()
-ggsave(paste0("pictures/", file_base_name, "_CRC_dimplot.png"), plot = p3, width = 7, height = 20, dpi = 300,bg = "white")
+# # 3. 只画这 30 个基因
+# p3=DotPlot(pbmc1, features = top_30_genes, group.by = "type") + coord_flip()
+# ggsave(paste0("pictures/", file_base_name, "_CRC_dimplot.png"), plot = p3, width = 7, height = 20, dpi = 300,bg = "white")

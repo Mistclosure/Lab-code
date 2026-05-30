@@ -35,12 +35,12 @@ qsave(pbmc1,'Malignant_GSE231559.qs')
 # 4. 计算评分
 # ------------------------------------------------------------------------------
 # --- 动态提取基因集文件名 ---
-signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv"
+signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/KEGG_cNMF_program_top200/files/Program_Top200_Genes/Program_6_top200_genes.csv"
 signature_name <- tools::file_path_sans_ext(basename(signature_file))
 
 CRC_data = read.csv(signature_file, header = T, check.names = F)
 #target_genes = as.character(CRC_data[CRC_data$Module == 'brown',2])
-target_genes = as.character(CRC_data[,1])
+target_genes = as.character(CRC_data[,'gene'])
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # 计算得分，使用准备好的 data_log2
