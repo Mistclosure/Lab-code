@@ -1,0 +1,16 @@
+# Ignore everything by default
+*
+
+# Keep traversing directories
+!*/
+
+# Track only code/notebook/markdown source files
+!*.py
+!*.ipynb
+!*.R
+!*.r
+!*.md
+!*.sh
+
+# Always allow this ignore file itself
+!.gitignore
