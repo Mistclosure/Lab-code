@@ -21,9 +21,9 @@ library(patchwork)
 
 # 输出目录
 output_dir <- config$paths$output_dir
-objects_dir <- get_results_dir(config, "objects")
-files_dir <- file.path(get_results_dir(config, "files"), "PBMC", "Monocytes")
-plots_dir <- file.path(get_results_dir(config, "plots"), "PBMC", "Monocytes")
+files_dir <- file.path(output_dir, "files")
+plots_dir <- file.path(output_dir, "plots")
+objects_dir <- file.path(output_dir, "results", "objects")
 subcluster_method <- "leiden"
 subcluster_algorithm <- 4
 subcluster_resolution <- 0.35
@@ -32,7 +32,7 @@ dir.create(plots_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(objects_dir, showWarnings = FALSE, recursive = TRUE)
 
 # 读取按组织对象
-sc_by_tissue_file <- file.path(objects_dir,
+sc_by_tissue_file <- file.path(output_dir,
                                paste0("coldmouse_introns_sc_by_tissue_no_harmony_",
                                       config$clustering$method, ".qs"))
 sc_by_tissue <- qread(sc_by_tissue_file)

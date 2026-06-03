@@ -5,10 +5,6 @@
 # 所有脚本通过此模块获取路径，避免硬编码 setwd()。
 # ==============================================================================
 
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
-
 #' 加载项目配置文件
 #'
 #' @param config_path 配置文件路径，默认为项目 config/config.yaml
@@ -68,23 +64,6 @@ get_output_dir <- function(config, subdir = NULL) {
 #' @param subdir 子目录名 (objects/files/plots)
 #' @return 完整路径
 get_results_dir <- function(config, subdir = NULL) {
-  if (!is.null(subdir)) {
-    configured_path <- switch(subdir,
-      objects = config$paths$objects_dir %||% config$paths$qs_dir,
-      qs = config$paths$qs_dir %||% config$paths$objects_dir,
-      files = config$paths$files_dir,
-      plots = config$paths$plots_dir,
-      rds = config$paths$rds_dir,
-      logs = config$paths$logs_dir,
-      NULL
-    )
-    if (!is.null(configured_path)) {
-      dir_path <- configured_path
-      if (!dir.exists(dir_path)) dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
-      return(dir_path)
-    }
-  }
-
   base_dir <- config$paths$results_dir
   if (!is.null(subdir)) {
     dir_path <- file.path(base_dir, subdir)

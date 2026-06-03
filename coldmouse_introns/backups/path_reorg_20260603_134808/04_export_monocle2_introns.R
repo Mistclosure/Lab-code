@@ -33,7 +33,7 @@ plots_dir <- get_results_dir(config, "plots")
 cluster_method <- config$clustering$method
 
 # 读取按组织对象（位于实验目录根层）
-sc_by_tissue_file <- file.path(objects_dir,
+sc_by_tissue_file <- file.path(config$paths$output_dir,
                                paste0("coldmouse_introns_sc_by_tissue_no_harmony_", cluster_method, ".qs"))
 if (!file.exists(sc_by_tissue_file)) {
   stop("未找到按组织对象文件：", sc_by_tissue_file)
@@ -79,4 +79,4 @@ save_seurat(cds_list,
             file.path(objects_dir,
                       paste0("coldmouse_introns_monocle2_", cluster_method, "_all_tissues.qs")))
 
-print(paste("步骤2/2：脚本结束。Monocle 2 CellDataSet 已保存到", objects_dir, "。"))
+print("步骤2/2：脚本结束。Monocle 2 CellDataSet 已保存到 results/objects/。")

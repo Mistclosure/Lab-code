@@ -164,12 +164,10 @@ for (fn_name in names(dplyr_compat_fns)) {
 # 输出目录
 # ==============================================================================
 output_dir  <- config$paths$output_dir
-objects_dir <- get_results_dir(config, "objects")
-rds_dir     <- get_results_dir(config, "rds")
-plots_dir   <- get_results_dir(config, "plots")
-files_dir   <- get_results_dir(config, "files")
+objects_dir <- file.path(output_dir, "results", "objects")
+plots_dir   <- file.path(output_dir, "plots")
+files_dir   <- file.path(output_dir, "files")
 dir.create(objects_dir, showWarnings = FALSE, recursive = TRUE)
-dir.create(rds_dir,     showWarnings = FALSE, recursive = TRUE)
 dir.create(plots_dir,   showWarnings = FALSE, recursive = TRUE)
 dir.create(files_dir,   showWarnings = FALSE, recursive = TRUE)
 
@@ -177,20 +175,6 @@ dir.create(files_dir,   showWarnings = FALSE, recursive = TRUE)
 # 保留 Group x seurat_clusters 的组成，避免单一组或 cluster 主导。
 MAX_MONOCLE2_CELLS <- 3000
 MAX_ORDERING_GENES <- 800
-
-get_monocle2_output_dirs <- function(output_tag) {
-  rel_dir <- switch(output_tag,
-    PBMC_Monocyte = file.path("PBMC", "Monocytes"),
-    Aorta_Macrophage = file.path("Aorta", "Macrophage"),
-    output_tag
-  )
-  tag_files_dir <- file.path(files_dir, rel_dir)
-  tag_plots_dir <- file.path(plots_dir, rel_dir)
-  dir.create(tag_files_dir, showWarnings = FALSE, recursive = TRUE)
-  dir.create(tag_plots_dir, showWarnings = FALSE, recursive = TRUE)
-  list(files = tag_files_dir, plots = tag_plots_dir)
-}
-
 set.seed(20260602)
 
 stratified_downsample_cells <- function(obj, max_cells = MAX_MONOCLE2_CELLS) {
@@ -232,10 +216,6 @@ stratified_downsample_cells <- function(obj, max_cells = MAX_MONOCLE2_CELLS) {
 # ==============================================================================
 run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
                                            label_value, output_tag) {
-  out_dirs <- get_monocle2_output_dirs(output_tag)
-  tag_files_dir <- out_dirs$files
-  tag_plots_dir <- out_dirs$plots
-
   cat("\n===================================================================\n")
   cat("Monocle2 拟时序分析:", output_tag, "\n")
   cat("===================================================================\n")
@@ -340,7 +320,7 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
     if (length(ordering_genes) < 100) {
       cat("    仍少于 100 个 ordering genes，停止拟时序分析。\n")
       write.csv(all_markers,
-                file.path(tag_files_dir, paste0("introns_monocle2_ordering_genes_", output_tag, ".csv")),
+                file.path(files_dir, paste0("introns_monocle2_ordering_genes_", output_tag, ".csv")),
                 row.names = FALSE)
       return(invisible(NULL))
     }
@@ -351,7 +331,7 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
   cat("    最终 ordering genes (在 CDS 中):", length(ordering_genes), "\n")
 
   write.csv(data.frame(gene = ordering_genes, stringsAsFactors = FALSE),
-            file.path(tag_files_dir, paste0("introns_monocle2_ordering_genes_", output_tag, ".csv")),
+            file.path(files_dir, paste0("introns_monocle2_ordering_genes_", output_tag, ".csv")),
             row.names = FALSE)
 
   # --- 5. setOrderingFilter + reduceDimension + orderCells ---
@@ -387,7 +367,7 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
     Pseudotime = pData(cds)$Pseudotime
   )
   write.csv(state_table,
-            file.path(tag_files_dir, paste0("introns_monocle2_state_table_", output_tag, ".csv")),
+            file.path(files_dir, paste0("introns_monocle2_state_table_", output_tag, ".csv")),
             row.names = FALSE)
 
   # --- 6. 保存 pseudotime metadata ---
@@ -400,13 +380,13 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
     stringsAsFactors = FALSE
   )
   write.csv(pseudotime_meta,
-            file.path(tag_files_dir, paste0("introns_monocle2_pseudotime_metadata_", output_tag, ".csv")),
+            file.path(files_dir, paste0("introns_monocle2_pseudotime_metadata_", output_tag, ".csv")),
             row.names = FALSE)
 
   # --- 7. 保存 CDS 对象 ---
   cat("  保存 CDS 对象...\n")
   qsave(cds, file.path(objects_dir, paste0("introns_monocle2_cds_", output_tag, ".qs")))
-  saveRDS(cds, file.path(rds_dir, paste0("introns_monocle2_cds_", output_tag, ".rds")))
+  saveRDS(cds, file.path(objects_dir, paste0("introns_monocle2_cds_", output_tag, ".rds")))
 
   # --- 8. 可视化 ---
   cat("  生成轨迹图...\n")
@@ -421,9 +401,9 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
     tryCatch({
       p <- plot_cell_trajectory(cds, color_by = pc$color_by) +
         ggtitle(paste0("Introns ", output_tag, " Trajectory (", pc$color_by, ")"))
-      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".png")),
+      ggsave(file.path(plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".png")),
              plot = p, width = pc$w, height = pc$h, dpi = 300)
-      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".pdf")),
+      ggsave(file.path(plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".pdf")),
              plot = p, width = pc$w, height = pc$h)
     }, error = function(e) {
       cat("    ", pc$color_by, " 图失败:", e$message, "\n")
@@ -437,7 +417,7 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
 # ==============================================================================
 # 读取输入对象
 # ==============================================================================
-sc_by_tissue_file <- file.path(objects_dir,
+sc_by_tissue_file <- file.path(output_dir,
                                paste0("coldmouse_introns_sc_by_tissue_no_harmony_",
                                       config$clustering$method, ".qs"))
 cat("读取:", sc_by_tissue_file, "\n")

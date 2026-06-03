@@ -102,15 +102,11 @@ print("步骤3/4：绘制 UMAP 并导出 marker 表。")
 for (tissue_name in names(sc_by_tissue)) {
   print(paste(">>> 正在处理组织:", tissue_name))
   obj <- sc_by_tissue[[tissue_name]]
-  tissue_files_dir <- file.path(files_dir, tissue_name)
-  tissue_plots_dir <- file.path(plots_dir, tissue_name)
-  dir.create(tissue_files_dir, showWarnings = FALSE, recursive = TRUE)
-  dir.create(tissue_plots_dir, showWarnings = FALSE, recursive = TRUE)
 
   # 导出 marker 表
   export_markers(obj, tissue_name,
                  cluster_method = cluster_method,
-                 output_dir = tissue_files_dir,
+                 output_dir = files_dir,
                  min_cells_threshold = min_cells_threshold,
                  prefix = "Introns")
 
@@ -148,7 +144,7 @@ for (tissue_name in names(sc_by_tissue)) {
     plot_layout(guides = "collect", axes = "collect") &
     theme(legend.text = element_text(size = 9))
 
-  ggsave(file.path(tissue_plots_dir, paste0("Introns_UMAP_Grid_Annotation_", cluster_method, "_", tissue_name, ".png")),
+  ggsave(file.path(plots_dir, paste0("Introns_UMAP_Grid_Annotation_", cluster_method, "_", tissue_name, ".png")),
          plot = p_final_anno,
          width = viz_config$umap_width, height = viz_config$umap_height, dpi = viz_config$umap_dpi)
 
@@ -181,7 +177,7 @@ for (tissue_name in names(sc_by_tissue)) {
     plot_layout(guides = "collect", axes = "collect") &
     theme(legend.text = element_text(size = 9))
 
-  ggsave(file.path(tissue_plots_dir, paste0("Introns_UMAP_Grid_Clusters_", cluster_method, "_", tissue_name, ".png")),
+  ggsave(file.path(plots_dir, paste0("Introns_UMAP_Grid_Clusters_", cluster_method, "_", tissue_name, ".png")),
          plot = p_final_cls,
          width = viz_config$umap_width, height = viz_config$umap_height, dpi = viz_config$umap_dpi)
 

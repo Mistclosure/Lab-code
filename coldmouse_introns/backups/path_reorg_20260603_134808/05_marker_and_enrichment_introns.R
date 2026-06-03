@@ -26,9 +26,8 @@ library(patchwork)
 
 # 输出目录
 output_dir <- config$paths$output_dir
-objects_dir <- get_results_dir(config, "objects")
-files_dir <- get_results_dir(config, "files")
-plots_dir <- get_results_dir(config, "plots")
+files_dir <- file.path(output_dir, "files")
+plots_dir <- file.path(output_dir, "plots")
 dir.create(files_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(plots_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -37,7 +36,7 @@ fc_threshold <- 0.25
 p_val_threshold <- 0.05
 
 # 读取按组织对象
-sc_by_tissue_file <- file.path(objects_dir,
+sc_by_tissue_file <- file.path(output_dir,
                                paste0("coldmouse_introns_sc_by_tissue_no_harmony_",
                                       config$clustering$method, ".qs"))
 sc_by_tissue <- qread(sc_by_tissue_file)
@@ -320,18 +319,14 @@ cat("GO:BP 基因集数量:", nrow(gobp_genesets$term2name), "\n")
 # 对每个组织运行 Cold vs RT 和 Cold vs TN
 for (tissue in names(sc_by_tissue)) {
   obj <- sc_by_tissue[[tissue]]
-  tissue_files_dir <- file.path(files_dir, tissue)
-  tissue_plots_dir <- file.path(plots_dir, tissue)
-  dir.create(tissue_files_dir, showWarnings = FALSE, recursive = TRUE)
-  dir.create(tissue_plots_dir, showWarnings = FALSE, recursive = TRUE)
 
   # Cold vs RT
   run_deg_gsea(obj, tissue, "Cold_4C", "RT_25C",
-               paste0(tissue, "_Cold_vs_RT"), gobp_genesets, tissue_files_dir, tissue_plots_dir)
+               paste0(tissue, "_Cold_vs_RT"), gobp_genesets, files_dir, plots_dir)
 
   # Cold vs TN
   run_deg_gsea(obj, tissue, "Cold_4C", "TN_30C",
-               paste0(tissue, "_Cold_vs_TN"), gobp_genesets, tissue_files_dir, tissue_plots_dir)
+               paste0(tissue, "_Cold_vs_TN"), gobp_genesets, files_dir, plots_dir)
 }
 
 cat("\n=== 所有分析完成 ===\n")

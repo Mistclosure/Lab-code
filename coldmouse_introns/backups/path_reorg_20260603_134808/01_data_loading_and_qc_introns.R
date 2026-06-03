@@ -33,10 +33,8 @@ library(SingleCellExperiment)
 # 设置输出目录
 output_dir <- get_output_dir(config)
 objects_dir <- get_results_dir(config, "objects")
-files_dir <- file.path(get_results_dir(config, "files"), "general")
-plots_dir <- file.path(get_results_dir(config, "plots"), "general")
-dir.create(files_dir, showWarnings = FALSE, recursive = TRUE)
-dir.create(plots_dir, showWarnings = FALSE, recursive = TRUE)
+files_dir <- get_results_dir(config, "files")
+plots_dir <- get_results_dir(config, "plots")
 
 # 读取样本映射
 sample_map <- read_sample_map(config$sample_map)
