@@ -18,9 +18,9 @@ import anndata as ad
 
 work_dir = Path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465")
 
-in_dir = work_dir / "files" / "processed" / "matrices"
+in_dir = work_dir / "Malignant_RNA_assay_export_for_python"
 
-out_h5ad = work_dir / "files" / "processed" / "h5ad" / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
+out_h5ad = work_dir / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
 
 print("输入目录:")
 print(in_dir)

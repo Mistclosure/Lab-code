@@ -11,16 +11,16 @@ Sys.setenv(http_proxy  = "http://127.0.0.1:7890")
 Sys.setenv(https_proxy = "http://127.0.0.1:7890")
 
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
-FILES_DIR <- file.path("files", "GO_BP")
-PLOTS_DIR <- file.path("plots", "GO_BP")
-QS_DIR <- file.path("qs", "WGCNA")
-TARGET_MODULES_DIR <- file.path("files", "WGCNA", "Target_Modules_Genes")
+FILES_DIR <- "files"
+PLOTS_DIR <- "plots"
+QS_DIR <- "qs"
+TARGET_MODULES_DIR <- file.path(FILES_DIR, "Target_Modules_Genes")
 
 setwd(WORK_DIR)
 
-if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR, recursive = TRUE)
-if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR, recursive = TRUE)
-if (!dir.exists(TARGET_MODULES_DIR)) dir.create(TARGET_MODULES_DIR, recursive = TRUE)
+if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR)
+if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR)
+if (!dir.exists(TARGET_MODULES_DIR)) dir.create(TARGET_MODULES_DIR)
 
 cat("正在读取 WGCNA 分析结果...\n")
 
@@ -234,7 +234,7 @@ if (nrow(go_all_df) > 0) {
   warning("合并后的整体基因集未发现显著 GO 富集结果。")
 }
 
-write.csv(target_gene_df, file.path(FILES_DIR, "target_gene_df.csv"), row.names = FALSE)
+write.csv(target_gene_df, "target_gene_df.csv", row.names = FALSE)
 
 cat("\n============================================\n")
 cat("全部 GO 富集分析及结果导出流程运行完毕！\n")

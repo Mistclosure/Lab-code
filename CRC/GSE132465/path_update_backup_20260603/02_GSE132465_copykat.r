@@ -2,8 +2,7 @@
 # 脚本2：GSE132465 标准 RNA 流程降维聚类 + CopyKAT 恶性细胞鉴定 + 亚群重分析
 # ==============================================================================
 
-WORK_DIR <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465"
-setwd(WORK_DIR)
+setwd("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465") # 修改为新路径
 library(data.table)
 library(Seurat)
 library(stringr)
@@ -19,7 +18,7 @@ library(limma)
 # 1. 读取脚本 1 预处理好的纯净数据
 # ------------------------------------------------------------------------------
 print("🚀 正在读取脚本 1 生成的质控后数据...")
-scRNA <- qread(file.path(WORK_DIR, "qs", "Seurat", "sc_combined_qc_Cleaned.qs"))
+scRNA <- qread("sc_combined_qc_Cleaned.qs")
 
 # 【适配修改】GSE132465 区分肿瘤/正常的列名为 'Class'，提取 Tumor 细胞
 if ("Class" %in% colnames(scRNA@meta.data)) {
@@ -63,8 +62,7 @@ scRNA <- FindNeighbors(scRNA, reduction = "harmony", dims = pc.num)
 scRNA <- FindClusters(scRNA, resolution = 1.5)
 
 # 使用 qsave 保存整体对象
-dir.create(file.path(WORK_DIR, "qs", "Seurat"), showWarnings = FALSE, recursive = TRUE)
-qsave(scRNA, file.path(WORK_DIR, "qs", "Seurat", "scRNA_RNA_assay.qs"))
+qsave(scRNA, "scRNA_RNA_assay.qs")
 
 # ------------------------------------------------------------------------------
 # 3. 按 Patient 分批运行 CopyKAT
@@ -113,9 +111,8 @@ for (i in seq_along(patient_ids)) {
 print("========== 所有患者 CopyKAT 运行完毕，正在合并预测结果 ==========")
 
 pred <- do.call(rbind, pred_list)
-dir.create(file.path(WORK_DIR, "qs", "copykat"), showWarnings = FALSE, recursive = TRUE)
-qsave(pred, file.path(WORK_DIR, "qs", "copykat", "copykat_merged_pred.qs"))
-pred = qread(file.path(WORK_DIR, "qs", "copykat", "copykat_merged_pred.qs"))
+qsave(pred, "copykat_merged_pred.qs")
+pred = qread('copykat_merged_pred.qs')
 
 # ------------------------------------------------------------------------------
 # 4. 提取预测结果并匹配临床信息
@@ -132,7 +129,7 @@ malig_counts <- as.data.frame(table(malig_ids))
 colnames(malig_counts) <- c("id", "number")
 
 # 【适配修改】读取 GSE132465 的临床信息
-cli_full <- read.csv(file.path(WORK_DIR, "metadata", "GSE132465_Cli.csv"), header = TRUE, check.names = FALSE)
+cli_full <- read.csv("GSE132465_Cli.csv", header = TRUE, check.names = FALSE)
 
 # 【适配修改】根据你的历史代码，临床信息的匹配列为 'Tumor'
 meat <- merge(cli_full, malig_counts, 
@@ -143,21 +140,20 @@ meat$number[is.na(meat$number)] <- 0
 meat <- meat[, c("Tumor", "number")] 
 colnames(meat)[1] <- "id"
 
-dir.create(file.path(WORK_DIR, "files", "tables"), showWarnings = FALSE, recursive = TRUE)
-write.table(meat, file = file.path(WORK_DIR, "files", "tables", "Paint_Malignant cells.txt"), 
+write.table(meat, file = "Paint_Malignant cells.txt", 
             sep = "\t", quote = FALSE, row.names = FALSE)
 
 # --- 任务 B: 提取全部恶性细胞列表 ---
 malig_df <- data.frame(Barcode = malig_barcodes, row.names = malig_barcodes)
 
-write.table(malig_df, file = file.path(WORK_DIR, "files", "tables", "Malignant cells.txt"), 
+write.table(malig_df, file = "Malignant cells.txt", 
             sep = "\t", quote = FALSE, col.names = TRUE)
 
 # ------------------------------------------------------------------------------
 # 5. 针对恶性细胞子集的重跑流程 
 # ------------------------------------------------------------------------------
 print("🚀 正在提取恶性细胞子集并重新聚类降维...")
-Malignant <- read.table(file.path(WORK_DIR, "files", "tables", "Malignant cells.txt"), header = TRUE, sep = "\t", check.names = FALSE, row.names = 1)
+Malignant <- read.table("Malignant cells.txt", header = TRUE, sep = "\t", check.names = FALSE, row.names = 1)
 pbmc1 <- scRNA[, rownames(Malignant)] 
 
 pbmc1 <- JoinLayers(pbmc1)
@@ -185,5 +181,5 @@ p1 <- DimPlot(pbmc1, reduction = "umap", label = TRUE) + NoLegend()
 # 【适配修改】检查批次效应去除情况
 p2 <- DimPlot(pbmc1, reduction = "umap", group.by = "Patient")
 
-qsave(pbmc1, file.path(WORK_DIR, "qs", "Seurat", "Malignant_RNA_assay.qs"))
+qsave(pbmc1, "Malignant_RNA_assay.qs")
 print("🎉 恶性细胞提取与重分析完成！")

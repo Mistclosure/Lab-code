@@ -17,16 +17,16 @@ library(qs)
 # 全局参数与环境配置 (集中管理，方便修改)
 # ==============================================================================
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
-SEURAT_OBJ_PATH <- file.path(WORK_DIR, 'Malignant_RNA_assay.qs')
-GENE_LIST_PATH <- '/mnt/disk1/qiuzerui/downloads/signature/ciliahub_genes_list.csv'
+SEURAT_OBJ_PATH <- file.path(WORK_DIR, 'qs', 'Seurat', 'Malignant_RNA_assay.qs')
+GENE_LIST_PATH <- file.path(WORK_DIR, 'files', 'WGCNA', 'ciliahub_genes_list.csv')
 
 # 设置工作目录
 setwd(WORK_DIR)
 
 # 目录配置 (分类存储输出文件)
-QS_DIR <- "qs"
-PLOTS_DIR <- "plots"
-FILES_DIR <- "files"
+QS_DIR <- file.path("qs", "WGCNA")
+PLOTS_DIR <- file.path("plots", "WGCNA")
+FILES_DIR <- file.path("files", "WGCNA")
 
 # 自动创建缺失的目录
 if (!dir.exists(QS_DIR)) dir.create(QS_DIR)

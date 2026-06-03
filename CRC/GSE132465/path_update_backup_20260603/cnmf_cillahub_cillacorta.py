@@ -5,7 +5,7 @@
 # 
 # 默认输入对象来自已有流程：
 # 
-# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/processed/h5ad/Malignant_RNA_assay_for_cNMF_countsX.h5ad`
+# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/Malignant_RNA_assay_for_cNMF_countsX.h5ad`
 # - 该对象由 `ipynb/Malignant_to_py.ipynb` / `ipynb/Malignant_to_py.py` 从 `Malignant_RNA_assay.qs` 导出，`X` 和 `layers['counts']` 都保存 raw counts。
 # 
 # 输出会写入独立目录：
@@ -62,16 +62,16 @@ except ImportError as e:
 # 关键路径：后续如果换输入对象或输出目录，只需要改这里
 # ------------------------------------------------------------------------------
 WORK_DIR = Path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465")
-INPUT_H5AD = WORK_DIR / "files" / "processed" / "h5ad" / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
-CILIACARTA_CSV = WORK_DIR / "files" / "tables" / "CiliaCarta.csv"
+INPUT_H5AD = WORK_DIR / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
+CILIACARTA_CSV = WORK_DIR / "CiliaCarta.csv"
 
 # 调试开关：正式分析保持默认 0；需要快速检查全流程时，在 shell 里设置 CNMF_FAST_DEBUG=1。
 FAST_DEBUG = os.environ.get("CNMF_FAST_DEBUG", "0") == "1"
 
-OUT_DIR = WORK_DIR / "files" / "cNMF" / ("CiliaCarta_debug" if FAST_DEBUG else "CiliaCarta")
+OUT_DIR = WORK_DIR / ("cNMF_CiliaCarta_GSE132465_debug" if FAST_DEBUG else "cNMF_CiliaCarta_GSE132465")
 CNMF_NAME = "GSE132465_malignant_CiliaCarta_cNMF_debug" if FAST_DEBUG else "GSE132465_malignant_CiliaCarta_cNMF"
 CNMF_RUN_DIR = OUT_DIR / CNMF_NAME
-PLOTS_DIR = WORK_DIR / "plots" / "cNMF" / ("CiliaCarta_debug" if FAST_DEBUG else "CiliaCarta")
+PLOTS_DIR = OUT_DIR / "plots"
 TABLES_DIR = OUT_DIR / "tables"
 TMP_DIR = OUT_DIR / "tmp"
 

@@ -3,8 +3,8 @@
 # ==========================================
 # 请将引号内的文件名替换为你实际的文件路径（例如 "C:/data/geneset1.csv"）
 data1 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/signature/ciliopathy_genes.csv", stringsAsFactors = FALSE)
-data2 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/tables/CRC_Proliferation_Invasion_Metastasis_Genes.csv", stringsAsFactors = FALSE)
-#data2 <- read.table("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/WGCNA/Target_Modules_Signed_单独列表/Module_blue_signed_genes.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+data2 <- read.csv("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv", stringsAsFactors = FALSE)
+#data2 <- read.table("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Target_Modules_Signed_单独列表/Module_blue_signed_genes.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
 # ==========================================
 # 2. 提取基因名称列
 # ==========================================
@@ -34,7 +34,7 @@ cat("重合的基因数量:", length(overlapping_genes), "\n")
 result_df <- data.frame(Overlapping_Genes = overlapping_genes)
 
 # 导出为 CSV（row.names = FALSE 表示不保存行号）
-write.csv(result_df, "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/tables/overlapping_genes_result.csv", row.names = FALSE)
+write.csv(result_df, "overlapping_genes_result.csv", row.names = FALSE)
 cat("重合基因已成功保存至当前工作目录下的 'overlapping_genes_result.csv'\n")
 
 # ==========================================

@@ -8,9 +8,14 @@ library(Seurat)
 library(CRDscore)
 library(qs)
 library(data.table)
-setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/')
+WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
+setwd(WORK_DIR)
+FILES_DIR <- file.path(WORK_DIR, 'files', 'clinical_association')
+PLOTS_DIR <- file.path(WORK_DIR, 'plots', 'clinical_association')
+dir.create(FILES_DIR, showWarnings = FALSE, recursive = TRUE)
+dir.create(PLOTS_DIR, showWarnings = FALSE, recursive = TRUE)
 
-pbmc1 = qread('Malignant_RNA_assay.qs')
+pbmc1 = qread(file.path(WORK_DIR, 'qs', 'Seurat', 'Malignant_RNA_assay.qs'))
 
 # （注：Seurat 的 NormalizeData 默认是取自然对数 log1p。为了生成 layer = "data" 以防报错，这里保留该步骤）
 #计算logCPM
@@ -28,7 +33,7 @@ data_log2 <- as.data.frame(seurat_data / log(2))
 # 定义 Signature 完整路径，并动态提取名称
 # ==========================================
 # 在这里输入包含文件名和后缀的完整路径
-signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/CRC_Proliferation_Invasion_Metastasis_Genes.csv"
+signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/tables/CRC_Proliferation_Invasion_Metastasis_Genes.csv"
 
 # 自动提取文件名：去除路径和 .csv 后缀
 signature_name <- sub("\\.csv$", "", basename(signature_file_path))
@@ -53,7 +58,7 @@ score$id <- rownames(score) # 为后续 merge 提供 ID 列
 meta = pbmc1@meta.data
 meta$id = rownames(meta) 
 
-cli = read.csv("GSE132465_Cli.csv", header=T, check.names=F)
+cli = read.csv(file.path(WORK_DIR, 'metadata', 'GSE132465_Cli.csv'), header=T, check.names=F)
 
 # 按照患者 ID 合并细胞元数据与临床信息
 rt = merge(meta, cli, by.x= "orig.ident",by.y="Tumor")
@@ -67,7 +72,7 @@ rt1$metastasis <- ifelse(
 )
 
 # 【修改点】：动态保存 CSV 文件名
-write.csv(rt1, paste0(signature_file_prefix, '_CRC_results.csv'), row.names= FALSE, quote = FALSE)
+write.csv(rt1, file.path(FILES_DIR, paste0(signature_file_prefix, '_CRC_results.csv')), row.names= FALSE, quote = FALSE)
 
 # ==============================
 # 图 1：针对 Stage (分期)
@@ -108,7 +113,7 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
 
 print(p1)
 # 动态保存图片 1
-ggsave(paste0(signature_file_prefix, "_Stage_plot.png"), plot = p1, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_Stage_plot.png")), plot = p1, width = 6, height = 5, dpi = 300)
 
 
 # ==============================
@@ -147,4 +152,4 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
 
 print(p2)
 # 动态保存图片 2
-ggsave(paste0(signature_file_prefix, "_Metastasis_plot.png"), plot = p2, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_Metastasis_plot.png")), plot = p2, width = 6, height = 5, dpi = 300)

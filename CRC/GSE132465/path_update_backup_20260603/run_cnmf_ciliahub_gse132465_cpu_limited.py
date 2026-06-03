@@ -1,16 +1,16 @@
 # %% [markdown]
-# # GSE132465 恶性细胞 CiliaCarta 基因 cNMF 分析
+# # GSE132465 恶性细胞 CiliaHub 基因 cNMF 分析
 # 
 # 本 notebook 基于当前项目已经生成的恶性细胞 AnnData 对象继续分析，不从 GSE132465 原始矩阵重新开始。
 # 
 # 默认输入对象来自已有流程：
 # 
-# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/processed/h5ad/Malignant_RNA_assay_for_cNMF_countsX.h5ad`
+# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/Malignant_RNA_assay_for_cNMF_countsX.h5ad`
 # - 该对象由 `ipynb/Malignant_to_py.ipynb` / `ipynb/Malignant_to_py.py` 从 `Malignant_RNA_assay.qs` 导出，`X` 和 `layers['counts']` 都保存 raw counts。
 # 
 # 输出会写入独立目录：
 # 
-# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaCarta_GSE132465/`
+# - `/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/cNMF_CiliaHub_GSE132465/`
 
 # %% [markdown]
 # ## 1. 环境和路径设置
@@ -31,10 +31,42 @@ import warnings
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib-cnmf")
 os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/numba-cache")
 
+# ------------------------------------------------------------------------------
+# CPU 线程限制：必须放在 numpy / scipy / sklearn / cnmf 导入之前
+# ------------------------------------------------------------------------------
+# 你的服务器有 192 cores，但 cNMF/NMF 通常不是核心越多越快；
+# 10000 cells x 2000 genes 建议先用 16 核，最多可尝试 24 或 32 核。
+# 运行时可用 shell 临时覆盖：CNMF_CPU_THREADS=24 python run_xxx.py
+CPU_THREADS = int(os.environ.get("CNMF_CPU_THREADS", "16"))
+
+for _var in [
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+    "BLIS_NUM_THREADS",
+]:
+    os.environ.setdefault(_var, str(CPU_THREADS))
+
+# 防止 MKL/OpenMP 动态加线程导致偷偷吃满 CPU
+os.environ.setdefault("MKL_DYNAMIC", "FALSE")
+os.environ.setdefault("OMP_DYNAMIC", "FALSE")
+
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
+
+# 再用 threadpoolctl 做一层运行时限制；如果没安装，不影响主流程
+try:
+    from threadpoolctl import threadpool_limits, threadpool_info
+    _threadpool_controller = threadpool_limits(limits=CPU_THREADS)
+    print(f"已限制 BLAS/OpenMP 线程数为: {CPU_THREADS}")
+except ImportError:
+    threadpool_info = None
+    _threadpool_controller = None
+    print("提示：未安装 threadpoolctl，仅使用环境变量限制线程。")
 
 # 可视化包不是 cNMF 核心依赖，但后面画 heatmap 会用到
 try:
@@ -62,18 +94,24 @@ except ImportError as e:
 # 关键路径：后续如果换输入对象或输出目录，只需要改这里
 # ------------------------------------------------------------------------------
 WORK_DIR = Path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465")
-INPUT_H5AD = WORK_DIR / "files" / "processed" / "h5ad" / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
-CILIACARTA_CSV = WORK_DIR / "files" / "tables" / "CiliaCarta.csv"
+INPUT_H5AD = WORK_DIR / "Malignant_RNA_assay_for_cNMF_countsX.h5ad"
+CILIAHUB_CSV = WORK_DIR / "ciliahub_genes_list.csv"
 
 # 调试开关：正式分析保持默认 0；需要快速检查全流程时，在 shell 里设置 CNMF_FAST_DEBUG=1。
 FAST_DEBUG = os.environ.get("CNMF_FAST_DEBUG", "0") == "1"
 
-OUT_DIR = WORK_DIR / "files" / "cNMF" / ("CiliaCarta_debug" if FAST_DEBUG else "CiliaCarta")
-CNMF_NAME = "GSE132465_malignant_CiliaCarta_cNMF_debug" if FAST_DEBUG else "GSE132465_malignant_CiliaCarta_cNMF"
+OUT_DIR = WORK_DIR / ("cNMF_CiliaHub_GSE132465_debug" if FAST_DEBUG else "cNMF_CiliaHub_GSE132465")
+CNMF_NAME = "GSE132465_malignant_CiliaHub_cNMF_debug" if FAST_DEBUG else "GSE132465_malignant_CiliaHub_cNMF"
 CNMF_RUN_DIR = OUT_DIR / CNMF_NAME
-PLOTS_DIR = WORK_DIR / "plots" / "cNMF" / ("CiliaCarta_debug" if FAST_DEBUG else "CiliaCarta")
+PLOTS_DIR = OUT_DIR / "plots"
 TABLES_DIR = OUT_DIR / "tables"
 TMP_DIR = OUT_DIR / "tmp"
+
+# 如果同一个 OUT_DIR/CNMF_NAME 曾经用“全基因矩阵”跑过，cNMF 会复用 cnmf_tmp 里的旧缓存，
+# 造成后续 spectra / marker 文件看起来像全基因结果。
+# 默认不删除旧结果；若确认要从当前 CiliaHub 输入重新开始，运行前设置：
+# CNMF_FORCE_REBUILD=1 python ipynb/run_cnmf_ciliahub_gse132465_cpu_limited.py
+FORCE_REBUILD = os.environ.get("CNMF_FORCE_REBUILD", "0") == "1"
 
 for d in [OUT_DIR, PLOTS_DIR, TABLES_DIR, TMP_DIR]:
     d.mkdir(parents=True, exist_ok=True)
@@ -88,13 +126,13 @@ if FAST_DEBUG:
     K_VALUES = np.arange(2, 4)
 else:
     N_ITER = 100
-    K_VALUES = np.arange(2, 9)  # CiliaCarta 基因数相对较少，先用较保守的 K 范围
+    K_VALUES = np.arange(2, 13)  # CiliaHub 限定基因集通常不需要过大的 K
 DENSITY_THRESHOLD = 0.5
 LOCAL_NEIGHBORHOOD_SIZE = 0.5 if FAST_DEBUG else 0.3
 TOTAL_WORKERS = 1
 WORKER_INDEX = 0
 
-# 过滤参数：细胞 QC 先在全基因 raw counts 上做；基因过滤在 CiliaCarta 子集上做
+# 过滤参数：细胞 QC 先在全基因 raw counts 上做；基因过滤在 CiliaHub 子集上做
 MIN_CELL_TOTAL_COUNTS = 500
 MIN_CELL_DETECTED_GENES = 100
 MIN_GENE_EXPRESSED_CELLS = 20
@@ -105,13 +143,19 @@ SELECTED_K = int(K_VALUES[0]) if FAST_DEBUG else None
 
 print("WORK_DIR:", WORK_DIR)
 print("INPUT_H5AD:", INPUT_H5AD)
-print("CILIACARTA_CSV:", CILIACARTA_CSV)
+print("CILIAHUB_CSV:", CILIAHUB_CSV)
 print("OUT_DIR:", OUT_DIR)
 print("FAST_DEBUG:", FAST_DEBUG)
+print("FORCE_REBUILD:", FORCE_REBUILD)
 print("K_VALUES:", list(K_VALUES))
 print("N_ITER:", N_ITER)
 print("DENSITY_THRESHOLD:", DENSITY_THRESHOLD)
 print("LOCAL_NEIGHBORHOOD_SIZE:", LOCAL_NEIGHBORHOOD_SIZE)
+print("CPU_THREADS:", CPU_THREADS)
+if threadpool_info is not None:
+    print("threadpool info:")
+    for info in threadpool_info():
+        print(" -", info.get("internal_api"), info.get("num_threads"), info.get("filepath", ""))
 
 # %% [markdown]
 # ## 2. 检查输入文件
@@ -130,7 +174,7 @@ def list_available_project_files(work_dir):
     return found
 
 missing = []
-for p in [INPUT_H5AD, CILIACARTA_CSV]:
+for p in [INPUT_H5AD, CILIAHUB_CSV]:
     if not p.exists():
         missing.append(p)
 
@@ -144,13 +188,13 @@ if missing:
         print(" -", p)
 
     raise FileNotFoundError(
-        "请先确认上游 AnnData / CiliaCarta CSV 路径。推荐输入是已有的 "
+        "请先确认上游 AnnData / CiliaHub CSV 路径。推荐输入是已有的 "
         "Malignant_RNA_assay_for_cNMF_countsX.h5ad。"
     )
 
 print("输入文件检查通过。")
 print("h5ad size:", INPUT_H5AD.stat().st_size / 1024**2, "MB")
-print("CiliaCarta CSV size:", CILIACARTA_CSV.stat().st_size / 1024, "KB")
+print("CiliaHub CSV size:", CILIAHUB_CSV.stat().st_size / 1024, "KB")
 
 # %% [markdown]
 # ## 3. 读取已有 AnnData 对象
@@ -187,15 +231,15 @@ print("counts dtype:", counts_all.dtype)
 print("counts nnz:", counts_all.nnz)
 
 # %% [markdown]
-# ## 4. 读取 CiliaCarta 基因并自动识别 gene symbol 列
+# ## 4. 读取 CiliaHub 基因并自动识别 gene symbol 列
 
 # %%
 # ==============================================================================
-# 4. 读取 CiliaCarta 基因并自动识别 gene symbol 列
+# 4. 读取 CiliaHub 基因并自动识别 gene symbol 列
 # ==============================================================================
 
-cilia_df = pd.read_csv(CILIACARTA_CSV, dtype=str)
-print("CiliaCarta CSV columns:", list(cilia_df.columns))
+cilia_df = pd.read_csv(CILIAHUB_CSV, dtype=str)
+print("CiliaHub CSV columns:", list(cilia_df.columns))
 print(cilia_df.head())
 
 
@@ -203,8 +247,6 @@ def choose_gene_symbol_column(df):
     """自动选择最可能代表 gene symbol 的列。"""
     exact_priority = [
         "gene", "genes", "gene_symbol", "symbol", "hgnc_symbol",
-        "gene_symbol", "gene", "hgnc_symbol", "sym", "name",
-        "associated_gene_name", "associated gene name",
         "external_gene_name", "gene.name", "gene_name"
     ]
     normalized = {c: re.sub(r"[^a-z0-9]+", "_", str(c).strip().lower()).strip("_") for c in df.columns}
@@ -231,8 +273,6 @@ def choose_gene_symbol_column(df):
             score += 3
         if "symbol" in norm:
             score += 3
-        if "associated" in norm and "gene" in norm and "name" in norm:
-            score += 5
         if "ensembl" in norm or norm in {"ensg", "ensembl_id"}:
             score -= 4
 
@@ -251,56 +291,43 @@ def choose_gene_symbol_column(df):
 
     if scores_df.empty or scores_df.iloc[0]["score"] < 3:
         raise ValueError(
-            "无法可靠判断 gene symbol 列。已打印 CiliaCarta.csv 的列名、前 5 行和列评分；"
-            "请手动设置 GENE_SYMBOL_COL。"
+            "无法可靠判断 gene symbol 列。请查看上面打印的列名，并手动设置 GENE_SYMBOL_COL。"
         )
 
     if len(scores_df) > 1 and scores_df.iloc[0]["score"] - scores_df.iloc[1]["score"] < 1:
         raise ValueError(
-            "gene symbol 列判断不够明确。已打印 CiliaCarta.csv 的列名、前 5 行和列评分；"
-            "请手动设置 GENE_SYMBOL_COL。"
+            "gene symbol 列判断不够明确。请查看上面打印的列名，并手动设置 GENE_SYMBOL_COL。"
         )
 
     return scores_df.iloc[0]["column"], "内容形态打分最高"
 
 
-def split_gene_symbols(values):
-    """清理 CiliaCarta gene symbol，兼容 GENE1;GENE2 / GENE1,GENE2 等写法。"""
-    genes = []
-    for value in values.dropna().astype(str):
-        value = value.strip()
-        if value == "" or value.lower() in {"na", "nan", "none"}:
-            continue
-        for gene in re.split(r"[;,]", value):
-            gene = gene.strip()
-            if gene == "" or gene.lower() in {"na", "nan", "none"}:
-                continue
-            genes.append(gene)
-    return pd.Index(pd.unique(pd.Series(genes, dtype=str)), name="gene_symbol")
-
-
 GENE_SYMBOL_COL, reason = choose_gene_symbol_column(cilia_df)
 print(f"\n自动选择 gene symbol 列: {GENE_SYMBOL_COL} ({reason})")
 
-ciliacarta_raw_nonempty_count = int(
-    cilia_df[GENE_SYMBOL_COL].dropna().astype(str).str.strip().replace("", np.nan).dropna().shape[0]
+ciliahub_genes = (
+    cilia_df[GENE_SYMBOL_COL]
+    .dropna()
+    .astype(str)
+    .str.strip()
 )
-ciliacarta_genes = split_gene_symbols(cilia_df[GENE_SYMBOL_COL])
+ciliahub_genes = ciliahub_genes[ciliahub_genes != ""]
+ciliahub_genes = pd.Index(pd.unique(ciliahub_genes), name="gene_symbol")
 
-print("CiliaCarta 去重后基因数:", len(ciliacarta_genes))
-print("前 20 个基因:", list(ciliacarta_genes[:20]))
+print("CiliaHub 去重后基因数:", len(ciliahub_genes))
+print("前 20 个基因:", list(ciliahub_genes[:20]))
 
-pd.DataFrame({"gene_symbol": ciliacarta_genes}).to_csv(
-    TABLES_DIR / "CiliaCarta_gene_symbols_used.csv",
+pd.DataFrame({"gene_symbol": ciliahub_genes}).to_csv(
+    TABLES_DIR / "CiliaHub_gene_symbols_used.csv",
     index=False
 )
 
 # %% [markdown]
-# ## 5. 检查 CiliaCarta 基因与 AnnData var_names / gene_symbol 的交集
+# ## 5. 检查 CiliaHub 基因与 AnnData var_names / gene_symbol 的交集
 
 # %%
 # ==============================================================================
-# 5. 检查 CiliaCarta 基因与 AnnData var_names / gene_symbol 的交集
+# 5. 检查 CiliaHub 基因与 AnnData var_names / gene_symbol 的交集
 # ==============================================================================
 
 # 当前项目 h5ad 的 var_names 来自 gene_id；var['gene_symbol'] 保存原始 symbol。
@@ -314,11 +341,11 @@ else:
     adata_gene_symbols = pd.Series(var_names.astype(str), index=adata.var_names)
     print("未检测到 adata.var['gene_symbol']，退回使用 adata.var_names 匹配。")
 
-intersect_var_names = pd.Index(sorted(set(ciliacarta_genes).intersection(set(var_names))))
-intersect_gene_symbols = pd.Index(sorted(set(ciliacarta_genes).intersection(set(adata_gene_symbols))))
+intersect_var_names = pd.Index(sorted(set(ciliahub_genes).intersection(set(var_names))))
+intersect_gene_symbols = pd.Index(sorted(set(ciliahub_genes).intersection(set(adata_gene_symbols))))
 
-print("CiliaCarta 与 adata.var_names 交集基因数:", len(intersect_var_names))
-print("CiliaCarta 与 adata.var['gene_symbol'] 交集基因数:", len(intersect_gene_symbols))
+print("CiliaHub 与 adata.var_names 交集基因数:", len(intersect_var_names))
+print("CiliaHub 与 adata.var['gene_symbol'] 交集基因数:", len(intersect_gene_symbols))
 
 if len(intersect_gene_symbols) >= len(intersect_var_names):
     keep_var_mask = adata_gene_symbols.isin(intersect_gene_symbols).values
@@ -329,32 +356,31 @@ else:
 
 print("最终匹配模式:", match_mode)
 print("最终保留基因数:", int(np.sum(keep_var_mask)))
-ciliacarta_intersection_count = int(np.sum(keep_var_mask))
 
 if np.sum(keep_var_mask) < 20:
-    missing_preview = sorted(set(ciliacarta_genes) - set(adata_gene_symbols))[:30]
+    missing_preview = sorted(set(ciliahub_genes) - set(adata_gene_symbols))[:30]
     raise ValueError(
-        "CiliaCarta 与表达矩阵交集少于 20 个基因，无法稳定运行 cNMF。\n"
+        "CiliaHub 与表达矩阵交集少于 20 个基因，无法稳定运行 cNMF。\n"
         f"缺失基因示例: {missing_preview}\n"
-        "请检查 CiliaCarta CSV 使用的是 gene symbol 还是 Ensembl ID，以及 AnnData var 信息。"
+        "请检查 CiliaHub CSV 使用的是 gene symbol 还是 Ensembl ID，以及 AnnData var 信息。"
     )
 
 intersect_table = pd.DataFrame({
     "gene_symbol": adata_gene_symbols[keep_var_mask].values,
     "var_name": var_names[keep_var_mask].values,
 })
-intersect_table.to_csv(TABLES_DIR / "CiliaCarta_intersect_genes_for_cNMF.csv", index=False)
+intersect_table.to_csv(TABLES_DIR / "CiliaHub_intersect_genes_for_cNMF.csv", index=False)
 intersect_table.head()
 
 # %% [markdown]
-# ## 6. 过滤低质量细胞和低表达 CiliaCarta 基因
+# ## 6. 过滤低质量细胞和低表达 CiliaHub 基因
 
 # %%
 # ==============================================================================
-# 6. 过滤低质量细胞和低表达 CiliaCarta 基因
+# 6. 过滤低质量细胞和低表达 CiliaHub 基因
 # ==============================================================================
 
-# 先用全基因 raw counts 计算细胞 QC，避免 CiliaCarta 限定基因集导致误判
+# 先用全基因 raw counts 计算细胞 QC，避免 CiliaHub 限定基因集导致误判
 cell_total_counts = np.asarray(counts_all.sum(axis=1)).ravel()
 cell_detected_genes = np.asarray((counts_all > 0).sum(axis=1)).ravel()
 
@@ -373,7 +399,7 @@ print("过滤前细胞数:", adata.n_obs)
 print("保留细胞数:", int(np.sum(keep_cells)))
 print("过滤掉细胞数:", int(np.sum(~keep_cells)))
 
-# 再提取 CiliaCarta 基因子集
+# 再提取 CiliaHub 基因子集
 adata_cilia = adata[keep_cells, keep_var_mask].copy()
 
 # 用 raw counts 覆盖 X，确保 cNMF 输入是 count matrix
@@ -387,7 +413,7 @@ if "gene_symbol" in adata_cilia.var.columns:
     adata_cilia.var_names = pd.Index(adata_cilia.var["gene_symbol"].astype(str).values)
     adata_cilia.var_names_make_unique()
 
-# 过滤低表达 CiliaCarta 基因
+# 过滤低表达 CiliaHub 基因
 counts_cilia = adata_cilia.layers["counts"].tocsr()
 gene_total_counts = np.asarray(counts_cilia.sum(axis=0)).ravel()
 gene_detected_cells = np.asarray((counts_cilia > 0).sum(axis=0)).ravel()
@@ -403,12 +429,10 @@ gene_qc = pd.DataFrame({
     "expressed_cells": gene_detected_cells,
     "keep": keep_genes,
 })
-gene_qc.to_csv(TABLES_DIR / "CiliaCarta_gene_qc_for_cNMF.csv", index=False)
+gene_qc.to_csv(TABLES_DIR / "CiliaHub_gene_qc_for_cNMF.csv", index=False)
 
-print("CiliaCarta 交集基因数:", adata_cilia.n_vars)
-ciliacarta_before_low_expr_filter_count = adata_cilia.n_vars
-ciliacarta_after_low_expr_filter_count = int(np.sum(keep_genes))
-print("低表达过滤后保留基因数:", ciliacarta_after_low_expr_filter_count)
+print("CiliaHub 交集基因数:", adata_cilia.n_vars)
+print("低表达过滤后保留基因数:", int(np.sum(keep_genes)))
 
 adata_cilia = adata_cilia[:, keep_genes].copy()
 adata_cilia.layers["counts"] = adata_cilia.layers["counts"].tocsr().astype(np.float32)
@@ -423,6 +447,22 @@ if adata_cilia.n_vars < max(20, K_VALUES.max() * 3):
 print("最终 cNMF 输入 AnnData:", adata_cilia)
 print("最终基因示例:", list(adata_cilia.var_names[:20]))
 
+# 最关键的安全检查：cNMF 后续只能看到这些 CiliaHub 过滤后的基因。
+# 如果这里不是约 2000 个 CiliaHub 基因，而是 25200 左右，说明前面筛选没有生效。
+ciliahub_gene_set = set(map(str, ciliahub_genes))
+adata_cilia_gene_set = set(map(str, adata_cilia.var_names))
+non_ciliahub_in_input = sorted(adata_cilia_gene_set - ciliahub_gene_set)
+if len(non_ciliahub_in_input) > 0:
+    raise ValueError(
+        "adata_cilia 中发现不属于 CiliaHub CSV 的基因，说明基因筛选逻辑异常。\n"
+        f"示例: {non_ciliahub_in_input[:20]}"
+    )
+
+expected_cnmf_genes = pd.Index(adata_cilia.var_names.astype(str), name="gene")
+expected_genes_path = TABLES_DIR / "expected_CiliaHub_genes_after_filter_for_cNMF.csv"
+pd.DataFrame({"gene": expected_cnmf_genes}).to_csv(expected_genes_path, index=False)
+print("已保存 cNMF 允许使用的最终 CiliaHub 基因列表:", expected_genes_path)
+
 # %% [markdown]
 # ## 7. 保存 cNMF 输入矩阵
 
@@ -431,14 +471,14 @@ print("最终基因示例:", list(adata_cilia.var_names[:20]))
 # 7. 保存 cNMF 输入矩阵
 # ==============================================================================
 
-input_h5ad = OUT_DIR / "GSE132465_malignant_CiliaCarta_counts_for_cNMF.h5ad"
-counts_txt = OUT_DIR / "GSE132465_malignant_CiliaCarta_counts_for_cNMF.txt"
+input_h5ad = OUT_DIR / "GSE132465_malignant_CiliaHub_counts_for_cNMF.h5ad"
+counts_txt = OUT_DIR / "GSE132465_malignant_CiliaHub_counts_for_cNMF.txt"
 
 print("正在保存 h5ad:", input_h5ad)
 adata_cilia.write_h5ad(input_h5ad, compression="gzip")
 
 # cNMF prepare 最稳定的输入格式是 cells x genes 的 tab-delimited count matrix
-# CiliaCarta 子集规模较小，转成 dense DataFrame 便于 cNMF 读取和人工检查
+# CiliaHub 子集规模较小，转成 dense DataFrame 便于 cNMF 读取和人工检查
 X = adata_cilia.layers["counts"]
 if sp.issparse(X):
     X = X.toarray()
@@ -456,15 +496,25 @@ print("正在保存 counts txt:", counts_txt)
 counts_df.to_csv(counts_txt, sep="\t")
 
 print("counts_df shape:", counts_df.shape)
-print("输入 gene 数量:", counts_df.shape[1])
-print("前 20 个 gene:", list(counts_df.columns[:20]))
-print("CiliaCarta 原始基因数:", ciliacarta_raw_nonempty_count)
-print("CiliaCarta 去重后基因数:", len(ciliacarta_genes))
-print("CiliaCarta 与表达矩阵交集基因数:", ciliacarta_intersection_count)
-print("低表达过滤后保留基因数:", ciliacarta_after_low_expr_filter_count)
 print("输出文件：")
 print(" -", input_h5ad)
 print(" -", counts_txt)
+
+# 保存后立刻校验文本矩阵列名，防止 cNMF prepare 误读到旧的全基因输入文件。
+counts_header = pd.read_csv(counts_txt, sep="\t", nrows=0).columns[1:].astype(str)
+if len(counts_header) != adata_cilia.n_vars:
+    raise ValueError(
+        f"counts_txt 的基因数为 {len(counts_header)}，但 adata_cilia.n_vars 为 {adata_cilia.n_vars}。"
+    )
+unexpected_counts_genes = sorted(set(counts_header) - set(expected_cnmf_genes))
+missing_counts_genes = sorted(set(expected_cnmf_genes) - set(counts_header))
+if unexpected_counts_genes or missing_counts_genes:
+    raise ValueError(
+        "保存给 cNMF 的 counts_txt 与 CiliaHub 过滤后基因列表不一致。\n"
+        f"unexpected 示例: {unexpected_counts_genes[:20]}\n"
+        f"missing 示例: {missing_counts_genes[:20]}"
+    )
+print("counts_txt 基因列校验通过，仅包含过滤后的 CiliaHub 基因。")
 
 # %% [markdown]
 # ## 8. 运行 cNMF：prepare / factorize / combine / K selection
@@ -474,14 +524,40 @@ print(" -", counts_txt)
 # 8. 运行 cNMF
 # ==============================================================================
 
-# 这一单元耗时最长。N_ITER=100 且 K=2..8 时通常需要较久。
+# 这一单元耗时最长。N_ITER=100 且 K=2..12 时通常需要较久。
 # 调试时可以先把 N_ITER 改成 20，确认流程后再改回 100 或更高。
+
+if FORCE_REBUILD and CNMF_RUN_DIR.exists():
+    print("CNMF_FORCE_REBUILD=1，删除旧 cNMF 运行目录，避免复用旧全基因缓存:", CNMF_RUN_DIR)
+    shutil.rmtree(CNMF_RUN_DIR)
 
 cnmf_obj = cNMF(output_dir=str(OUT_DIR), name=CNMF_NAME)
 
+# 如果不是强制重建，也要检查 cNMF 缓存是否和当前 CiliaHub 基因集一致。
+# 这是最常见的“明明筛了 CiliaHub，输出却像全基因”的原因。
+for cached_h5ad in [
+    CNMF_RUN_DIR / "cnmf_tmp" / f"{CNMF_NAME}.norm_counts.h5ad",
+    CNMF_RUN_DIR / "cnmf_tmp" / f"{CNMF_NAME}.tpm.h5ad",
+]:
+    if cached_h5ad.exists():
+        cached = ad.read_h5ad(cached_h5ad, backed="r")
+        cached_genes = pd.Index(cached.var_names.astype(str))
+        cached_shape = cached.shape
+        cached.file.close()
+
+        if list(cached_genes) != list(expected_cnmf_genes):
+            raise ValueError(
+                "检测到 cNMF 旧缓存的基因列表与当前 CiliaHub 输入不一致。\n"
+                f"缓存文件: {cached_h5ad}\n"
+                f"缓存 shape: {cached_shape}; 当前 CiliaHub 输入 shape: {adata_cilia.shape}\n"
+                "这通常表示该 OUT_DIR/CNMF_NAME 之前用全基因矩阵跑过。\n"
+                "解决方法：设置 CNMF_FORCE_REBUILD=1 重新运行，或更换 OUT_DIR/CNMF_NAME。"
+            )
+        print("cNMF 缓存基因列表校验通过:", cached_h5ad)
+
 print("开始 cNMF prepare...")
 try:
-    # 限定到 CiliaCarta 后，尽量让 cNMF 使用过滤后的全部基因，而不是再默认筛 2000 个高变基因。
+    # 限定到 CiliaHub 后，尽量让 cNMF 使用过滤后的全部基因，而不是再默认筛 2000 个高变基因。
     cnmf_obj.prepare(
         counts_fn=str(counts_txt),
         components=K_VALUES,
@@ -499,7 +575,7 @@ except TypeError:
     )
 
 print("开始 cNMF factorize...")
-cnmf_obj.factorize(worker_i=WORKER_INDEX, total_workers=TOTAL_WORKERS, skip_completed_runs=False)
+cnmf_obj.factorize(worker_i=WORKER_INDEX, total_workers=TOTAL_WORKERS, skip_completed_runs=True)
 
 print("开始 cNMF combine...")
 try:
@@ -668,7 +744,7 @@ print("spectra_score columns 前几个:", list(spectra_score_df.columns[:5]))
 
 # cNMF spectra 文件在不同版本中可能是 program x gene 或 gene x program。
 # 这里根据与输入基因名的重合度自动判断方向，并统一成 program x gene。
-input_genes = set(adata_cilia.var_names.astype(str))
+input_genes = set(expected_cnmf_genes.astype(str))
 index_gene_overlap = len(set(map(str, spectra_score_df.index)).intersection(input_genes))
 column_gene_overlap = len(set(map(str, spectra_score_df.columns)).intersection(input_genes))
 
@@ -678,6 +754,20 @@ else:
     spectra_program_by_gene = spectra_score_df.T.copy()
 
 spectra_program_by_gene.index = [f"Program_{i+1}" for i in range(spectra_program_by_gene.shape[0])]
+
+# 再次强制校验 cNMF 输出基因。若这里报错，说明读到的 spectra 文件不是当前 CiliaHub run 产生的。
+spectra_genes = pd.Index(spectra_program_by_gene.columns.astype(str))
+unexpected_spectra_genes = sorted(set(spectra_genes) - set(expected_cnmf_genes))
+missing_spectra_genes = sorted(set(expected_cnmf_genes) - set(spectra_genes))
+if unexpected_spectra_genes or missing_spectra_genes:
+    raise ValueError(
+        "cNMF spectra 输出基因与 CiliaHub 输入不一致，疑似读到了旧的全基因结果。\n"
+        f"spectra 基因数: {len(spectra_genes)}; CiliaHub 输入基因数: {len(expected_cnmf_genes)}\n"
+        f"unexpected 示例: {unexpected_spectra_genes[:20]}\n"
+        f"missing 示例: {missing_spectra_genes[:20]}\n"
+        "解决方法：设置 CNMF_FORCE_REBUILD=1 重新运行，或更换 OUT_DIR/CNMF_NAME。"
+    )
+print("cNMF spectra 基因校验通过，仅包含过滤后的 CiliaHub 基因。")
 
 marker_rows = []
 for program in spectra_program_by_gene.index:
@@ -763,7 +853,7 @@ else:
         xticklabels=True,
         yticklabels=True,
     )
-    plt.title(f"Top CiliaCarta genes per cNMF program, K={selected_k}")
+    plt.title(f"Top CiliaHub genes per cNMF program, K={selected_k}")
     plt.xlabel("Genes")
     plt.ylabel("Programs")
     plt.tight_layout()
@@ -850,9 +940,9 @@ for p in sorted(PLOTS_DIR.glob("*")):
 # 
 # 推荐运行顺序：
 # 
-# 1. 先运行第 1-7 节，确认输入对象、CiliaCarta gene symbol 列、基因交集、过滤后细胞数和基因数。
-# 2. 运行第 8 节执行 cNMF。正式结果默认 `N_ITER = 100`、`K_VALUES = 2..8`；如果只是检查流程，可在启动前设置 `CNMF_FAST_DEBUG=1`，会写入单独的 `cNMF_CiliaCarta_GSE132465_debug/` 目录。
-# 3. 查看 `cNMF_CiliaCarta_GSE132465/GSE132465_malignant_CiliaCarta_cNMF/GSE132465_malignant_CiliaCarta_cNMF.k_selection.png`，然后在第 1 节把 `SELECTED_K` 改成最终 K。
+# 1. 先运行第 1-7 节，确认输入对象、CiliaHub gene symbol 列、基因交集、过滤后细胞数和基因数。
+# 2. 运行第 8 节执行 cNMF。正式结果默认 `N_ITER = 100`、`K_VALUES = 2..12`；如果只是检查流程，可在启动前设置 `CNMF_FAST_DEBUG=1`，会写入单独的 `cNMF_CiliaHub_GSE132465_debug/` 目录。
+# 3. 查看 `cNMF_CiliaHub_GSE132465/GSE132465_malignant_CiliaHub_cNMF/GSE132465_malignant_CiliaHub_cNMF.k_selection.png`，然后在第 1 节把 `SELECTED_K` 改成最终 K。
 # 4. 运行第 10-14 节生成 consensus programs、usage matrix、marker gene ranking 和基础可视化。
 # 
 # 需要的 Python 包：
@@ -876,13 +966,13 @@ for p in sorted(PLOTS_DIR.glob("*")):
 # 
 # 主要输出文件：
 # 
-# - `GSE132465_malignant_CiliaCarta_counts_for_cNMF.h5ad`：过滤后的 cNMF 输入 AnnData。
-# - `GSE132465_malignant_CiliaCarta_counts_for_cNMF.txt`：cells x genes 的 raw count matrix，供 cNMF 使用。
-# - `tables/CiliaCarta_intersect_genes_for_cNMF.csv`：CiliaCarta 与表达矩阵交集基因。
-# - `tables/CiliaCarta_gene_qc_for_cNMF.csv`：CiliaCarta 基因过滤统计。
+# - `GSE132465_malignant_CiliaHub_counts_for_cNMF.h5ad`：过滤后的 cNMF 输入 AnnData。
+# - `GSE132465_malignant_CiliaHub_counts_for_cNMF.txt`：cells x genes 的 raw count matrix，供 cNMF 使用。
+# - `tables/CiliaHub_intersect_genes_for_cNMF.csv`：CiliaHub 与表达矩阵交集基因。
+# - `tables/CiliaHub_gene_qc_for_cNMF.csv`：CiliaHub 基因过滤统计。
 # - `tables/usage_matrix_from_cNMF.k_*.csv`：细胞 x program 的 usage matrix。
 # - `tables/consensus_programs_by_gene.k_*.csv`：program x gene 的 consensus program 矩阵。
 # - `tables/marker_gene_rankings_by_program.k_*.csv`：每个 program 的 marker gene 排名。
 # - `plots/usage_heatmap.k_*.png`：usage heatmap。
 # - `plots/program_top_gene_heatmap.k_*.png`：program top gene heatmap。
-# - `GSE132465_malignant_CiliaCarta_cNMF/*.k_selection.png`：cNMF 自动生成的 K 选择图。
+# - `GSE132465_malignant_CiliaHub_cNMF/*.k_selection.png`：cNMF 自动生成的 K 选择图。

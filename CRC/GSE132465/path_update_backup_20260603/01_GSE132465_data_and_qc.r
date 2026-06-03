@@ -25,13 +25,13 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/')
 print("🚀 步骤1/4: 开始读取 10X 矩阵与注释数据...")
 
 # 读取矩阵
-counts_matrix <- fread(file.path("raw_data", "GEO", "GSE132465_10X_UMI_matrix.txt"), header = TRUE, sep = "\t", check.names = FALSE)
+counts_matrix <- fread("GSE132465_10X_UMI_matrix.txt", header = TRUE, sep = "\t", check.names = FALSE)
 counts_matrix <- as.data.frame(counts_matrix)
 rownames(counts_matrix) <- counts_matrix[[1]] # 第一列设为行名
 counts_matrix <- counts_matrix[,-1]          # 删掉原来的第一列
 
 # 读取注释
-cell_annotation <- fread(file.path("metadata", "GSE132465_10X_cell_annotation.txt"), header = TRUE, sep = "\t")
+cell_annotation <- fread("GSE132465_10X_cell_annotation.txt", header = TRUE, sep = "\t")
 cell_annotation <- as.data.frame(cell_annotation)
 rownames(cell_annotation) <- cell_annotation[[1]]
 cell_annotation <- cell_annotation[,-1]
@@ -135,8 +135,7 @@ print("🚀 步骤4/4: 合并纯净数据并保存...")
 sc_final <- merge(sc_clean_list[[1]], y = sc_clean_list[2:length(sc_clean_list)])
 sc_final <- JoinLayers(sc_final)
 
-dir.create(file.path("qs", "Seurat"), showWarnings = FALSE, recursive = TRUE)
-qsave(sc_final, file.path("qs", "Seurat", "sc_combined_qc_Cleaned.qs"))
+qsave(sc_final, "sc_combined_qc_Cleaned.qs")
 
 print(paste("🎉 全部运行完毕！最终保留高质量单细胞总数:", ncol(sc_final)))
 print("📊 各患者(Patient)的最终保留细胞数统计：")

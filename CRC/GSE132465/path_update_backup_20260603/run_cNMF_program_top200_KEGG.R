@@ -33,25 +33,25 @@ setwd(WORK_DIR)
 #    consensus_programs_by_gene.k_7.csv
 CNMF_TABLE_PATH <- file.path(
   WORK_DIR,
-  "files",
-  "cNMF",
-  "CiliaCarta",
-  "marker_gene_rankings_by_program.k_5.csv"
+  "cNMF_CiliaHub_GSE132465",
+  "tables",
+  "marker_gene_rankings_by_program.k_7.csv"
 )
 
 CNMF_MATRIX_FALLBACK_PATH <- file.path(
   WORK_DIR,
-  "files",
-  "cNMF",
-  "CiliaCarta",
-  "consensus_programs_by_gene.k_5.csv"
+  "cNMF_CiliaHub_GSE132465",
+  "tables",
+  "consensus_programs_by_gene.k_7.csv"
 )
 
-FILES_DIR <- file.path(WORK_DIR, "files", "cNMF", "CiliaCarta")
-PLOTS_DIR <- file.path(WORK_DIR, "plots", "cNMF", "CiliaCarta")
+OUT_DIR <- file.path(WORK_DIR, "KEGG_cNMF_program_top200")
+FILES_DIR <- file.path(OUT_DIR, "files")
+PLOTS_DIR <- file.path(OUT_DIR, "plots")
 PROGRAM_GENES_DIR <- file.path(FILES_DIR, "Program_Top200_Genes")
 PROGRAM_KEGG_DIR <- file.path(FILES_DIR, "Program_KEGG_Results")
 
+dir.create(OUT_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(FILES_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(PLOTS_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(PROGRAM_GENES_DIR, showWarnings = FALSE, recursive = TRUE)
@@ -68,8 +68,7 @@ SHOW_CATEGORY_COMBINED_PER_PROGRAM <- 8
 cat("WORK_DIR:", WORK_DIR, "\n")
 cat("CNMF_TABLE_PATH:", CNMF_TABLE_PATH, "\n")
 cat("CNMF_MATRIX_FALLBACK_PATH:", CNMF_MATRIX_FALLBACK_PATH, "\n")
-cat("FILES_DIR:", FILES_DIR, "\n")
-cat("PLOTS_DIR:", PLOTS_DIR, "\n")
+cat("OUT_DIR:", OUT_DIR, "\n")
 
 # ==============================================================================
 # 1. 工具函数 ------------------------------------------------------------------

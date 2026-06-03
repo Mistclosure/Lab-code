@@ -16,9 +16,9 @@ suppressPackageStartupMessages({
 
 work_dir <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465"
 
-input_qs <- file.path(work_dir, "qs", "Seurat", "Malignant_RNA_assay.qs")
+input_qs <- file.path(work_dir, "Malignant_RNA_assay.qs")
 
-out_dir <- file.path(work_dir, "files", "processed", "matrices")
+out_dir <- file.path(work_dir, "Malignant_RNA_assay_export_for_python")
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 

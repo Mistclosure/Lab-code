@@ -18,14 +18,14 @@ suppressPackageStartupMessages({
 # ==============================================================================
 
 WORK_DIR <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465"
-SEURAT_OBJ_PATH <- file.path(WORK_DIR, "qs", "Seurat", "Malignant_RNA_assay.qs")
-GENE_LIST_PATH <- file.path(WORK_DIR, "files", "WGCNA", "ciliahub_genes_list.csv")
+SEURAT_OBJ_PATH <- file.path(WORK_DIR, "Malignant_RNA_assay.qs")
+GENE_LIST_PATH <- "/mnt/disk1/qiuzerui/downloads/signature/ciliahub_genes_list.csv"
 
 setwd(WORK_DIR)
 
-QS_DIR <- file.path("qs", "hdWGCNA")
-PLOTS_DIR <- file.path("plots", "hdWGCNA")
-FILES_DIR <- file.path("files", "hdWGCNA")
+QS_DIR <- "qs"
+PLOTS_DIR <- "plots"
+FILES_DIR <- "files"
 
 dir.create(QS_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(PLOTS_DIR, showWarnings = FALSE, recursive = TRUE)

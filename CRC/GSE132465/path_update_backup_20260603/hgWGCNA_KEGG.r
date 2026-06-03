@@ -21,14 +21,14 @@ Sys.setenv(http_proxy  = "http://127.0.0.1:7890")
 Sys.setenv(https_proxy = "http://127.0.0.1:7890")
 
 WORK_DIR <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465"
-FILES_DIR <- file.path("files", "KEGG")
-PLOTS_DIR <- file.path("plots", "KEGG")
-QS_DIR <- file.path("qs", "hdWGCNA")
+FILES_DIR <- "files"
+PLOTS_DIR <- "plots"
+QS_DIR <- "qs"
 
 setwd(WORK_DIR)
 
-if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR, recursive = TRUE)
-if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR, recursive = TRUE)
+if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR)
+if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR)
 
 cat("正在读取 WGCNA 分析结果...\n")
 

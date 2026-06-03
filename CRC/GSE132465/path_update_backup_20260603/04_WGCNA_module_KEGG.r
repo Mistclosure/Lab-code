@@ -19,16 +19,16 @@ library(qs)
 # Sys.setenv(https_proxy = "http://127.0.0.1:7890")
 
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
-FILES_DIR <- file.path("files", "KEGG")
-PLOTS_DIR <- file.path("plots", "KEGG")
-QS_DIR <- file.path("qs", "hdWGCNA")
-TARGET_MODULES_DIR <- file.path("files", "hdWGCNA", "Target_Modules_单独列表") # 新增：存放按模块独立导出的基因文件目录
+FILES_DIR <- "files"
+PLOTS_DIR <- "plots"
+QS_DIR <- "qs"
+TARGET_MODULES_DIR <- file.path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/files/Selected_Modules_By_Color/Module_brown_genes.csv") # 新增：存放按模块独立导出的基因文件目录
 
 setwd(WORK_DIR)
 
 # 确保输出文件夹存在
-if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR, recursive = TRUE)
-if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR, recursive = TRUE)
+if (!dir.exists(FILES_DIR)) dir.create(FILES_DIR)
+if (!dir.exists(PLOTS_DIR)) dir.create(PLOTS_DIR)
 
 cat("正在读取 WGCNA 分析结果...\n")
 # 读取之前保存的 qs 结果列表，并提取基因模块映射表
@@ -214,4 +214,4 @@ cat("\n============================================\n")
 cat("全部 KEGG 分析及结果导出流程运行完毕！\n")
 cat("============================================\n")
 
-write.csv(target_gene_df, file.path(FILES_DIR, "target_gene_df.csv"), row.names = FALSE)
+write.csv(target_gene_df, "target_gene_df.csv", row.names = FALSE)

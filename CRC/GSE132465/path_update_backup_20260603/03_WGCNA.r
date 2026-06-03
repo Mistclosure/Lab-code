@@ -17,7 +17,7 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE132465')
 
 # 2. 读取数据与提取表达矩阵 ----------------------------------------------------
 cat("正在加载恶性细胞 Seurat 对象...\n")
-malig_seurat <- qread(file.path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465", "qs", "Seurat", "Malignant_RNA_assay.qs"))
+malig_seurat <- qread("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/Malignant_RNA_assay.qs")
 
 # 提取 RNA assay 的 data 图层作为表达矩阵
 malig_seurat = JoinLayers(malig_seurat)
@@ -85,8 +85,7 @@ aggregated_pseudo_expr <- aggregated_pseudo_expr[, -1]
 # 4.4 转置回常规表达矩阵格式 (基因 x 细胞)
 pseudo_cell_counts_mat <- as.matrix(pseudo_cell_counts)
 pseudo_expr_matrix <- t(aggregated_pseudo_expr)[, rownames(pseudo_cell_counts_mat)]
-dir.create(file.path('qs', 'WGCNA'), showWarnings = FALSE, recursive = TRUE)
-qsave(pseudo_expr_matrix, file.path('qs', 'WGCNA', 'pseudo_expr_matrix.qs'))
+qsave(pseudo_expr_matrix,'pseudo_expr_matrix.qs')
 # 4.5 构建伪细胞与原始细胞的映射表 (供后续临床关联使用)
 cat("构建伪细胞映射表...\n")
 pseudo_df <- data.frame(CellID = rownames(all_pseudo_ids), 
@@ -98,7 +97,7 @@ stopifnot(all(pseudo_df$CellID %in% colnames(malig_seurat)))
 # 5. 目标基因过滤与 WGCNA 数据准备 ---------------------------------------------
 # ==============================================================================
 cat("正在读取目标基因列表并过滤表达矩阵...\n")
-ciliahub_genes <- read.csv(file.path("/mnt/disk1/qiuzerui/downloads/CRC/GSE132465", "files", "WGCNA", "ciliahub_genes_list.csv"), header = TRUE, check.names = FALSE, row.names = 1)
+ciliahub_genes <- read.csv("/mnt/disk1/qiuzerui/downloads/signature/ciliahub_genes_list.csv", header = TRUE, check.names = FALSE, row.names = 1)
 
 # 提取交集基因的伪细胞表达矩阵
 filtered_expr_matrix <- pseudo_expr_matrix[intersect(rownames(ciliahub_genes), rownames(pseudo_expr_matrix)), ]

@@ -7,12 +7,11 @@ library(tidyr)
 
 # 1. 设置工作目录 (请确保与你之前的脚本一致)
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
-INPUT_DIR <- file.path("files", "KEGG")
-OUTPUT_DIR <- file.path("files", "tables")
+FILES_DIR <- "files"
 setwd(WORK_DIR)
 
 # 2. 读取之前生成的 compareCluster 结果文件
-input_file <- file.path(INPUT_DIR, "Target_Modules_compareCluster_KEGG_signed.csv")
+input_file <- file.path(FILES_DIR, "Target_Modules_compareCluster_KEGG_signed.csv")
 
 if (!file.exists(input_file)) {
   stop("找不到输入文件，请确认路径是否正确或是否已运行上一个分析脚本。")
@@ -42,8 +41,7 @@ pathway_gene_map <- kegg_data %>%
   select(Gene, Pathway)
 
 # 5. 输出结果
-dir.create(OUTPUT_DIR, showWarnings = FALSE, recursive = TRUE)
-output_file <- file.path(OUTPUT_DIR, "CRC_Proliferation_Invasion_Metastasis_Genes.csv")
+output_file <- file.path(FILES_DIR, "CRC_Proliferation_Invasion_Metastasis_Genes.csv")
 write.csv(pathway_gene_map, file = output_file, row.names = FALSE, quote = FALSE)
 
 cat("\n================================================================\n")
