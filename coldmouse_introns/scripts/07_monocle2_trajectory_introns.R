@@ -408,8 +408,73 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
   qsave(cds, file.path(objects_dir, paste0("introns_monocle2_cds_", output_tag, ".qs")))
   saveRDS(cds, file.path(rds_dir, paste0("introns_monocle2_cds_", output_tag, ".rds")))
 
-  # --- 8. 可视化 ---
-  cat("  生成轨迹图...\n")
+  # --- 8. 可视化：使用 Seurat UMAP 坐标展示 monocle2 结果 ---
+  cat("  生成 UMAP 拟时序图...\n")
+
+  if (!"umap" %in% names(subset_obj@reductions)) {
+    stop("Seurat subset has no UMAP reduction for ", output_tag)
+  }
+  umap_coords <- Embeddings(subset_obj, "umap")
+  cds_cells <- rownames(pData(cds))
+  missing_umap_cells <- setdiff(cds_cells, rownames(umap_coords))
+  if (length(missing_umap_cells) > 0) {
+    stop("UMAP coordinates missing for ", length(missing_umap_cells), " cells in ", output_tag)
+  }
+
+  umap_df <- data.frame(
+    Cell = cds_cells,
+    UMAP_1 = umap_coords[cds_cells, 1],
+    UMAP_2 = umap_coords[cds_cells, 2],
+    Pseudotime = pData(cds)$Pseudotime,
+    State = pData(cds)$State,
+    Group = pData(cds)$Group,
+    seurat_clusters = pData(cds)$seurat_clusters,
+    stringsAsFactors = FALSE
+  )
+  write.csv(umap_df,
+            file.path(tag_files_dir, paste0("introns_monocle2_umap_metadata_", output_tag, ".csv")),
+            row.names = FALSE)
+
+  plot_monocle2_umap <- function(df, color_by, output_tag) {
+    plot_df <- df
+    base_plot <- ggplot(plot_df, aes(x = UMAP_1, y = UMAP_2, color = .data[[color_by]])) +
+      geom_point(size = 0.35, alpha = 0.85) +
+      labs(
+        title = paste0("Introns ", output_tag, " monocle2 on UMAP (", color_by, ")"),
+        x = "UMAP_1",
+        y = "UMAP_2",
+        color = color_by
+      ) +
+      theme_classic(base_size = 12) +
+      theme(
+        plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)
+      )
+
+    if (is.numeric(plot_df[[color_by]])) {
+      base_plot + scale_color_gradientn(
+        colors = c("#2c7bb6", "#ffffbf", "#d7191c"),
+        na.value = "grey80"
+      )
+    } else {
+      plot_df[[color_by]] <- factor(plot_df[[color_by]])
+      ggplot(plot_df, aes(x = UMAP_1, y = UMAP_2, color = .data[[color_by]])) +
+        geom_point(size = 0.35, alpha = 0.85) +
+        labs(
+          title = paste0("Introns ", output_tag, " monocle2 on UMAP (", color_by, ")"),
+          x = "UMAP_1",
+          y = "UMAP_2",
+          color = color_by
+        ) +
+        theme_classic(base_size = 12) +
+        theme(
+          plot.title = element_text(hjust = 0.5),
+          legend.title = element_text(size = 10),
+          legend.text = element_text(size = 8)
+        )
+    }
+  }
 
   plot_configs <- list(
     list(color_by = "Pseudotime",        w = 8,  h = 6),
@@ -419,14 +484,13 @@ run_monocle2_subset_trajectory <- function(obj, subset_name, label_field,
   )
   for (pc in plot_configs) {
     tryCatch({
-      p <- plot_cell_trajectory(cds, color_by = pc$color_by) +
-        ggtitle(paste0("Introns ", output_tag, " Trajectory (", pc$color_by, ")"))
-      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".png")),
+      p <- plot_monocle2_umap(umap_df, pc$color_by, output_tag)
+      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_umap_", pc$color_by, "_", output_tag, ".png")),
              plot = p, width = pc$w, height = pc$h, dpi = 300)
-      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_trajectory_", pc$color_by, "_", output_tag, ".pdf")),
+      ggsave(file.path(tag_plots_dir, paste0("introns_monocle2_umap_", pc$color_by, "_", output_tag, ".pdf")),
              plot = p, width = pc$w, height = pc$h)
     }, error = function(e) {
-      cat("    ", pc$color_by, " 图失败:", e$message, "\n")
+      cat("    ", pc$color_by, " UMAP 图失败:", e$message, "\n")
     })
   }
 

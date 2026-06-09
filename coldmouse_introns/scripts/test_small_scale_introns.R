@@ -6,11 +6,14 @@
 # ==============================================================================
 
 # 加载工具
-source("/home/zerui/code/coldmouse_introns/R/utils_paths.R")
-source("/home/zerui/code/coldmouse_introns/R/utils_io.R")
-source("/home/zerui/code/coldmouse_introns/R/utils_qc.R")
-source("/home/zerui/code/coldmouse_introns/R/utils_seurat.R")
-source("/home/zerui/code/coldmouse_introns/R/utils_monocle2.R")
+PROJECT_HOME <- Sys.getenv("COLDMOUSE_INTRONS_HOME", unset = "/home/zerui/code/coldmouse_introns")
+source(file.path(PROJECT_HOME, "R", "utils_paths.R"))
+source(file.path(PROJECT_HOME, "R", "utils_io.R"))
+source(file.path(PROJECT_HOME, "R", "utils_qc.R"))
+source(file.path(PROJECT_HOME, "R", "utils_seurat.R"))
+source(file.path(PROJECT_HOME, "R", "utils_monocle2.R"))
+
+config <- load_config()
 
 # 加载 R 包
 library(Seurat)
@@ -23,14 +26,13 @@ library(scDblFinder)
 library(SingleCellExperiment)
 
 # 创建测试输出目录
-test_dir <- "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/results/test"
-dir.create(test_dir, showWarnings = FALSE, recursive = TRUE)
+test_dir <- get_results_dir(config, "test")
 
 # ------------------------------------------------------------------------------
 # 1. 检查 loom 文件结构
 # ------------------------------------------------------------------------------
 print("=== 测试1: 检查 loom 文件结构 ===")
-loom_file <- "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/rawdata/A1.loom"
+loom_file <- file.path(config$paths$rawdata_dir, "A1.loom")
 loom_info <- check_loom_structure(loom_file)
 
 cat("Loom 文件:", loom_file, "\n")

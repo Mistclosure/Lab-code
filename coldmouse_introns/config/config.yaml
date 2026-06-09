@@ -1,0 +1,70 @@
+# ==============================================================================
+# coldmouse_introns 项目配置文件
+# ==============================================================================
+
+project:
+  name: "coldmouse_introns"
+  description: "Cold mouse introns single-cell RNA-seq analysis pipeline"
+
+# 数据路径
+paths:
+  rawdata_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/rawdata"
+  output_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns"
+  results_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/results"
+  qs_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/qs"
+  objects_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/qs"
+  rds_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/results/objects"
+  files_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/files"
+  plots_dir: "/mnt/disk1/qiuzerui/expriments/coldmouse_introns/plots"
+  logs_dir: "/home/zerui/code/coldmouse_introns/logs"
+
+# 样本映射文件
+sample_map: "/home/zerui/code/coldmouse_introns/config/sample_map.csv"
+
+# QC 参数
+qc:
+  min_features: 200
+  max_features: null  # null 表示不设上限，根据分位数表再更新
+  min_cells: 3
+  percent_mt_threshold: 15
+  max_count: null  # null 表示不设上限
+
+# 核糖体基因处理
+ribo:
+  remove_ribo_genes: true
+  ribo_pattern: "^Rp[sl]"
+
+# 双细胞过滤
+doublet:
+  run_scDblFinder: true
+  scDblFinder_resolution: 0.5
+  scDblFinder_pca_dims: 20
+
+# 聚类参数
+clustering:
+  method: "louvain"  # "louvain" 或 "leiden"
+  resolution: 1.0
+  pca_dims: 50
+  n_pcs: 50
+  nfeatures: 2000
+
+# Harmony 批次校正 (可选)
+harmony:
+  run_harmony: false  # 默认不运行
+  group_by_vars: "orig.ident"
+
+# SingleR 注释
+singler:
+  reference: "MouseRNAseqData"
+  min_cells_threshold: 20
+
+# 可视化
+visualization:
+  umap_width: 15
+  umap_height: 11
+  umap_dpi: 300
+
+# 线程和内存策略
+performance:
+  future_globals_maxSize: "4G"
+  n_cores: 8  # 避免 192 核全开导致内存压力

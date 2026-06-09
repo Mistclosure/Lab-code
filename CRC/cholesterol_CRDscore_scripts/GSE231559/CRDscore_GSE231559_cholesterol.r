@@ -11,6 +11,8 @@ library(data.table)
 
 # --- 承接预处理脚本：设置工作目录并读取 .qs 对象 ---
 setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE231559')
+PLOTS_DIR <- "/mnt/disk1/qiuzerui/downloads/CRC/cholesterol_Score/GSE231559"
+dir.create(PLOTS_DIR, showWarnings = FALSE, recursive = TRUE)
 
 # 1. 读取上一步预处理完成的高质量 Seurat 对象
 pbmc1 <- qread("Malignant_RNA_assay.qs")
@@ -34,14 +36,10 @@ qsave(pbmc1,'Malignant_GSE231559.qs')
 # ------------------------------------------------------------------------------
 # 4. 计算评分
 # ------------------------------------------------------------------------------
-# --- 动态提取基因集文件名 ---
-signature_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/input/table2_primary_cilia_single_gene_confirmed.csv"
-
-signature_name <- tools::file_path_sans_ext(basename(signature_file))
-
-CRC_data = read.csv(signature_file, header = T, check.names = F)
-#target_genes = as.character(CRC_data[CRC_data$Module == 'brown',2])
-target_genes = as.character(CRC_data[,'Gene'])
+signature_name <- "cholesterolscore"
+target_genes <- c("HMGCS1", "HMGCR", "MVK", "PMVK", "MVD", "IDI1", "FDPS", "FDFT1", "SQLE",
+                  "LSS", "CYP51A1", "TM7SF2", "MSMO1", "NSDHL", "HSD17B7", "DHCR24",
+                  "EBP", "SC5D", "DHCR7")
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # 计算得分，使用准备好的 data_log2
@@ -106,7 +104,7 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
 
 print(p1)
 # 动态保存图片名
-ggsave(paste0(signature_name, "_Stage_plot.png"), plot = p1, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_name, "_GSE231559_Stage_plot.png")), plot = p1, width = 6, height = 5, dpi = 300)
 
 # ==============================================================================
 # 图 2：针对 Metastasis (转移情况)
@@ -142,4 +140,4 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
 
 print(p2)
 # 动态保存图片名
-ggsave(paste0(signature_name, "_Metastasis_plot.png"), plot = p2, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_name, "_GSE231559_Metastasis_plot.png")), plot = p2, width = 6, height = 5, dpi = 300)

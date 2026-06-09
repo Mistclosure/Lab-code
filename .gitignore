@@ -1,16 +1,67 @@
-# Ignore everything by default
-*
+# Source repository ignore rules for /home/zerui/code.
+# Keep scripts, notebooks, configs and documentation trackable.
+# Ignore generated logs, caches, backups, large bioinfo objects and result folders.
 
-# Keep traversing directories
-!*/
+# Runtime logs
+*.log
+*.out
+log/
+logs/
 
-# Track only code/notebook/markdown source files
-!*.py
-!*.ipynb
-!*.R
-!*.r
-!*.md
-!*.sh
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
 
-# Always allow this ignore file itself
-!.gitignore
+# R session/cache
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Backup/temp files
+*.bak
+*.bak_*
+*.tmp
+*.temp
+*~
+
+# Bioinfo large objects / matrices
+*.qs
+*.rds
+*.Rds
+*.RDS
+*.RData
+*.h5
+*.h5ad
+*.loom
+*.mtx
+*.mtx.gz
+*.tsv.gz
+*.csv.gz
+*.txt.gz
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bai
+*.sam
+*.cram
+*.vcf
+*.vcf.gz
+
+# Analysis outputs
+results/
+files/
+plots/
+pictures/
+figures/
+qs/
+
+# Project backups
+backups/
+path_update_backup_*/
+path_reorg_*/
+path_sync_*/

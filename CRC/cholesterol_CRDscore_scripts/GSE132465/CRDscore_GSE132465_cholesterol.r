@@ -11,7 +11,7 @@ library(data.table)
 WORK_DIR <- '/mnt/disk1/qiuzerui/downloads/CRC/GSE132465'
 setwd(WORK_DIR)
 FILES_DIR <- file.path(WORK_DIR, 'files', 'clinical_association')
-PLOTS_DIR <- file.path(WORK_DIR, 'plots', 'clinical_association')
+PLOTS_DIR <- "/mnt/disk1/qiuzerui/downloads/CRC/cholesterol_Score/GSE132465"
 dir.create(FILES_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(PLOTS_DIR, showWarnings = FALSE, recursive = TRUE)
 
@@ -29,26 +29,12 @@ seurat_data = LayerData(pbmc1, assay = "RNA", layer = "data")
 # 这样 data_log2 才是 CRDscore 要求的 log2 尺度表达矩阵
 data_log2 <- as.data.frame(seurat_data / log(2))
 
-# ==========================================
-# 定义 Signature 完整路径，并动态提取名称
-# ==========================================
-# 在这里输入包含文件名和后缀的完整路径
-signature_file_path <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/input/table2_primary_cilia_single_gene_confirmed.csv"
+signature_name <- "cholesterolscore"
+signature_file_prefix <- signature_name
 
-# 自动提取文件名：去除路径和 .csv 后缀，得到 "112 primary cilium genes"
-signature_name <- sub("\\.csv$", "", basename(signature_file_path))
-
-# 如果希望保存的文件名不带空格(如 "112_primary_cilium_genes")，可以取消下面这行的注释
-# signature_file_prefix <- gsub(" ", "_", signature_name) 
-signature_file_prefix <- signature_name # 这里默认保留原名
-
-# 2. 提取基因集 (按照完整路径读取)
-CRC_data = read.csv(signature_file_path, header = T, check.names = F)
-target_genes = as.character(CRC_data[,'Gene'])
-#data7 = CRC_data[CRC_data$Pathway == 'Cell cycle',]
-#target_genes = as.character(CRC_data[CRC_data$Pathway == 'Proteoglycans in cancer',1])
-#write.csv(data7,'Cell cycle.csv' , row.names= FALSE, quote = FALSE)
-#target_genes=c('CXCL9', 'CXCL10', 'CXCL11', 'CXCR3', 'CD3', 'CD4', 'CD8a', 'CD8b', 'CD274', 'PDCD1', 'CXCR4', 'CCL5')
+target_genes <- c("HMGCS1", "HMGCR", "MVK", "PMVK", "MVD", "IDI1", "FDPS", "FDFT1", "SQLE",
+                  "LSS", "CYP51A1", "TM7SF2", "MSMO1", "NSDHL", "HSD17B7", "DHCR24",
+                  "EBP", "SC5D", "DHCR7")
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # 3. 计算评分
@@ -120,7 +106,7 @@ p1 = ggplot(data_stage, aes(x = Type, y = score, color = Type)) +
 
 print(p1)
 # 动态保存图片 1
-ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_Stage_plot.png")), plot = p1, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_GSE132465_Stage_plot.png")), plot = p1, width = 6, height = 5, dpi = 300)
 
 
 # ==============================
@@ -159,4 +145,4 @@ p2 = ggplot(data_meta, aes(x = Type, y = score, color = Type)) +
 
 print(p2)
 # 动态保存图片 2
-ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_Metastasis_plot.png")), plot = p2, width = 6, height = 5, dpi = 300)
+ggsave(file.path(PLOTS_DIR, paste0(signature_file_prefix, "_GSE132465_Metastasis_plot.png")), plot = p2, width = 6, height = 5, dpi = 300)

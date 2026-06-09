@@ -62,10 +62,19 @@ get_output_dir <- function(config, subdir = NULL) {
   dir_path
 }
 
+#' 创建并返回目录
+#'
+#' @param dir_path 目录路径
+#' @return 完整路径
+ensure_dir <- function(dir_path) {
+  if (!dir.exists(dir_path)) dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
+  dir_path
+}
+
 #' 获取结果目录
 #'
 #' @param config 配置列表
-#' @param subdir 子目录名 (objects/files/plots)
+#' @param subdir 子目录名 (objects/qs/rds/files/plots/logs/test)
 #' @return 完整路径
 get_results_dir <- function(config, subdir = NULL) {
   if (!is.null(subdir)) {
@@ -76,12 +85,13 @@ get_results_dir <- function(config, subdir = NULL) {
       plots = config$paths$plots_dir,
       rds = config$paths$rds_dir,
       logs = config$paths$logs_dir,
+      test = file.path(config$paths$results_dir, "test"),
+      rawdata = config$paths$rawdata_dir,
       NULL
     )
     if (!is.null(configured_path)) {
       dir_path <- configured_path
-      if (!dir.exists(dir_path)) dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
-      return(dir_path)
+      return(ensure_dir(dir_path))
     }
   }
 
@@ -91,9 +101,29 @@ get_results_dir <- function(config, subdir = NULL) {
   } else {
     dir_path <- base_dir
   }
-  if (!dir.exists(dir_path)) dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
-  dir_path
+  ensure_dir(dir_path)
 }
+
+#' 获取 files 或 plots 下的分析子目录
+#'
+#' @param config 配置列表
+#' @param kind files 或 plots
+#' @param ... 子目录，例如 "PBMC", "Monocytes"
+#' @return 完整路径
+get_analysis_dir <- function(config, kind = c("files", "plots"), ...) {
+  kind <- match.arg(kind)
+  base_dir <- get_results_dir(config, kind)
+  subdirs <- c(...)
+  if (length(subdirs) > 0) {
+    subdirs <- subdirs[!is.na(subdirs) & nzchar(subdirs)]
+    if (length(subdirs) > 0) base_dir <- do.call(file.path, as.list(c(base_dir, subdirs)))
+  }
+  ensure_dir(base_dir)
+}
+
+#' 获取对象目录，当前结构中 qs 和 rds 分开保存
+get_qs_dir <- function(config) get_results_dir(config, "qs")
+get_rds_dir <- function(config) get_results_dir(config, "rds")
 
 #' 设置线程和内存策略
 #'

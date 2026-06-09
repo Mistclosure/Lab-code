@@ -13,11 +13,12 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE225857/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes   ciliopathy_genes
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/KEGG_cNMF_program_top200/files/Program_Top200_Genes/Program_6_top200_genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/input/table2_primary_cilia_single_gene_confirmed.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 
 pbmc1 = qread('Malignant.qs')
+pbmc1 <- NormalizeData(pbmc1,normalization.method = "LogNormalize", scale.factor = 1000000)
 # 过滤全0基因
 pbmc1 <- pbmc1[Matrix::rowSums(GetAssayData(pbmc1, layer = "counts")) > 0, ]
 # 1. Seurat v5 提取表达矩阵
@@ -25,7 +26,7 @@ exp = as.data.frame(LayerData(pbmc1, assay = "RNA", layer = "data"))
 
 # 2. 提取基因集
 CRC_data = read.csv(input_file, header = T, check.names = F)
-target_genes = as.character(CRC_data[,'gene'])
+target_genes = as.character(CRC_data[,'Gene'])
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # --- 3. 计算评分 (方法 A: CRDscore) ---
@@ -71,7 +72,7 @@ p = ggplot(data_p, aes(x = Type, y = score, color = Type)) +
   geom_boxplot(alpha=0.7, outlier.shape = NA, size=0.7, width=0.7, fatten=0.7) +
   theme_bw() + theme(panel.grid=element_blank()) +
   stat_compare_means(comparisons = my_comparisons, method = "wilcox.test") +
-  ggtitle(paste0(file_base_name, "+CRC+CRDscore")) +
+  ggtitle(paste0(file_base_name, "+GSE225857+CRDscore")) +
   ylim(-0.2, 0.2) + ylab("CRDScore") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 15, face = "bold", color = "black"),
         axis.text.y = element_text(size = 15, face = "bold", color = "black"),

@@ -1,0 +1,28 @@
+=== Session Info ===
+R version 4.4.3 (2025-02-28)
+Platform: x86_64-conda-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS/LAPACK: /home/zerui/miniconda3/envs/cmintro/lib/libopenblasp-r0.3.33.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=zh_CN.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=zh_CN.UTF-8        LC_COLLATE=zh_CN.UTF-8    
+ [5] LC_MONETARY=zh_CN.UTF-8    LC_MESSAGES=zh_CN.UTF-8   
+ [7] LC_PAPER=zh_CN.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=zh_CN.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Asia/Shanghai
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.4.3 parallel_4.4.3
+
+=== Loaded Packages ===
+compiler: 4.4.3
+parallel: 4.4.3

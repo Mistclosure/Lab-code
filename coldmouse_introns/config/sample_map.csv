@@ -1,0 +1,10 @@
+sample_id,tissue,group,condition,loom_file
+A1,Aorta,RT_25C,NonCold,A1.loom
+A2,Aorta,Cold_4C,Cold,A2.loom
+A3,Aorta,TN_30C,NonCold,A3.loom
+B1,PBMC,RT_25C,NonCold,B1.loom
+B2,PBMC,Cold_4C,Cold,B2.loom
+B3,PBMC,TN_30C,NonCold,B3.loom
+M1,BoneMarrow,RT_25C,NonCold,M1.loom
+M2,BoneMarrow,Cold_4C,Cold,M2.loom
+M3,BoneMarrow,TN_30C,NonCold,M3.loom

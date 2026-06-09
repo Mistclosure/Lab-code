@@ -13,7 +13,7 @@ setwd('/mnt/disk1/qiuzerui/downloads/CRC/GSE178318/')
 dir.create("pictures", showWarnings = FALSE) 
 
 # 定义输入文件名变量DNA-damage-response genes.csv   ciliopathy_genes.csv
-input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/KEGG_cNMF_program_top200/files/Program_Top200_Genes/Program_6_top200_genes.csv"
+input_file <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/input/table2_primary_cilia_single_gene_confirmed.csv"
 file_base_name <- tools::file_path_sans_ext(basename(input_file))
 
 pbmc1 = qread('Malignant.qs')
@@ -44,7 +44,7 @@ exp = data_log2
 
 # 2. 提取基因集
 CRC_data = read.csv(input_file, header = T, check.names = F)
-target_genes = as.character(CRC_data[,'gene'])
+target_genes = as.character(CRC_data[,'Gene'])
 target_genes = intersect(target_genes, rownames(pbmc1))
 
 # --- 3. 计算评分 (方法 A: CRDscore) ---
