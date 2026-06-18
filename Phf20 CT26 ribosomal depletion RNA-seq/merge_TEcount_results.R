@@ -4,6 +4,7 @@ workdir <- "/mnt/disk1/qiuzerui/expriments/Phf20 CT26 ribosomal depletion RNA-se
 counts_dir <- file.path(workdir, "counts")
 files_dir <- file.path(workdir, "files")
 dir.create(files_dir, showWarnings = FALSE, recursive = TRUE)
+output_prefix <- "Phf20_ribo_deleption"
 
 cnt_files <- list.files(
   counts_dir,
@@ -51,57 +52,15 @@ merged_with_type <- cbind(
   merged[, count_cols, drop = FALSE]
 )
 
-gene_matrix <- merged_with_type[merged_with_type$feature_type == "gene", , drop = FALSE]
-te_matrix <- merged_with_type[merged_with_type$feature_type == "TE", , drop = FALSE]
-
-metadata <- data.frame(
-  sample = sample_names,
-  source_file = basename(cnt_files),
-  group = ifelse(grepl("Phf20", sample_names, ignore.case = TRUE), "Phf20", "Scr"),
-  replicate = sub(".*_(\\d+)_Mixt$", "\\1", sample_names),
-  stringsAsFactors = FALSE
-)
-
-write.table(
-  merged_with_type,
-  file = file.path(files_dir, "TEcount_merged_gene_TE_counts.tsv"),
-  sep = "\t",
-  quote = FALSE,
-  row.names = FALSE
-)
-
 write.csv(
   merged_with_type,
-  file = file.path(files_dir, "TEcount_merged_gene_TE_counts.csv"),
-  quote = FALSE,
-  row.names = FALSE
-)
-
-write.table(
-  gene_matrix,
-  file = file.path(files_dir, "TEcount_merged_gene_counts.tsv"),
-  sep = "\t",
-  quote = FALSE,
-  row.names = FALSE
-)
-
-write.table(
-  te_matrix,
-  file = file.path(files_dir, "TEcount_merged_TE_counts.tsv"),
-  sep = "\t",
-  quote = FALSE,
-  row.names = FALSE
-)
-
-write.csv(
-  metadata,
-  file = file.path(files_dir, "TEcount_sample_metadata.csv"),
+  file = file.path(files_dir, paste0(output_prefix, "_TEcount_merged_gene_TE_counts.csv")),
   quote = FALSE,
   row.names = FALSE
 )
 
 message("Merged files: ", length(cnt_files))
 message("Total features: ", nrow(merged_with_type))
-message("Gene features: ", nrow(gene_matrix))
-message("TE features: ", nrow(te_matrix))
+message("Gene features: ", sum(merged_with_type$feature_type == "gene"))
+message("TE features: ", sum(merged_with_type$feature_type == "TE"))
 message("Output directory: ", files_dir)
