@@ -58,17 +58,17 @@ dir.create(FILES_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(PLOTS_DIR, recursive = TRUE, showWarnings = FALSE)
 
 seed_base <- 12345
-n_random_sets <- 100
+n_random_sets <- 1000
 random_run_label <- paste0("random_", n_random_sets)
 set.seed(seed_base)
 
 # --- 读取 gene set ---
-gene_csv <- "/mnt/disk1/qiuzerui/downloads/CRC/GSE132465/input/table1_primary_cilia_single_gene_confirmed.csv"
+gene_csv <- "/mnt/disk1/qiuzerui/downloads/CRC/signature/antigen presentation genes.csv"
 gene_set_name <- tools::file_path_sans_ext(basename(gene_csv))
 gene_set_prefix <- gsub("[^A-Za-z0-9_]+", "_", gene_set_name)
 gene_set_prefix <- gsub("_+", "_", gene_set_prefix)
 gene_set_prefix <- gsub("^_|_$", "", gene_set_prefix)
-gs <- read.csv(gene_csv, header = TRUE, check.names = FALSE)
+gs <- read.csv(gene_csv, header = TRUE, check.names = FALSE, fileEncoding = "UTF-8-BOM")
 gene_col <- intersect(c("gene", "Gene", "symbol", "Symbol", "gene_symbol", "GeneSymbol"), colnames(gs))[1]
 if (is.na(gene_col)) {
   stop("No gene symbol column found in gene set CSV.")
